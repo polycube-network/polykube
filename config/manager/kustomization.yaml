@@ -1,0 +1,10 @@
+resources:
+- manager.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: manager-env
+  files:
+  - controller_manager_config.yaml

@@ -1,0 +1,176 @@
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: polykube
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      k8s-app: polykube
+      kubernetes.io/cluster-service: "true"
+  template:
+    metadata:
+      labels:
+        k8s-app: polykube
+        kubernetes.io/cluster-service: "true"
+      annotations:
+        # Mark polycube as critical, gets priority
+        # https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        scheduler.alpha.kubernetes.io/tolerations: >-
+          [{"key":"dedicated","operator":"Equal","value":"master","effect":"NoSchedule"}]
+    spec:
+      #serviceAccountName: polycube
+      containers:
+        - name: polycubed
+          image: polycubenets/polycube-k8s:latest
+          imagePullPolicy: Always
+          command: ["polycubed",
+                    "--loglevel=DEBUG",
+                    "--addr=0.0.0.0",
+                    "--logfile=/host/var/log/pcn_k8s"]
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/cni-install.sh"
+            preStop:
+              exec:
+                command:
+                  - "/cni-uninstall.sh"
+          env:
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POLYCUBE_MTU
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: mtu
+            - name: POLYCUBE_VPODS_RANGE
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: vPodsRange
+          volumeMounts:
+            - name: lib-modules
+              mountPath: /lib/modules
+            - name: usr-src
+              mountPath: /usr/src
+            - name: cni-path
+              mountPath: /host/opt/cni/bin
+            - name: etc-cni-netd
+              mountPath: /host/etc/cni/net.d
+            - name: var-log
+              mountPath: /host/var/log
+            - name: kubeconfig
+              mountPath: /var/lib/pcn_k8s/
+          securityContext:
+            privileged: true
+          ports:
+            - name: polycubed
+              containerPort: 9000
+          terminationMessagePolicy: FallbackToLogsOnError
+        - name: polycube-k8s
+          image: polycubenets/polycube-k8s:latest
+          imagePullPolicy: Always
+          command: ["/pcn_k8s"]
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - "/cleanup.sh"
+          env:
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POLYCUBE_MTU
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: mtu
+            - name: POLYCUBE_VPODS_RANGE
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: vPodsRange
+            - name: POLYCUBE_VTEPS_RANGE
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: vtepsRange
+            - name: POLYCUBE_ETCD_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: etcd_url
+            - name: POLYCUBE_SERVICE_CLUSTERIP_RANGE
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: serviceClusterIPRange
+            - name: POLYCUBE_SERVICE_NODEPORT_RANGE
+              valueFrom:
+                configMapKeyRef:
+                  name: polycube-env
+                  key: serviceNodePortRange
+          volumeMounts:
+            - name: netns
+              mountPath: /host/var/run/netns
+            - name: proc
+              mountPath: /host/proc/
+            - name: kubeconfig
+              mountPath: /var/lib/pcn_k8s/
+          securityContext:
+            privileged: true
+          terminationMessagePolicy: FallbackToLogsOnError
+          livenessProbe:
+            httpGet:
+              host: 127.0.0.1
+              path: /polycube/v1/k8switch0/
+              port: 9000
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            periodSeconds: 20
+      hostNetwork: true
+      #restartPolicy: Never
+      volumes:
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+        - name: usr-src
+          hostPath:
+            path: /usr/src
+        - name: cni-path
+          hostPath:
+            path: /opt/cni/bin
+        - name: etc-cni-netd
+          hostPath:
+            path: /etc/cni/net.d
+        - name: var-log
+          hostPath:
+            path: /var/log
+        - name: netns
+          hostPath:
+            path: /var/run/netns
+        - name: proc
+          hostPath:
+            path: /proc/
+        - name: kubeconfig
+          configMap:
+            name: kube-proxy
+            #namespace: kube-public
+      tolerations:
+        - effect: NoSchedule
+          key: node.kubernetes.io/not-ready
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          key: node.cloudprovider.kubernetes.io/uninitialized
+          value: "true"
+        - key: CriticalAddonsOnly
+          operator: "Exists"

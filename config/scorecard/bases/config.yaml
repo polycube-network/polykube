@@ -1,0 +1,7 @@
+apiVersion: scorecard.operatorframework.io/v1alpha3
+kind: Configuration
+metadata:
+  name: env
+stages:
+- parallel: true
+  tests: []

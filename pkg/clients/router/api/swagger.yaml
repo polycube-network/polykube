@@ -1,0 +1,2913 @@
+---
+swagger: "2.0"
+info:
+  description: "router API generated from router.yang"
+  version: "1.0.0"
+  title: "router API"
+  x-yang-path: "/input/router.yang"
+host: "localhost:8080"
+basePath: "/"
+tags:
+- name: "router"
+schemes:
+- "http"
+paths:
+  /router/{name}/:
+    get:
+      tags:
+      - "router"
+      summary: "Read router by ID"
+      description: "Read operation of resource: router"
+      operationId: "readRouterByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Router"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create router by ID"
+      description: "Create operation of resource: router"
+      operationId: "createRouterByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "router"
+        description: "routerbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Router"
+        x-exportParamName: "Router"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+      x-has-default-impl: true
+    put:
+      tags:
+      - "router"
+      summary: "Replace router by ID"
+      description: "Replace operation of resource: router"
+      operationId: "replaceRouterByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "router"
+        description: "routerbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Router"
+        x-exportParamName: "Router"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+      x-has-default-impl: true
+    delete:
+      tags:
+      - "router"
+      summary: "Delete router by ID"
+      description: "Delete operation of resource: router"
+      operationId: "deleteRouterByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+      x-has-default-impl: true
+    patch:
+      tags:
+      - "router"
+      summary: "Update router by ID"
+      description: "Update operation of resource: router"
+      operationId: "updateRouterByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "router"
+        description: "routerbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Router"
+        x-exportParamName: "Router"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/:
+    get:
+      tags:
+      - "router"
+      summary: "Read router by ID"
+      description: "Read operation of resource: router"
+      operationId: "readRouterListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Router"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-has-default-impl: true
+    patch:
+      tags:
+      - "router"
+      summary: "Update router by ID"
+      description: "Update operation of resource: router"
+      operationId: "updateRouterListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "router"
+        description: "routerbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Router"
+        x-exportParamName: "Router"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/uuid/:
+    get:
+      tags:
+      - "router"
+      summary: "Read uuid by ID"
+      description: "Read operation of resource: uuid"
+      operationId: "readRouterUuidByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            description: "UUID of the Cube"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /router/{name}/type/:
+    get:
+      tags:
+      - "router"
+      summary: "Read type by ID"
+      description: "Read operation of resource: type"
+      operationId: "readRouterTypeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Type of the Cube (TC, XDP_SKB, XDP_DRV)"
+            example: "TC"
+            enum:
+            - "TC"
+            - "XDP_SKB"
+            - "XDP_DRV"
+            default: "TC"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /router/{name}/service-name/:
+    get:
+      tags:
+      - "router"
+      summary: "Read service-name by ID"
+      description: "Read operation of resource: service-name"
+      operationId: "readRouterServiceNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            example: "helloworld"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /router/{name}/loglevel/:
+    get:
+      tags:
+      - "router"
+      summary: "Read loglevel by ID"
+      description: "Read operation of resource: loglevel"
+      operationId: "readRouterLoglevelByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Defines the logging level of a service instance, from none\
+              \ (OFF) to the most verbose (TRACE)"
+            example: "INFO"
+            enum:
+            - "TRACE"
+            - "DEBUG"
+            - "INFO"
+            - "WARN"
+            - "ERR"
+            - "CRITICAL"
+            - "OFF"
+            default: "INFO"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "router"
+      summary: "Update loglevel by ID"
+      description: "Update operation of resource: loglevel"
+      operationId: "updateRouterLoglevelByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "loglevel"
+        description: "Defines the logging level of a service instance, from none (OFF)\
+          \ to the most verbose (TRACE)"
+        required: true
+        schema:
+          type: "string"
+          description: "Defines the logging level of a service instance, from none\
+            \ (OFF) to the most verbose (TRACE)"
+          example: "INFO"
+          enum:
+          - "TRACE"
+          - "DEBUG"
+          - "INFO"
+          - "WARN"
+          - "ERR"
+          - "CRITICAL"
+          - "OFF"
+          default: "INFO"
+        x-is-enum: "true"
+        x-exportParamName: "Loglevel"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /router/{name}/ports/{ports_name}/:
+    get:
+      tags:
+      - "router"
+      summary: "Read ports by ID"
+      description: "Read operation of resource: ports"
+      operationId: "readRouterPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Ports"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create ports by ID"
+      description: "Create operation of resource: ports"
+      operationId: "createRouterPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace ports by ID"
+      description: "Replace operation of resource: ports"
+      operationId: "replaceRouterPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete ports by ID"
+      description: "Delete operation of resource: ports"
+      operationId: "deleteRouterPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update ports by ID"
+      description: "Update operation of resource: ports"
+      operationId: "updateRouterPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/ports/:
+    get:
+      tags:
+      - "router"
+      summary: "Read ports by ID"
+      description: "Read operation of resource: ports"
+      operationId: "readRouterPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Ports"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create ports by ID"
+      description: "Create operation of resource: ports"
+      operationId: "createRouterPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace ports by ID"
+      description: "Replace operation of resource: ports"
+      operationId: "replaceRouterPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete ports by ID"
+      description: "Delete operation of resource: ports"
+      operationId: "deleteRouterPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update ports by ID"
+      description: "Update operation of resource: ports"
+      operationId: "updateRouterPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/ports/{ports_name}/uuid/:
+    get:
+      tags:
+      - "router"
+      summary: "Read uuid by ID"
+      description: "Read operation of resource: uuid"
+      operationId: "readRouterPortsUuidByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            description: "UUID of the port"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /router/{name}/ports/{ports_name}/status/:
+    get:
+      tags:
+      - "router"
+      summary: "Read status by ID"
+      description: "Read operation of resource: status"
+      operationId: "readRouterPortsStatusByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Status of the port (UP or DOWN)"
+            enum:
+            - "UP"
+            - "DOWN"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /router/{name}/ports/{ports_name}/peer/:
+    get:
+      tags:
+      - "router"
+      summary: "Read peer by ID"
+      description: "Read operation of resource: peer"
+      operationId: "readRouterPortsPeerByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Peer name, such as a network interfaces (e.g., 'veth0')\
+              \ or another cube (e.g., 'br1:port2')"
+            example: "r0:port1"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "router"
+      summary: "Update peer by ID"
+      description: "Update operation of resource: peer"
+      operationId: "updateRouterPortsPeerByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "peer"
+        description: "Peer name, such as a network interfaces (e.g., 'veth0') or another\
+          \ cube (e.g., 'br1:port2')"
+        required: true
+        schema:
+          type: "string"
+          description: "Peer name, such as a network interfaces (e.g., 'veth0') or\
+            \ another cube (e.g., 'br1:port2')"
+          example: "r0:port1"
+        x-exportParamName: "Peer"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /router/{name}/ports/{ports_name}/ip/:
+    get:
+      tags:
+      - "router"
+      summary: "Read ip by ID"
+      description: "Read operation of resource: ip"
+      operationId: "readRouterPortsIpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+            description: "IP address and prefix of the port"
+            example: "10.0.0.1/24"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "router"
+      summary: "Update ip by ID"
+      description: "Update operation of resource: ip"
+      operationId: "updateRouterPortsIpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ip"
+        description: "IP address and prefix of the port"
+        required: true
+        schema:
+          type: "string"
+          format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+          description: "IP address and prefix of the port"
+          example: "10.0.0.1/24"
+        x-exportParamName: "Ip"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/ports/{ports_name}/secondaryip/{ip}/:
+    get:
+      tags:
+      - "router"
+      summary: "Read secondaryip by ID"
+      description: "Read operation of resource: secondaryip"
+      operationId: "readRouterPortsSecondaryipByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Ip"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/PortsSecondaryip"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create secondaryip by ID"
+      description: "Create operation of resource: secondaryip"
+      operationId: "createRouterPortsSecondaryipByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "secondaryip"
+        description: "secondaryipbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/PortsSecondaryip"
+        x-exportParamName: "Secondaryip"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace secondaryip by ID"
+      description: "Replace operation of resource: secondaryip"
+      operationId: "replaceRouterPortsSecondaryipByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "secondaryip"
+        description: "secondaryipbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/PortsSecondaryip"
+        x-exportParamName: "Secondaryip"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete secondaryip by ID"
+      description: "Delete operation of resource: secondaryip"
+      operationId: "deleteRouterPortsSecondaryipByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Ip"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update secondaryip by ID"
+      description: "Update operation of resource: secondaryip"
+      operationId: "updateRouterPortsSecondaryipByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "secondaryip"
+        description: "secondaryipbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/PortsSecondaryip"
+        x-exportParamName: "Secondaryip"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/ports/{ports_name}/secondaryip/:
+    get:
+      tags:
+      - "router"
+      summary: "Read secondaryip by ID"
+      description: "Read operation of resource: secondaryip"
+      operationId: "readRouterPortsSecondaryipListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/PortsSecondaryip"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create secondaryip by ID"
+      description: "Create operation of resource: secondaryip"
+      operationId: "createRouterPortsSecondaryipListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "secondaryip"
+        description: "secondaryipbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/PortsSecondaryip"
+        x-exportParamName: "Secondaryip"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace secondaryip by ID"
+      description: "Replace operation of resource: secondaryip"
+      operationId: "replaceRouterPortsSecondaryipListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "secondaryip"
+        description: "secondaryipbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/PortsSecondaryip"
+        x-exportParamName: "Secondaryip"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete secondaryip by ID"
+      description: "Delete operation of resource: secondaryip"
+      operationId: "deleteRouterPortsSecondaryipListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update secondaryip by ID"
+      description: "Update operation of resource: secondaryip"
+      operationId: "updateRouterPortsSecondaryipListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "secondaryip"
+        description: "secondaryipbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/PortsSecondaryip"
+        x-exportParamName: "Secondaryip"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/ports/{ports_name}/mac/:
+    get:
+      tags:
+      - "router"
+      summary: "Read mac by ID"
+      description: "Read operation of resource: mac"
+      operationId: "readRouterPortsMacByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+            description: "MAC address of the port"
+            example: "B3:23:45:F5:3A"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "router"
+      summary: "Update mac by ID"
+      description: "Update operation of resource: mac"
+      operationId: "updateRouterPortsMacByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "mac"
+        description: "MAC address of the port"
+        required: true
+        schema:
+          type: "string"
+          format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+          description: "MAC address of the port"
+          example: "B3:23:45:F5:3A"
+        x-exportParamName: "Mac"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/shadow/:
+    get:
+      tags:
+      - "router"
+      summary: "Read shadow by ID"
+      description: "Read operation of resource: shadow"
+      operationId: "readRouterShadowByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "boolean"
+            description: "Defines if the service is visible in Linux"
+            default: "false"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /router/{name}/span/:
+    get:
+      tags:
+      - "router"
+      summary: "Read span by ID"
+      description: "Read operation of resource: span"
+      operationId: "readRouterSpanByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "boolean"
+            description: "Defines if all traffic is sent to Linux"
+            default: "false"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "router"
+      summary: "Update span by ID"
+      description: "Update operation of resource: span"
+      operationId: "updateRouterSpanByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "span"
+        description: "Defines if all traffic is sent to Linux"
+        required: true
+        schema:
+          type: "boolean"
+          description: "Defines if all traffic is sent to Linux"
+          default: "false"
+        x-exportParamName: "Span"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /router/{name}/route/{network}/{nexthop}/:
+    get:
+      tags:
+      - "router"
+      summary: "Read route by ID"
+      description: "Read operation of resource: route"
+      operationId: "readRouterRouteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Route"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create route by ID"
+      description: "Create operation of resource: route"
+      operationId: "createRouterRouteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      - in: "body"
+        name: "route"
+        description: "routebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Route"
+        x-exportParamName: "Route"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace route by ID"
+      description: "Replace operation of resource: route"
+      operationId: "replaceRouterRouteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      - in: "body"
+        name: "route"
+        description: "routebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Route"
+        x-exportParamName: "Route"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete route by ID"
+      description: "Delete operation of resource: route"
+      operationId: "deleteRouterRouteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update route by ID"
+      description: "Update operation of resource: route"
+      operationId: "updateRouterRouteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      - in: "body"
+        name: "route"
+        description: "routebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Route"
+        x-exportParamName: "Route"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/route/:
+    get:
+      tags:
+      - "router"
+      summary: "Read route by ID"
+      description: "Read operation of resource: route"
+      operationId: "readRouterRouteListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Route"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create route by ID"
+      description: "Create operation of resource: route"
+      operationId: "createRouterRouteListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "route"
+        description: "routebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Route"
+        x-exportParamName: "Route"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace route by ID"
+      description: "Replace operation of resource: route"
+      operationId: "replaceRouterRouteListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "route"
+        description: "routebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Route"
+        x-exportParamName: "Route"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete route by ID"
+      description: "Delete operation of resource: route"
+      operationId: "deleteRouterRouteListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update route by ID"
+      description: "Update operation of resource: route"
+      operationId: "updateRouterRouteListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "route"
+        description: "routebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Route"
+        x-exportParamName: "Route"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/route/{network}/{nexthop}/interface/:
+    get:
+      tags:
+      - "router"
+      summary: "Read interface by ID"
+      description: "Read operation of resource: interface"
+      operationId: "readRouterRouteInterfaceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Outgoing interface"
+            example: "port2"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+  /router/{name}/route/{network}/{nexthop}/pathcost/:
+    get:
+      tags:
+      - "router"
+      summary: "Read pathcost by ID"
+      description: "Read operation of resource: pathcost"
+      operationId: "readRouterRoutePathcostByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "integer"
+            format: "uint32"
+            description: "Cost of this route"
+            example: "10"
+            default: 1
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "router"
+      summary: "Update pathcost by ID"
+      description: "Update operation of resource: pathcost"
+      operationId: "updateRouterRoutePathcostByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "network"
+        in: "path"
+        description: "ID of network"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        x-exportParamName: "Network"
+      - name: "nexthop"
+        in: "path"
+        description: "ID of nexthop"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Nexthop"
+      - in: "body"
+        name: "pathcost"
+        description: "Cost of this route"
+        required: true
+        schema:
+          type: "integer"
+          format: "uint32"
+          description: "Cost of this route"
+          example: "10"
+          default: 1
+        x-exportParamName: "Pathcost"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/arp-table/{address}/:
+    get:
+      tags:
+      - "router"
+      summary: "Read arp-table by ID"
+      description: "Read operation of resource: arp-table"
+      operationId: "readRouterArpTableByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/ArpTable"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create arp-table by ID"
+      description: "Create operation of resource: arp-table"
+      operationId: "createRouterArpTableByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "arp-table"
+        description: "arp-tablebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/ArpTable"
+        x-exportParamName: "ArpTable"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace arp-table by ID"
+      description: "Replace operation of resource: arp-table"
+      operationId: "replaceRouterArpTableByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "arp-table"
+        description: "arp-tablebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/ArpTable"
+        x-exportParamName: "ArpTable"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete arp-table by ID"
+      description: "Delete operation of resource: arp-table"
+      operationId: "deleteRouterArpTableByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update arp-table by ID"
+      description: "Update operation of resource: arp-table"
+      operationId: "updateRouterArpTableByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "arp-table"
+        description: "arp-tablebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/ArpTable"
+        x-exportParamName: "ArpTable"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/arp-table/:
+    get:
+      tags:
+      - "router"
+      summary: "Read arp-table by ID"
+      description: "Read operation of resource: arp-table"
+      operationId: "readRouterArpTableListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ArpTable"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "router"
+      summary: "Create arp-table by ID"
+      description: "Create operation of resource: arp-table"
+      operationId: "createRouterArpTableListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "arp-table"
+        description: "arp-tablebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/ArpTable"
+        x-exportParamName: "ArpTable"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "router"
+      summary: "Replace arp-table by ID"
+      description: "Replace operation of resource: arp-table"
+      operationId: "replaceRouterArpTableListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "arp-table"
+        description: "arp-tablebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/ArpTable"
+        x-exportParamName: "ArpTable"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "router"
+      summary: "Delete arp-table by ID"
+      description: "Delete operation of resource: arp-table"
+      operationId: "deleteRouterArpTableListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "router"
+      summary: "Update arp-table by ID"
+      description: "Update operation of resource: arp-table"
+      operationId: "updateRouterArpTableListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "arp-table"
+        description: "arp-tablebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/ArpTable"
+        x-exportParamName: "ArpTable"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/arp-table/{address}/mac/:
+    get:
+      tags:
+      - "router"
+      summary: "Read mac by ID"
+      description: "Read operation of resource: mac"
+      operationId: "readRouterArpTableMacByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+            description: "Destination MAC address"
+            example: "C5:13:2D:36:27:9B"
+            x-is-required: true
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "router"
+      summary: "Update mac by ID"
+      description: "Update operation of resource: mac"
+      operationId: "updateRouterArpTableMacByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "mac"
+        description: "Destination MAC address"
+        required: true
+        schema:
+          type: "string"
+          format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+          description: "Destination MAC address"
+          example: "C5:13:2D:36:27:9B"
+          x-is-required: true
+        x-exportParamName: "Mac"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /router/{name}/arp-table/{address}/interface/:
+    get:
+      tags:
+      - "router"
+      summary: "Read interface by ID"
+      description: "Read operation of resource: interface"
+      operationId: "readRouterArpTableInterfaceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Outgoing interface"
+            example: "port2"
+            x-is-required: true
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "router"
+      summary: "Update interface by ID"
+      description: "Update operation of resource: interface"
+      operationId: "updateRouterArpTableInterfaceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "interface"
+        description: "Outgoing interface"
+        required: true
+        schema:
+          type: "string"
+          description: "Outgoing interface"
+          example: "port2"
+          x-is-required: true
+        x-exportParamName: "Interface_"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+definitions:
+  PortsSecondaryip:
+    properties:
+      ip:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        example: "10.0.0.2/24"
+        description: "Secondary IP address and prefix of the port"
+        x-is-key: true
+    example:
+      ip: "10.0.0.2/24"
+    x-is-list: "true"
+    x-parent: "Ports"
+  Ports:
+    properties:
+      name:
+        type: "string"
+        example: "port1"
+        description: "Port Name"
+        x-has-default-impl: true
+        x-is-required: true
+        x-is-key: true
+      uuid:
+        type: "string"
+        format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        description: "UUID of the port"
+        readOnly: true
+        x-is-base-datamodel: true
+      status:
+        type: "string"
+        description: "Status of the port (UP or DOWN)"
+        readOnly: true
+        enum:
+        - "UP"
+        - "DOWN"
+        x-is-base-datamodel: true
+      peer:
+        type: "string"
+        example: "r0:port1"
+        description: "Peer name, such as a network interfaces (e.g., 'veth0') or another\
+          \ cube (e.g., 'br1:port2')"
+        x-is-base-datamodel: true
+      tcubes:
+        type: "array"
+        items:
+          type: "string"
+          description: "List of transparent cubes attached to this port"
+          readOnly: true
+        x-is-base-datamodel: true
+      ip:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        example: "10.0.0.1/24"
+        description: "IP address and prefix of the port"
+      secondaryip:
+        type: "array"
+        description: "Additional IP addresses for the port"
+        items:
+          $ref: "#/definitions/PortsSecondaryip"
+        x-key:
+        - "ip"
+        x-key-list:
+        - name: "ip"
+          type: "string"
+      mac:
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        example: "B3:23:45:F5:3A"
+        description: "MAC address of the port"
+    example:
+      tcubes:
+      - "tcubes"
+      - "tcubes"
+      peer: "r0:port1"
+      secondaryip:
+      - ip: "10.0.0.2/24"
+      - ip: "10.0.0.2/24"
+      ip: "10.0.0.1/24"
+      name: "port1"
+      uuid: "uuid"
+      mac: "B3:23:45:F5:3A"
+      status: "UP"
+    x-inherits-from: "polycube::service::Port"
+    x-is-list: "true"
+    x-parent: "Router"
+  Route:
+    properties:
+      network:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        example: "10.0.0.0/24"
+        description: "Destination network IP"
+        x-is-required: true
+        x-is-key: true
+      nexthop:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        example: "123.14.23.3"
+        description: "Next hop; if destination is local will be shown 'local' instead\
+          \ of the ip address"
+        x-is-required: true
+        x-is-key: true
+      interface:
+        type: "string"
+        example: "port2"
+        description: "Outgoing interface"
+        readOnly: true
+      pathcost:
+        type: "integer"
+        format: "uint32"
+        example: 10
+        description: "Cost of this route"
+    example:
+      pathcost: 10
+      interface: "port2"
+      nexthop: "123.14.23.3"
+      network: "10.0.0.0/24"
+    x-is-list: "true"
+    x-parent: "Router"
+  ArpTable:
+    properties:
+      address:
+        type: "string"
+        example: "123.13.34.0"
+        description: "Destination IP address"
+        x-is-required: true
+        x-is-key: true
+      mac:
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        example: "C5:13:2D:36:27:9B"
+        description: "Destination MAC address"
+        x-is-required: true
+      interface:
+        type: "string"
+        example: "port2"
+        description: "Outgoing interface"
+        x-is-required: true
+    example:
+      address: "123.13.34.0"
+      interface: "port2"
+      mac: "C5:13:2D:36:27:9B"
+    x-is-list: "true"
+    x-parent: "Router"
+  Router:
+    properties:
+      name:
+        type: "string"
+        example: "router1"
+        description: "Name of the router service"
+        x-has-default-impl: true
+        x-is-required: true
+        x-is-key: true
+        x-is-cube-name: true
+      uuid:
+        type: "string"
+        format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        description: "UUID of the Cube"
+        readOnly: true
+        x-is-base-datamodel: true
+      type:
+        type: "string"
+        example: "TC"
+        description: "Type of the Cube (TC, XDP_SKB, XDP_DRV)"
+        readOnly: true
+        default: "TC"
+        enum:
+        - "TC"
+        - "XDP_SKB"
+        - "XDP_DRV"
+        x-is-base-datamodel: true
+      service-name:
+        type: "string"
+        example: "helloworld"
+        readOnly: true
+        x-is-base-datamodel: true
+      loglevel:
+        type: "string"
+        example: "INFO"
+        description: "Defines the logging level of a service instance, from none (OFF)\
+          \ to the most verbose (TRACE)"
+        default: "INFO"
+        enum:
+        - "TRACE"
+        - "DEBUG"
+        - "INFO"
+        - "WARN"
+        - "ERR"
+        - "CRITICAL"
+        - "OFF"
+        x-is-base-datamodel: true
+      ports:
+        type: "array"
+        description: "Entry of the ports table"
+        items:
+          $ref: "#/definitions/Ports"
+        x-is-port-class: true
+        x-key:
+        - "name"
+        x-key-list:
+        - name: "name"
+          type: "string"
+      shadow:
+        type: "boolean"
+        description: "Defines if the service is visible in Linux"
+        readOnly: true
+        default: false
+        x-is-base-datamodel: true
+      span:
+        type: "boolean"
+        description: "Defines if all traffic is sent to Linux"
+        default: false
+        x-is-base-datamodel: true
+      route:
+        type: "array"
+        description: "Entry associated with the routing table"
+        items:
+          $ref: "#/definitions/Route"
+        x-key:
+        - "network"
+        - "nexthop"
+        x-key-list:
+        - name: "network"
+          type: "string"
+        - name: "nexthop"
+          type: "string"
+      arp-table:
+        type: "array"
+        description: "Entry associated with the ARP table"
+        items:
+          $ref: "#/definitions/ArpTable"
+        x-key:
+        - "address"
+        x-key-list:
+        - name: "address"
+          type: "string"
+    example:
+      service-name: "helloworld"
+      route:
+      - pathcost: 10
+        interface: "port2"
+        nexthop: "123.14.23.3"
+        network: "10.0.0.0/24"
+      - pathcost: 10
+        interface: "port2"
+        nexthop: "123.14.23.3"
+        network: "10.0.0.0/24"
+      shadow: false
+      loglevel: "INFO"
+      name: "router1"
+      arp-table:
+      - address: "123.13.34.0"
+        interface: "port2"
+        mac: "C5:13:2D:36:27:9B"
+      - address: "123.13.34.0"
+        interface: "port2"
+        mac: "C5:13:2D:36:27:9B"
+      type: "TC"
+      ports:
+      - tcubes:
+        - "tcubes"
+        - "tcubes"
+        peer: "r0:port1"
+        secondaryip:
+        - ip: "10.0.0.2/24"
+        - ip: "10.0.0.2/24"
+        ip: "10.0.0.1/24"
+        name: "port1"
+        uuid: "uuid"
+        mac: "B3:23:45:F5:3A"
+        status: "UP"
+      - tcubes:
+        - "tcubes"
+        - "tcubes"
+        peer: "r0:port1"
+        secondaryip:
+        - ip: "10.0.0.2/24"
+        - ip: "10.0.0.2/24"
+        ip: "10.0.0.1/24"
+        name: "port1"
+        uuid: "uuid"
+        mac: "B3:23:45:F5:3A"
+        status: "UP"
+      uuid: "uuid"
+      span: false
+    x-is-list: "true"
+    x-is-standard: true
+    x-parent: "Router"
