@@ -6,6 +6,7 @@
 *.so
 *.dylib
 bin
+cni/plugins/polykube-cni-plugin
 testbin/*
 
 # Test binary, build with `go test -c`

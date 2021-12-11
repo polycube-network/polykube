@@ -1,0 +1,5 @@
+time="2021-11-10T12:00:39+01:00" level=info msg="ip allocated" id=ADD_veth1_container ip=10.0.1.1 netmask=ffffff00
+time="2021-11-10T12:00:39+01:00" level=info msg="veth pair created" contIface="{Name:veth1 Mac:fa:25:7c:c6:d6:f1 Sandbox:/run/netns/ns1}" hostIface="{Name:veth1_container Mac:8a:89:f3:4c:51:08 Sandbox:}" id=ADD_veth1_container mtu=1450
+time="2021-11-10T12:00:39+01:00" level=info msg="netns configured" address=10.0.1.1/24 gateway="{IP:10.0.1.254 RawMAC:aa:bb:cc:dd:ee:ff MAC:aa:bb:cc:dd:ee:ff}" id=ADD_veth1_container iface=veth1 netns=/run/netns/ns1
+time="2021-11-10T12:00:44+01:00" level=info msg="lbrp created and connected to pod" connection="lbrp_veth1_container:to_pod <-> veth1_container" id=ADD_veth1_container lbrp=lbrp_veth1_container
+time="2021-11-10T12:00:48+01:00" level=info msg="lbrp connected to bridge" bridge=br0 connection="lbrp_veth1_container:to_bridge <-> br0:to_lbrp_veth1_container" id=ADD_veth1_container lbrp=lbrp_veth1_container

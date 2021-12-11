@@ -1,16 +1,16 @@
 resources:
-- bases/env.yaml
+- bases/config.yaml
 patchesJson6902:
-- path: patches/basic.env.yaml
+- path: patches/basic.config.yaml
   target:
     group: scorecard.operatorframework.io
     version: v1alpha3
     kind: Configuration
-    name: env
-- path: patches/olm.env.yaml
+    name: config
+- path: patches/olm.config.yaml
   target:
     group: scorecard.operatorframework.io
     version: v1alpha3
     kind: Configuration
-    name: env
+    name: config
 #+kubebuilder:scaffold:patchesJson6902

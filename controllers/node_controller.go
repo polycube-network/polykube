@@ -19,19 +19,19 @@ package controllers
 import (
 	"context"
 	"errors"
-	"github.com/ekoops/polykube-operator/pkg/node"
-	"github.com/ekoops/polykube-operator/pkg/polycube"
-	"github.com/ekoops/polykube-operator/pkg/utils"
+	"github.com/ekoops/polykube-operator/node"
+	"github.com/ekoops/polykube-operator/polycube"
+	"github.com/ekoops/polykube-operator/types"
 	"github.com/go-logr/logr"
-	"github.com/prometheus/common/log"
 	corev1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
-	"sync"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
 // NodeReconciler reconciles a Node object
@@ -41,7 +41,7 @@ type NodeReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-func buildNodeDetail(n *corev1.Node) (*NodeDetail, error) {
+func buildNodeDetail(n *corev1.Node) (*types.NodeDetail, error) {
 	IP := node.GetIP(n)
 	if IP == nil {
 		return nil, errors.New("failed to parse node IP")
@@ -56,12 +56,15 @@ func buildNodeDetail(n *corev1.Node) (*NodeDetail, error) {
 	if err != nil {
 		return nil, errors.New("failed to calculate node vtep")
 	}
-	return &NodeDetail{
+
+	return &types.NodeDetail{
 		IP:        IP,
-		podCIDR:   podCIDR,
-		vtepIPNet: vtepIPNet,
+		PodCIDR:   podCIDR,
+		VtepIPNet: vtepIPNet,
 	}, nil
 }
+
+var NodeDetailMap map[string]*types.NodeDetail
 
 //+kubebuilder:rbac:groups=core,resources=nodes,verbs=get;list;watch
 //+kubebuilder:rbac:groups=core,resources=nodes/status,verbs=get;list
@@ -78,121 +81,95 @@ func buildNodeDetail(n *corev1.Node) (*NodeDetail, error) {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.10.0/pkg/reconcile
 func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	nId := req.NamespacedName.String()
-	l := ctrllog.FromContext(ctx, "node", nId)
+	l := ctrllog.FromContext(ctx)
 
 	n := &corev1.Node{}
 	if err := r.Get(ctx, req.NamespacedName, n); err != nil {
-		l.Error(err, "failed to retrieve the service object")
+		if apierrors.IsNotFound(err) {
+			nodeDetail, found := NodeDetailMap[nId]
+			if !found {
+				return ctrl.Result{}, nil
+			}
+			if err := polycube.DeleteRouteToNodePodCIDR(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
+				return ctrl.Result{}, err
+			}
+
+			if err := node.DeleteFdbEntry(nodeDetail.IP); err != nil {
+				return ctrl.Result{}, err
+			}
+			delete(NodeDetailMap, nId)
+			return ctrl.Result{}, nil
+		}
+		l.Error(err, "failed to retrieve the node object")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	l.Info("node object retrieved")
 
-	// name of the custom finalizer
-	finalizer := "polykube.com/finalizer"
-
-	// examine DeletionTimestamp to determine if object is under deletion
-	if !n.ObjectMeta.DeletionTimestamp.IsZero() {
-		// The object is being deleted
-		if utils.ContainsString(n.GetFinalizers(), finalizer) {
-			// the finalizer is present, so perform cleanup steps
-			nodeInfo, err := buildNodeDetail(n)
-			if err != nil {
-				log.Error(err, "failed to get node info")
-				return ctrl.Result{}, err
-			}
-
-			if err := polycube.DeleteRouteToNodePodCIDR(nodeInfo.podCIDR, nodeInfo.vtepIPNet.IP); err != nil {
-				return ctrl.Result{}, err
-			}
-
-			if err := node.DeleteFdbEntry(nodeInfo.IP); err != nil {
-				return ctrl.Result{}, err
-			}
-
-			// remove our finalizer from the list and update it.
-			controllerutil.RemoveFinalizer(n, finalizer)
-			if err := r.Update(ctx, n); err != nil {
-				return ctrl.Result{}, err
-			}
-		}
-		// Stop reconciliation as the item is being deleted
+	if !node.IsReady(n) {
+		// stop reconciliation since a new event will be fired when the node will be ready
+		l.Info("node not ready")
 		return ctrl.Result{}, nil
 	}
 
-	// the object is not under deletion: if the finalizers is not present, Add it
-	if !utils.ContainsString(n.GetFinalizers(), finalizer) {
-		controllerutil.AddFinalizer(n, finalizer)
-		if err := r.Update(ctx, n); err != nil {
+	nodeDetail, err := buildNodeDetail(n)
+	if err != nil {
+		l.Error(err, "failed to build node detail")
+		return ctrl.Result{}, err
+	}
+
+	// the following will create or update the entry related to the node inside the map
+	NodeDetailMap[nId] = nodeDetail
+
+	routeExist, err := polycube.CheckRouteExistence(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP)
+	if err != nil {
+		l.Error(err, "something wrong during route existence check")
+		return ctrl.Result{}, err
+	}
+	if !routeExist {
+		l.Info("route doesn't exist: creating it...")
+		if err := polycube.CreateRouteToNodePodCIDR(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
+			l.Error(err, "something wrong during route creation")
 			return ctrl.Result{}, err
 		}
 	}
 
-	if !node.IsReady(n) {
-		// stop reconciliation since a new event will be fired when the node will be ready
-		log.Info("node not ready")
-		return ctrl.Result{}, nil
-	}
-
-	nodeInfo, err := buildNodeDetail(n)
+	entryExist, err := node.CheckFdbEntryExistence(nodeDetail.IP)
 	if err != nil {
-		log.Error(err, "failed to build node detail")
+		l.Error(err, "something wrong during fdb entry existence check")
 		return ctrl.Result{}, err
 	}
-
-	var lastErr error
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-	c := make(chan error)
-
-	go func() {
-		defer wg.Done()
-		routeExist, err := polycube.CheckRouteExistence(nodeInfo.podCIDR, nodeInfo.vtepIPNet.IP)
-		if err != nil {
-			c <- err
-		}
-		if routeExist {
-			c <- nil
-		}
-		c <- polycube.CreateRouteToNodePodCIDR(nodeInfo.podCIDR, nodeInfo.vtepIPNet.IP)
-	}()
-
-	go func() {
-		defer wg.Done()
-		entryExist, err := node.CheckFdbEntryExistence(nodeInfo.IP)
-		if err != nil {
-			c <- err
-		}
-		if entryExist {
-			c <- nil
-		}
-		c <- node.CreateFdbEntry(nodeInfo.IP)
-	}()
-
-	go func() {
-		wg.Wait()
-		close(c)
-	}()
-
-	for err := range c {
-		if err != nil {
-			log.Error(err, "error during cluster status reconciliation for the node object")
-			lastErr = err
+	if !entryExist {
+		if err := node.CreateFdbEntry(nodeDetail.IP); err != nil {
+			l.Error(err, "something wrong during fdb entry creation")
+			return ctrl.Result{}, err
 		}
 	}
 
-	if lastErr != nil {
-		return ctrl.Result{}, lastErr
-	}
-
-	log.Info("cluster status reconciled for the node object")
+	l.Info("cluster status reconciled for the node object")
 
 	return ctrl.Result{}, nil
 }
 
+func predicates() predicate.Predicate {
+	return predicate.Funcs{
+		CreateFunc: func(e event.CreateEvent) bool {
+			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
+		},
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			return e.ObjectOld.GetName() != node.Conf.Node.Name && e.ObjectOld.GetName() != "master"
+		},
+		DeleteFunc: func(e event.DeleteEvent) bool {
+			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
+		},
+	}
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *NodeReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	NodeDetailMap = make(map[string]*types.NodeDetail)
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Node{}).
+		WithEventFilter(predicates()).
 		Complete(r)
 }

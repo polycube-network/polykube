@@ -28,14 +28,19 @@ func allocIP(ipamType string, stdin []byte) (*net.IPNet, error) {
 	}
 
 	if len(result.IPs) == 0 {
-		return nil, errors.New("missing ip config")
+		// this assignment is done in order to allow the deferred function to work
+		err = errors.New("missing ip config")
+		return nil, err
 	}
 
 	for _, ipI := range result.IPs {
 		// checking if ipI is an IPv4 address
 		if address := ipI.Address; address.IP.To4() != nil {
+			address.IP = address.IP.To4()
 			return &address, nil
 		}
 	}
-	return nil, errors.New("no IPv4 address found")
+	// this assignment is done in order to allow the deferred function to work
+	err = errors.New("no IPv4 address found")
+	return nil, err
 }

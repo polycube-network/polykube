@@ -18,12 +18,15 @@ package controllers
 
 import (
 	"context"
-	"github.com/ekoops/polykube-operator/pkg/node"
-	"github.com/ekoops/polykube-operator/pkg/polycube"
+	"fmt"
+	"github.com/ekoops/polykube-operator/node"
+	"github.com/ekoops/polykube-operator/polycube"
+	"github.com/ekoops/polykube-operator/types"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"net"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
@@ -37,19 +40,31 @@ type ServiceReconciler struct {
 }
 
 // buildServiceDetail builds a struct containing the info about two frontends sets: one for the ClusterIP Service
-// feature and the other for the NodePort one (if the service is of type NodePort; otherwise this will be empty)
-func buildServiceDetail(s *corev1.Service) *ServiceDetail {
-	nodeIP := node.Conf.ExtIface.IPNet.IP.String()
+// feature and the other for the NodePort one (if the service is of type NodePort; otherwise this second one will
+// be empty)
+func buildServiceDetail(s *corev1.Service, sId string, nodeIP net.IP) *types.ServiceDetail {
+	nip := nodeIP.String()
 	st := s.Spec.Type
+	itp := "CLUSTER"
+	if s.Spec.InternalTrafficPolicy != nil && *s.Spec.InternalTrafficPolicy == corev1.ServiceInternalTrafficPolicyLocal {
+		itp = "LOCAL"
+	}
+	etp := "CLUSTER"
+	if s.Spec.ExternalTrafficPolicy == corev1.ServiceExternalTrafficPolicyTypeLocal {
+		etp = "LOCAL"
+	}
 
-	sd := &ServiceDetail{
-		ClusterIPFrontendsSet: make(FrontendsSet),
-		NodePortFrontendsSet:  make(FrontendsSet),
+	sd := &types.ServiceDetail{
+		ServiceId:             sId,
+		ClusterIPFrontendsSet: make(types.FrontendsSet),
+		NodePortFrontendsSet:  make(types.FrontendsSet),
+		InternalTrafficPolicy: itp,
+		ExternalTrafficPolicy: etp,
 	}
 
 	for _, p := range s.Spec.Ports {
 		for _, vip := range s.Spec.ClusterIPs {
-			f := Frontend{
+			f := types.Frontend{
 				Vip:   vip,
 				Vport: p.Port,
 				Proto: string(p.Protocol),
@@ -58,8 +73,8 @@ func buildServiceDetail(s *corev1.Service) *ServiceDetail {
 		}
 
 		if st == corev1.ServiceTypeNodePort {
-			f := Frontend{
-				Vip:   nodeIP,
+			f := types.Frontend{
+				Vip:   nip,
 				Vport: p.NodePort,
 				Proto: string(p.Protocol),
 			}
@@ -83,7 +98,7 @@ func buildServiceDetail(s *corev1.Service) *ServiceDetail {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.10.0/pkg/reconcile
 func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	sId := req.NamespacedName.String()
-	l := ctrllog.FromContext(ctx, "service", sId)
+	l := ctrllog.FromContext(ctx)
 
 	s := &corev1.Service{}
 	if err := r.Get(ctx, req.NamespacedName, s); err != nil {
@@ -91,9 +106,12 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			// the following work for both the internal and the external load balancers.
 			// In case o services other than ClusterIP and NodePort ones, the following
 			// will not delete anything
-			if err := polycube.CleanupLbrpsServices(sId); err != nil {
-				l.Error(err, "something went wrong during related lbrp services cleanup")
+			if err := polycube.CleanupK8sLbrpsServices(sId); err != nil {
+				l.Error(err, "something went wrong during related k8s lbrp services cleanup")
 				return ctrl.Result{}, err
+			}
+			if err := polycube.CleanupK8sDispatcherNodePortRules(sId); err != nil {
+				l.Error(err, "something went wrong during related k8s dispatcher NodePort rules cleanup")
 			}
 			l.Info("cleanup performed on service object deletion event")
 			return ctrl.Result{}, nil
@@ -111,9 +129,17 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, nil
 	}
 
-	sd := buildServiceDetail(s)
-	if err := polycube.SyncLbrpsServices(sId, sd); err != nil {
-		l.Error(err, "something went wrong during lbrps services sync")
+	nodeIP := node.Conf.ExtIface.IPNet.IP
+	sd := buildServiceDetail(s, sId, nodeIP)
+
+	l.V(1).WithValues("detail", fmt.Sprintf("%+v", sd)).Info("built service detail")
+
+	if err := polycube.SyncK8sLbrpServices(sd); err != nil {
+		l.Error(err, "something went wrong during k8s lbrp services sync")
+		return ctrl.Result{}, err
+	}
+	if err := polycube.SyncK8sDispatcherNodePortRules(sd, nodeIP); err != nil {
+		l.Error(err, "something went wrong during k8s dispatcher NodePort rules sync")
 		return ctrl.Result{}, err
 	}
 

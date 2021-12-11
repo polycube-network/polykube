@@ -1,6 +1,0 @@
-apiVersion: network.polykube.com/v1
-kind: Polykube
-metadata:
-  name: polykube-sample
-spec:
-  # Add fields here

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,9 +13,8 @@ import (
 	"github.com/containernetworking/plugins/pkg/ip"
 	"github.com/containernetworking/plugins/pkg/ipam"
 	"github.com/containernetworking/plugins/pkg/ns"
-	lbrp "github.com/ekoops/polykube-operator/pkg/clients/lbrp"
-	simplebridge "github.com/ekoops/polykube-operator/pkg/clients/simplebridge"
-	"github.com/ekoops/polykube-operator/pkg/utils"
+	k8slbrp "github.com/ekoops/polykube-operator/polycube/clients/k8slbrp"
+	"github.com/ekoops/polykube-operator/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/vishvananda/netlink"
 	"io/ioutil"
@@ -28,8 +28,8 @@ const (
 )
 
 var (
-	simplebridgeAPI *simplebridge.SimplebridgeApiService
-	lbrpAPI         *lbrp.LbrpApiService
+	//routerAPI  *router.RouterApiService
+	k8sLbrpAPI *k8slbrp.K8sLbrpApiService
 )
 
 func init() {
@@ -47,31 +47,24 @@ func init() {
 	// must ensure that the goroutine does not jump from OS thread to thread
 	runtime.LockOSThread()
 
-	// init simplebridge API
-	cfgSimplebridge := simplebridge.Configuration{BasePath: basePath}
-	srSimplebridge := simplebridge.NewAPIClient(&cfgSimplebridge)
-	simplebridgeAPI = srSimplebridge.SimplebridgeApi
+	//// init router API
+	//cfgRouter := router.Configuration{BasePath: basePath}
+	//srRouter := router.NewAPIClient(&cfgRouter)
+	//routerAPI = srRouter.RouterApi
 
-	// init lbrp API
-	cfgLbrp := lbrp.Configuration{BasePath: basePath}
-	srLbrp := lbrp.NewAPIClient(&cfgLbrp)
-	lbrpAPI = srLbrp.LbrpApi
+	// init k8slbrp API
+	cfgK8sLbrp := k8slbrp.Configuration{BasePath: basePath}
+	srK8sLbrp := k8slbrp.NewAPIClient(&cfgK8sLbrp)
+	k8sLbrpAPI = srK8sLbrp.K8sLbrpApi
 }
 
-func setupVeth(netns ns.NetNS, contIfName string, hostIfName string, mtu int) (*current.Interface, *current.Interface, error) {
+func setupVeth(netns ns.NetNS, contIfName, hostIfName string, mtu int) (*current.Interface, *current.Interface, error) {
 	contIface := &current.Interface{}
 	hostIface := &current.Interface{}
 
 	err := netns.Do(func(hostNS ns.NetNS) error {
-
-		// create the veth pair in the container and move host end into host netns
-		hostVeth, contVeth, err := ip.SetupVethWithName(
-			contIfName,
-			hostIfName,
-			mtu,
-			"",
-			hostNS,
-		)
+		// creating the veth pair in the container and moving host end into host netns
+		hostVeth, contVeth, err := ip.SetupVethWithName(contIfName, hostIfName, mtu, "", hostNS)
 		if err != nil {
 			return err
 		}
@@ -88,7 +81,7 @@ func setupVeth(netns ns.NetNS, contIfName string, hostIfName string, mtu int) (*
 	// need to lookup hostVeth again as its index has changed during ns move
 	hostVeth, err := netlink.LinkByName(hostIface.Name)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to lookup %q: %v", hostIface.Name, err)
+		return nil, nil, fmt.Errorf("failed %q lookup: %v", hostIface.Name, err)
 	}
 	hostIface.Mac = hostVeth.Attrs().HardwareAddr.String()
 
@@ -113,12 +106,8 @@ func loadNetConf(stdin []byte) (*NetConf, error) {
 		return nil, errors.New("MTU must be specified")
 	}
 
-	if conf.BridgeName == "" {
-		return nil, errors.New("bridge name must be specified")
-	}
-
-	if conf.VClusterCIDR == "" {
-		return nil, errors.New("VClusterCIDR must be specified")
+	if conf.K8sLbrpName == "" {
+		return nil, errors.New("K8s lbrp name must be specified")
 	}
 
 	if conf.Gw.IP == nil || conf.Gw.IP.To4() == nil {
@@ -138,17 +127,25 @@ func loadNetConf(stdin []byte) (*NetConf, error) {
 
 func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *GwInfo) error {
 	if err := netns.Do(func(_ ns.NetNS) error {
-		// setting up the veth interface
+		// retrieving the veth interface
 		link, err := netlink.LinkByName(ifName)
 		if err != nil {
 			return fmt.Errorf("failed to lookup iface: %v", err)
 		}
-		if err := netlink.LinkSetUp(link); err != nil {
-			return fmt.Errorf("failed to set iface up: %v", err)
-		}
 
-		// adding ip4 address to the interface
-		addr := &netlink.Addr{IPNet: address, Label: ""}
+		// adding a /32 IPv4 address to the interface and setting the peer to the default gateway address
+		allOneMask := net.IPv4Mask(255, 255, 255, 255)
+		addr := &netlink.Addr{
+			IPNet: &net.IPNet{
+				IP:   address.IP,
+				Mask: allOneMask,
+			},
+			Label: "",
+			Peer: &net.IPNet{
+				IP:   gwInfo.IP,
+				Mask: allOneMask,
+			},
+		}
 		if err = netlink.AddrAdd(link, addr); err != nil {
 			return fmt.Errorf("failed to set IPv4 address on iface: %v", err)
 		}
@@ -161,6 +158,7 @@ func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *G
 		if err := netlink.RouteAdd(route); err != nil {
 			return fmt.Errorf("failed to add default route: %v", err)
 		}
+
 		// adding arp entry for default gateway
 		arpentry := &netlink.Neigh{
 			LinkIndex:    link.Attrs().Index,
@@ -171,7 +169,6 @@ func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *G
 		if err := netlink.NeighAdd(arpentry); err != nil {
 			return fmt.Errorf("failed to add static arp entry for default gateway: %v", err)
 		}
-
 		return nil
 	}); err != nil {
 		return err
@@ -180,17 +177,15 @@ func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *G
 }
 
 func cmdAdd(args *skel.CmdArgs) error {
-	// defining the attachment identifier and the base logger
-	att := utils.Truncate(fmt.Sprintf("%s_%s", args.IfName, args.ContainerID[0:10]), 15)
-	l := log.WithField("id", fmt.Sprintf("ADD_%s", att))
+	// Defining the attachment identifier and the base logger. For the attachment, a truncation
+	// of ifName_containerId[0:10] up to 15 characters is used (since it is the max possible)
+	att := utils.CreateAttachment(args.IfName, args.ContainerID)
+	l := log.WithField("id", "ADD_"+att)
 
 	// parsing configuration
 	conf, err := loadNetConf(args.StdinData)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"subject": "netconf",
-			"detail":  err,
-		}).Fatal("parsing failed")
+		l.WithFields(log.Fields{"subject": "netconf", "detail": err}).Fatal("parsing failed")
 		return fmt.Errorf("failed to parse netconf: %v", err)
 	}
 
@@ -206,13 +201,10 @@ func cmdAdd(args *skel.CmdArgs) error {
 	// getting netns handle
 	netns, err := ns.GetNS(args.Netns)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"netns":  args.Netns,
-			"detail": err,
-		}).Fatal("failed to retrieve netns")
+		l.WithFields(log.Fields{"netns": args.Netns, "detail": err}).Fatal("failed to retrieve netns")
 		return fmt.Errorf("failed to open netns %q: %v", args.Netns, err)
 	}
-	defer netns.Close() // TODO why?
+	defer netns.Close()
 
 	// checking if the specified iface already exists in the specified netns
 	if err := netns.Do(func(_ ns.NetNS) error {
@@ -225,44 +217,31 @@ func cmdAdd(args *skel.CmdArgs) error {
 		}
 		return nil
 	}); err != nil {
-		l.WithFields(log.Fields{
-			"netns":  args.Netns,
-			"iface":  args.IfName,
-			"detail": err,
-		}).Fatal("error during iface existence checking")
+		l.WithFields(
+			log.Fields{"netns": args.Netns, "iface": args.IfName, "detail": err},
+		).Fatal("error during iface existence checking")
 		return fmt.Errorf("error during checking iface %q existence into netns %q: %v", args.IfName, args.Netns, err)
 	}
 
-	// getting ip from ipam plugin
+	// getting ip from ipam plugin. Pay attention: the returned IP has a /24 prefix length, but eventually a /32 will
+	// be configured on the container interface
 	addr, err := allocIP(conf.IPAM.Type, args.StdinData)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"scope":  "ipam",
-			"detail": err,
-		}).Fatal("failed to get ip")
+		l.WithFields(log.Fields{"scope": "ipam", "detail": err}).Fatal("failed to get ip")
 		return fmt.Errorf("failed to get ip through ipam plugin: %v", err)
 	}
-	l.WithFields(log.Fields{
-		"ip":      addr.IP,
-		"netmask": addr.Mask,
-	}).Info("ip allocated")
+	l.WithFields(log.Fields{"ip": addr.IP, "netmask": addr.Mask}).Info("ip allocated")
 
 	// setting up the veth pair
-	// using a truncation of ifName_containerId[0:10] up to 15 characters since it is the max possibile
-	// link name dimensione
-	hostIface, contIface, err := setupVeth(
-		netns,
-		args.IfName,
-		att,
-		conf.MTU,
-	)
+	contIfaceName := args.IfName
+	ipHexStr := hex.EncodeToString(addr.IP)
+	hostIfaceName := utils.GetHostIfaceName(contIfaceName, ipHexStr)
+
+	hostIface, contIface, err := setupVeth(netns, contIfaceName, hostIfaceName, conf.MTU)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"netns":  args.Netns,
-			"iface":  args.IfName,
-			"mtu":    conf.MTU,
-			"detail": err,
-		}).Fatal("failed to setup veth pair")
+		l.WithFields(
+			log.Fields{"netns": args.Netns, "iface": args.IfName, "mtu": conf.MTU, "detail": err},
+		).Fatal("failed to setup veth pair")
 		return fmt.Errorf("failed to setup veth pair: %v", err)
 	}
 	l.WithFields(log.Fields{
@@ -272,51 +251,51 @@ func cmdAdd(args *skel.CmdArgs) error {
 	}).Info("veth pair created")
 
 	// configuring netns
-	netnsLgr := l.WithFields(log.Fields{
+	nlog := l.WithFields(log.Fields{
 		"netns":   args.Netns,
-		"iface":   args.IfName,
+		"iface":   contIfaceName,
 		"address": fmt.Sprintf("%+v", addr),
 		"gateway": fmt.Sprintf("%+v", conf.Gw),
 	})
-	if err := configureNetns(netns, args.IfName, addr, &conf.Gw); err != nil {
-		netnsLgr.WithField("detail", err).Fatal("failed to configure the netns")
+	if err := configureNetns(netns, contIfaceName, addr, &conf.Gw); err != nil {
+		nlog.WithField("detail", err).Fatal("failed to configure the netns")
 		return fmt.Errorf("failed to configure the netns %q: %v", args.Netns, err)
 	}
-	netnsLgr.Info("netns configured")
+	nlog.Info("netns configured")
 
-	// creating lbrp (using pod ip as id, so it can be referenced by operator)
-	// and connecting the frontend port to hostInterface
-	//lbrpName := fmt.Sprintf("lbrp-%s", addr.IP.String())
-	lbName := "lbrp_" + hostIface.Name
-	llog := l.WithField("lbrp", lbName)
-	if err := createLbrp(lbName, hostIface); err != nil {
-		llog.WithField("detail", err).Fatal("failed to create lbrp")
-		return fmt.Errorf("failed to create lbrp %q: %v", lbName, err)
+	// creating k8slbrp port and connecting it to hostInterface
+	k8sLbrpName := conf.K8sLbrpName
+	k8sLbrpPortName := ipHexStr
+	port := k8slbrp.Ports{
+		Name:  k8sLbrpPortName,
+		Type_: "frontend",
+		Ip_:   addr.IP.String(),
+		Peer:  hostIfaceName,
 	}
-	llog.WithField(
-		"connection", fmt.Sprintf("%s <-> %s", utils.CreatePeer(lbName, "to_pod"), hostIface.Name),
-	).Info("lbrp created and connected to pod")
-
-	// creating bridge port and connect it to the lbrp
-	brName := conf.BridgeName
-	conlog := l.WithFields(log.Fields{
-		"lbrp":   lbName,
-		"bridge": brName,
+	nlog = l.WithFields(log.Fields{
+		"k8slbrp": k8sLbrpName,
+		"port":    fmt.Sprintf("%+v", port),
 	})
-	lbPort, brPort, err := connectLbrpToBridge(lbName, brName)
-	if err != nil {
-		conlog.WithField("detail", err).Fatal("failed to connect lbrp to bridge")
-		return fmt.Errorf("failed to connect %q lbrp to %q bridge: %v", lbName, brName, err)
+
+	if resp, err := k8sLbrpAPI.CreateK8sLbrpPortsByID(context.TODO(), k8sLbrpName, k8sLbrpPortName, port); err != nil {
+		nlog.WithFields(log.Fields{
+			"response": fmt.Sprintf("%+v", resp), "detail": err,
+		}).Fatal("failed to create and connect k8s lbrp port")
+		return fmt.Errorf(
+			"failed to create and connect %q internal k8s lbrp %q port: %v", k8sLbrpName, k8sLbrpPortName, err,
+		)
 	}
-	conlog.WithField(
-		"connection", fmt.Sprintf("%s <-> %s", brPort.Peer, lbPort.Peer),
-	).Info("lbrp connected to bridge")
+	nlog.WithField(
+		"connection", fmt.Sprintf("%s:%s <-> %s", k8sLbrpName, k8sLbrpPortName, hostIfaceName),
+	).Info("internal k8s lbrp connected to the host interface")
 
 	// setting up the plugin result
 	result := &current.Result{}
 	if prevResult != nil {
 		result = prevResult
 	}
+	// The contIface will be placed at index len(result.Interfaces),
+	// so the hostIface will be placed at index len(result.Interfaces) + 1
 	contIp := &current.IPConfig{
 		Interface: current.Int(len(result.Interfaces)), // 0 if unchained
 		Address:   *addr,
@@ -329,7 +308,9 @@ func cmdAdd(args *skel.CmdArgs) error {
 		},
 		GW: conf.Gw.IP,
 	}
-	result.Interfaces = append(result.Interfaces, contIface, hostIface) // the order is important!
+	// The order is important! The contIface must precede the hostIface,
+	// since this will be exploited in the DEL and CHECK operations
+	result.Interfaces = append(result.Interfaces, contIface, hostIface)
 	result.IPs = append(result.IPs, contIp)
 	result.Routes = append(result.Routes, contRoute)
 
@@ -373,28 +354,27 @@ func checkIface(l *log.Entry, netns string, iface *IFaceConf) error {
 
 // getIfaceConfs scans the prevResult.Interfaces in order to find the expected container and host interface created
 // during the ADD operation. If the two interfaces are found, they are returned in association with their IPConf
-func getIfaceConfs(contIfName, hostIfName, netns string, prevResult *current.Result) (*IFaceConf, *IFaceConf, error) {
+func getIfaceConfs(prevResult *current.Result, contIfName, netns string) (*IFaceConf, *IFaceConf, error) {
 	var contIfaceConf, hostIfaceConf *IFaceConf
 	// scanning all prevResult interfaces
 	for i, iface := range prevResult.Interfaces {
 		// is this the container interface?
-		if iface.Name == contIfName && iface.Sandbox == netns {
+		if iface.Name == contIfName && (netns == "" || netns == iface.Sandbox) {
 			contIfaceConf = &IFaceConf{
 				ResultIndex: i,
 				Interface:   iface,
 			}
-		}
-		// is this the host interface?
-		if iface.Name == hostIfName && iface.Sandbox == "" {
+			// thc host interface is placed immediately after the container interface
 			hostIfaceConf = &IFaceConf{
-				ResultIndex: i,
-				Interface:   iface,
+				ResultIndex: i + 1,
+				Interface:   prevResult.Interfaces[i+1],
 			}
+			break
 		}
 	}
-	// if at least one of the two interfaces is not found return an error
-	if contIfaceConf == nil || hostIfaceConf == nil {
-		return nil, nil, errors.New("unexpected interfaces: wrong or missing") // TODO
+	// if the two interfaces were not found return an error
+	if contIfaceConf == nil {
+		return nil, nil, errors.New("unexpected interfaces: wrong or missing")
 	}
 	// scanning prevResult.IPs in order to associate the container interface to its ip configuration
 	for _, ipConf := range prevResult.IPs {
@@ -415,26 +395,22 @@ func getIfaceConfs(contIfName, hostIfName, netns string, prevResult *current.Res
 
 // cmdCheck is called for CHECK requests
 func cmdCheck(args *skel.CmdArgs) error {
-	// defining the attachment identifier and the base logger
-	att := utils.Truncate(fmt.Sprintf("%s_%s", args.IfName, args.ContainerID[0:10]), 15)
-	l := log.WithField("id", fmt.Sprintf("CHK_%s", att))
+	// Defining the attachment identifier and the base logger. For the attachment, a truncation
+	// of ifName_containerId[0:10] up to 15 characters is used (since it is the max possible)
+	att := utils.CreateAttachment(args.IfName, args.ContainerID)
+	l := log.WithField("id", "CHK_"+att)
 
 	// parsing configuration
 	conf, err := loadNetConf(args.StdinData)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"subject": "netconf",
-			"detail":  err,
-		}).Fatal("parsing failed")
+		l.WithFields(log.Fields{"subject": "netconf", "detail": err}).Fatal("parsing failed")
 		return err
 	}
 
 	// checking the presence of prevResult (its presence is made mandatory by the CNI specification
 	// in order to check the container networking)
 	if conf.PrevResult == nil {
-		l.WithField(
-			"detail", "prevResult must be specified",
-		).Fatal("missing configuration")
+		l.WithField("detail", "prevResult must be specified").Fatal("missing configuration")
 		return errors.New("missing configuration: prevResult must be specified")
 	}
 	prevResult, err := current.NewResultFromResult(conf.PrevResult)
@@ -446,10 +422,7 @@ func cmdCheck(args *skel.CmdArgs) error {
 	// CHECK on ipam plugin
 	err = ipam.ExecCheck(conf.IPAM.Type, args.StdinData)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"scope":  "ipam",
-			"detail": err,
-		}).Fatal("CHECK operation failed")
+		l.WithFields(log.Fields{"scope": "ipam", "detail": err}).Fatal("CHECK operation failed")
 		return fmt.Errorf("CHECK operation failed on ipam plugin: %v", err)
 	}
 	l.Info("ip checked")
@@ -457,21 +430,17 @@ func cmdCheck(args *skel.CmdArgs) error {
 	// getting netns handle
 	netns, err := ns.GetNS(args.Netns)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"netns":  args.Netns,
-			"detail": err,
-		}).Fatal("failed to retrieve netns")
+		l.WithFields(log.Fields{"netns": args.Netns, "detail": err}).Fatal("failed to retrieve netns")
 		return fmt.Errorf("failed to open netns %q: %v", args.Netns, err)
 	}
 	defer netns.Close()
 
 	// extracting the container interface and the host interface with their own ip configurations
-	contIfaceConf, hostIfaceConf, err := getIfaceConfs(args.IfName, att, args.Netns, prevResult)
+	contIfaceConf, hostIfaceConf, err := getIfaceConfs(prevResult, args.IfName, args.Netns)
 
 	if err != nil {
 		l.WithFields(log.Fields{
-			"prevResult": fmt.Sprintf("%+v", *prevResult),
-			"detail":     err,
+			"prevResult": fmt.Sprintf("%+v", *prevResult), "detail": err,
 		}).Fatal("unexpected prevResult")
 		return fmt.Errorf("unexpected prevResult: %v", err)
 	}
@@ -506,58 +475,27 @@ func cmdCheck(args *skel.CmdArgs) error {
 	ilog.Info("netns iface checked")
 	nlog.Info("netns checked")
 
-	// checking lbrp
-	lbName := "lbrp_" + att
-	lbFPeer := att                                             // lbrp frontend port peer
-	lbBPeer := utils.CreatePeer(conf.BridgeName, "to_"+lbName) // lbrp backend port peer
-	llog := l.WithField("lbrp", lbName)                        // load balancer logger
-	if err := checkLbrp(
-		lbName,
-		lbFPeer,
-		lbBPeer,
-	); err != nil {
-		llog.WithField("detail", err).Fatal("failed lbrp checking")
-		return fmt.Errorf("failed %q lbrp checking: %v", lbName, err)
+	// checking k8slbrp
+	k8sLbrpName := conf.K8sLbrpName
+	contIP := contIfaceConf.IPConf.Address.IP
+	k8sLbrpPortName := hex.EncodeToString(contIP)
+	k8sLbrpPortPeer := hostIfaceConf.Interface.Name
+	llog := l.WithField("k8slbrp", k8sLbrpName) // load balancer logger
+	if err := checkK8sLbrpPort(k8sLbrpName, k8sLbrpPortName, k8sLbrpPortPeer, contIP.String()); err != nil {
+		llog.WithField("detail", err).Fatal("failed k8slbrp checking")
+		return fmt.Errorf("failed %q k8slbrp port checking: %v", k8sLbrpName, err)
 	}
-	llog.Info("lbrp checked")
-
-	// checking bridge port
-	brName := conf.BridgeName
-	brPortName := "to_" + lbName
-	brPeer := utils.CreatePeer(lbName, "to_bridge")
-	brlog := l.WithFields(log.Fields{
-		"bridge": brName,
-		"port":   brPortName,
-	})
-	port, resp, err := simplebridgeAPI.ReadSimplebridgePortsByID(context.TODO(), brName, brPortName)
-	if err != nil {
-		brlog.WithField("detail", fmt.Sprintf(
-			"failed to retrieve %q bridge - error: %s, response: %+v", brName, err, resp,
-		)).Fatal("failed bridge port checking")
-		return fmt.Errorf("failed to retrieve %q bridge %q port - error: %s, response: %+v", brName, brPortName, err, resp)
-	}
-	if port.Peer != brPeer {
-		brlog.WithField("detail", fmt.Sprintf(
-			"wrong %q bridge %q port peer - required: %q, found: %q", brName, brPortName, brPeer, port.Peer,
-		)).Fatal("failed bridge port checking")
-		return fmt.Errorf("wrong %q bridge %q port peer - required: %q, found: %q", brName, brPortName, brPeer, port.Peer)
-	}
-	if port.Status != "UP" {
-		brlog.WithField("detail", fmt.Sprintf(
-			"wrong %q bridge %q port status - required: UP, found: DOWN", brName, brPortName,
-		)).Fatal("failed bridge port checking")
-		return fmt.Errorf("wrong %q bridge %q port status - required: UP, found: DOWN", brName, brPortName)
-	}
-	brlog.Info("bridge port checked")
+	llog.Info("k8slbrp checked")
 
 	return nil
 }
 
 // cmdDel is called for DELETE requests
 func cmdDel(args *skel.CmdArgs) error {
-	// defining the attachment identifier and the base logger
-	att := utils.Truncate(fmt.Sprintf("%s_%s", args.IfName, args.ContainerID[0:10]), 15)
-	l := log.WithField("id", fmt.Sprintf("DEL_%s", att))
+	// Defining the attachment identifier and the base logger. For the attachment, a truncation
+	// of ifName_containerId[0:10] up to 15 characters is used (since it is the max possible)
+	att := utils.CreateAttachment(args.IfName, args.ContainerID)
+	l := log.WithField("id", "DEL_"+att)
 
 	// parsing configuration
 	conf, err := loadNetConf(args.StdinData)
@@ -569,27 +507,39 @@ func cmdDel(args *skel.CmdArgs) error {
 		return err
 	}
 
-	// actually, this implementation of the DELETE operation doesn't need to access the
-	// information about prevResult, so it will not be checked
+	// parsing prevResult
+	if conf.PrevResult == nil {
+		l.WithField("detail", "prevResult must be specified").Fatal("missing configuration")
+		return errors.New("missing configuration: prevResult must be specified")
+	}
+	prevResult, err := current.NewResultFromResult(conf.PrevResult)
+	if err != nil {
+		l.WithField("detail", err).Fatal("failed to convert prevResult into current version")
+		return fmt.Errorf("failed to convert prevResult into current version: %v", err)
+	}
+
+	// extracting the container interface with its own ip configurations
+	contIfaceConf, _, err := getIfaceConfs(prevResult, args.IfName, args.Netns)
+	if err != nil {
+		l.WithFields(log.Fields{
+			"prevResult": fmt.Sprintf("%+v", *prevResult), "detail": err,
+		}).Fatal("unexpected prevResult")
+		return fmt.Errorf("unexpected prevResult: %v", err)
+	}
+	contIP := contIfaceConf.IPConf.Address.IP.To4()
 
 	// releasing IP address
 	if err := ipam.ExecDel(conf.IPAM.Type, args.StdinData); err != nil {
-		l.WithFields(log.Fields{
-			"scope":  "ipam",
-			"detail": err,
-		}).Fatal("DEL operation failed")
+		l.WithFields(log.Fields{"scope": "ipam", "detail": err}).Fatal("DEL operation failed")
 		return fmt.Errorf("DEL operation failed on ipam plugin: %v", err)
 	}
 	l.Info("ip released")
 
 	// deleting netns iface and related stuff (routes, arpentry, etc...)
 	if args.Netns != "" {
-		nlog := l.WithFields(log.Fields{
-			"netns": args.Netns,
-			"iface": args.IfName,
-		})
 		// There is a netns so try to clean up. Delete can be called multiple times
 		// so don't return an error if the device is already removed.
+		l := l.WithFields(log.Fields{"netns": args.Netns, "iface": args.IfName})
 		if err := ns.WithNetNSPath(args.Netns, func(_ ns.NetNS) error {
 			if err = ip.DelLinkByName(args.IfName); err != nil && err != ip.ErrLinkNotFound {
 				// if there is an error different from ip.ErrLinkNotFound, returns error
@@ -599,36 +549,29 @@ func cmdDel(args *skel.CmdArgs) error {
 		}); err != nil {
 			// if netns is not found, continue anyway.
 			if _, notFound := err.(ns.NSPathNotExistErr); !notFound {
-				nlog.Fatal("failed to delete iface")
+				l.Fatal("failed to delete iface")
 				return fmt.Errorf("failed to delete iface %q into netns %q: %v", args.IfName, args.Netns, err)
 			}
 		}
-		nlog.Info("netns iface and related stuff (routes, arpentry, etc...) deleted")
+		l.Info("netns iface and related stuff (routes, arpentry, etc...) deleted")
 	}
 
-	// deleting load balancer
-	lbName := "lbrp_" + att
-	llog := l.WithField("lbrp", lbName)
-	if resp, err := lbrpAPI.DeleteLbrpByID(context.TODO(), lbName); err != nil && resp.StatusCode != 409 {
-		llog.WithField("detail", err).Fatal("failed to delete lbrp")
-		return fmt.Errorf("failed to delete lbrp %q - error: %s, response: %+v", lbName, err, resp)
-	}
-	llog.Info("lbrp deleted")
-
-	// deleting bridge port
-	brName := conf.BridgeName
-	brPortName := "to_" + lbName
-	brlog := l.WithFields(log.Fields{
-		"bridge": brName,
-		"port":   brPortName,
-	})
-	if resp, err := simplebridgeAPI.DeleteSimplebridgePortsByID(context.TODO(), brName, brPortName); err != nil && resp.StatusCode != 409 {
-		brlog.WithField("detail", err).Fatal("failed to delete bridge port")
+	// deleting k8slbrp port
+	k8sLbrpName := conf.K8sLbrpName
+	k8sLbrpPortName := hex.EncodeToString(contIP)
+	l = l.WithFields(log.Fields{"k8slbrp": k8sLbrpName, "port": k8sLbrpPortName})
+	if resp, err := k8sLbrpAPI.DeleteK8sLbrpPortsByID(
+		context.TODO(), k8sLbrpName, k8sLbrpPortName,
+	); err != nil && resp.StatusCode != 409 {
+		l.WithFields(log.Fields{
+			"response": fmt.Sprintf("%+v", resp), "detail": err,
+		}).Fatal("failed to delete internal k8s lbrp port")
 		return fmt.Errorf(
-			"failed to delete port %q on bridge %q: - error: %s, response: %+v", brPortName, brName, err, resp,
+			"failed to delete %q port on %q internal k8s lbrp: - error: %s, response: %+v",
+			k8sLbrpPortName, k8sLbrpName, err, resp,
 		)
 	}
-	brlog.Info("bridge port deleted")
+	l.Info("internal k8s lbrp port deleted")
 
 	return nil
 }
