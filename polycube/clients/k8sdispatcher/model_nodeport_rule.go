@@ -11,9 +11,9 @@ package swagger
 
 type NodeportRule struct {
 	// Source IP address
-	Name string `json:"name,omitempty"`
+	Name string `json:"nodeport-name,omitempty"`
 	// Destination L4 port number
-	Port int32 `json:"port,omitempty"`
+	Port int32 `json:"nodeport-port,omitempty"`
 	// L4 protocol
 	Proto string `json:"proto,omitempty"`
 	// Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoint

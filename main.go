@@ -177,7 +177,7 @@ func main() {
 		os.Exit(8)
 	}
 
-	//time.Sleep(3 * 60 * 60 * time.Second)
+	//time.Sleep(24 * 60 * 60 * time.Second)
 
 	//if err := attachPods(); err != nil {
 	//	os.Exit(9)
@@ -212,14 +212,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Service")
 		os.Exit(1)
 	}
-	//if err = (&controllers.EndpointsReconciler{
-	//	Client: mgr.GetClient(),
-	//	Log:    ctrl.Log.WithName("endpoints-controller"),
-	//	Scheme: mgr.GetScheme(),
-	//}).SetupWithManager(mgr); err != nil {
-	//	setupLog.Error(err, "unable to create controller", "controller", "Endpoints")
-	//	os.Exit(1)
-	//}
+	if err = (&controllers.EndpointsReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("endpoints-controller"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Endpoints")
+		os.Exit(1)
+	}
 
 	//+kubebuilder:scaffold:builder
 

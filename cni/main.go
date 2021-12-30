@@ -500,10 +500,7 @@ func cmdDel(args *skel.CmdArgs) error {
 	// parsing configuration
 	conf, err := loadNetConf(args.StdinData)
 	if err != nil {
-		l.WithFields(log.Fields{
-			"subject": "netconf",
-			"detail":  err,
-		}).Fatal("parsing failed")
+		l.WithFields(log.Fields{"subject": "netconf", "detail": err}).Fatal("parsing failed")
 		return err
 	}
 
@@ -535,6 +532,23 @@ func cmdDel(args *skel.CmdArgs) error {
 	}
 	l.Info("ip released")
 
+	// deleting k8slbrp port
+	k8sLbrpName := conf.K8sLbrpName
+	k8sLbrpPortName := hex.EncodeToString(contIP)
+	l = l.WithFields(log.Fields{"k8slbrp": k8sLbrpName, "port": k8sLbrpPortName})
+	if resp, err := k8sLbrpAPI.DeleteK8sLbrpPortsByID(
+		context.TODO(), k8sLbrpName, k8sLbrpPortName,
+	); err != nil && resp.StatusCode != 409 {
+		l.WithFields(log.Fields{
+			"response": fmt.Sprintf("%+v", resp), "detail": err,
+		}).Fatal("failed to delete internal k8s lbrp port")
+		return fmt.Errorf(
+			"failed to delete %q port on %q internal k8s lbrp: - error: %s, response: %+v",
+			k8sLbrpPortName, k8sLbrpName, err, resp,
+		)
+	}
+	l.Info("internal k8s lbrp port deleted")
+
 	// deleting netns iface and related stuff (routes, arpentry, etc...)
 	if args.Netns != "" {
 		// There is a netns so try to clean up. Delete can be called multiple times
@@ -555,23 +569,6 @@ func cmdDel(args *skel.CmdArgs) error {
 		}
 		l.Info("netns iface and related stuff (routes, arpentry, etc...) deleted")
 	}
-
-	// deleting k8slbrp port
-	k8sLbrpName := conf.K8sLbrpName
-	k8sLbrpPortName := hex.EncodeToString(contIP)
-	l = l.WithFields(log.Fields{"k8slbrp": k8sLbrpName, "port": k8sLbrpPortName})
-	if resp, err := k8sLbrpAPI.DeleteK8sLbrpPortsByID(
-		context.TODO(), k8sLbrpName, k8sLbrpPortName,
-	); err != nil && resp.StatusCode != 409 {
-		l.WithFields(log.Fields{
-			"response": fmt.Sprintf("%+v", resp), "detail": err,
-		}).Fatal("failed to delete internal k8s lbrp port")
-		return fmt.Errorf(
-			"failed to delete %q port on %q internal k8s lbrp: - error: %s, response: %+v",
-			k8sLbrpPortName, k8sLbrpName, err, resp,
-		)
-	}
-	l.Info("internal k8s lbrp port deleted")
 
 	return nil
 }

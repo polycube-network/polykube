@@ -5,6 +5,12 @@ type Backend struct {
 	Port int32
 }
 type BackendsSet map[Backend]struct{}
+
+func (fs BackendsSet) Contains(b Backend) bool {
+	_, ok := fs[b]
+	return ok
+}
+
 type ServiceToBackends map[string]BackendsSet
 
 func (stb ServiceToBackends) Add(s string, b Backend) {
@@ -37,6 +43,7 @@ func (stb ServiceToBackends) Contains(s string, b Backend) bool {
 }
 
 type EndpointsDetail struct {
+	EndpointsId                string
 	ClusterIPServiceToBackends ServiceToBackends
 	NodePortServiceToBackends  ServiceToBackends
 }

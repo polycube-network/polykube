@@ -10,7 +10,6 @@ import (
 	"github.com/ekoops/polykube-operator/utils"
 	"net"
 	"strings"
-	"sync"
 )
 
 func CreateIntK8sLbrpFrontendPort(portId string, IP net.IP) error {
@@ -139,26 +138,29 @@ func deleteK8sLbrpService(klName string, svc *k8slbrp.Service) error {
 	return nil
 }
 
+func getK8sLbrps() ([]*k8slbrp.K8sLbrp, error) {
+	ikl, resp, err := k8sLbrpAPI.ReadK8sLbrpByID(context.TODO(), conf.intK8sLbrpName)
+	if err != nil {
+		log.Error(err, "failed to retrieve the internal k8s lbrp", "response", fmt.Sprintf("%+v", resp))
+		return nil, errors.New("failed to retrieve the internal k8s lbrp")
+	}
+
+	ekl, resp, err := k8sLbrpAPI.ReadK8sLbrpByID(context.TODO(), conf.extK8sLbrpName)
+	if err != nil {
+		log.Error(err, "failed to retrieve the external k8s lbrp", "response", fmt.Sprintf("%+v", resp))
+		return nil, errors.New("failed to retrieve the external k8s lbrp")
+	}
+	return []*k8slbrp.K8sLbrp{&ikl, &ekl}, nil
+}
+
 func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 	svcId := svcDetail.ServiceId
 	log := log.WithValues("svcId", svcId)
 
-	var kls []k8slbrp.K8sLbrp
-
-	ikl, resp, err := k8sLbrpAPI.ReadK8sLbrpByID(context.TODO(), conf.intK8sLbrpName)
+	kls, err := getK8sLbrps()
 	if err != nil {
-		log.Error(err, "failed to retrieve the internal k8s lbrp", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to retrieve the internal k8s lbrp")
-	}
-	kls = append(kls, ikl)
-
-	if len(svcDetail.NodePortFrontendsSet) > 0 {
-		ekl, resp, err := k8sLbrpAPI.ReadK8sLbrpByID(context.TODO(), conf.extK8sLbrpName)
-		if err != nil {
-			log.Error(err, "failed to retrieve the external k8s lbrp", "response", fmt.Sprintf("%+v", resp))
-			return errors.New("failed to retrieve the external k8s lbrp")
-		}
-		kls = append(kls, ekl)
+		log.Error(err, "failed to retrieve the k8s lbrp list")
+		return errors.New("failed to retrieve the k8s lbrp list")
 	}
 
 	for _, kl := range kls {
@@ -202,20 +204,11 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 func CleanupK8sLbrpsServices(svcId string) error {
 	log := log.WithValues("svcId", svcId)
 
-	var kls []k8slbrp.K8sLbrp
-
-	ikl, resp, err := k8sLbrpAPI.ReadK8sLbrpByID(context.TODO(), conf.intK8sLbrpName)
+	kls, err := getK8sLbrps()
 	if err != nil {
-		log.Error(err, "failed to retrieve the internal k8s lbrp", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to retrieve the internal k8s lbrp")
+		log.Error(err, "failed to retrieve the k8s lbrp list")
+		return errors.New("failed to retrieve the k8s lbrp list")
 	}
-
-	ekl, resp, err := k8sLbrpAPI.ReadK8sLbrpByID(context.TODO(), conf.extK8sLbrpName)
-	if err != nil {
-		log.Error(err, "failed to retrieve the external k8s lbrp", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to retrieve the external k8s lbrp")
-	}
-	kls = append(kls, ikl, ekl)
 
 	for _, kl := range kls {
 		log := log.WithValues("k8slbrp", kl.Name)
@@ -239,109 +232,117 @@ func areBackendsEqual(actualBackendsList []k8slbrp.ServiceBackend, expectedBacke
 	if len(actualBackendsList) != len(expectedBackendsSet) {
 		return false
 	}
-	for _, b := range actualBackendsList {
-		key := types.Backend{Ip: b.Ip, Port: b.Port}
-		if _, ok := expectedBackendsSet[key]; !ok {
+	for _, sb := range actualBackendsList {
+		b := types.Backend{Ip: sb.Ip, Port: sb.Port}
+		if !expectedBackendsSet.Contains(b) {
 			return false
 		}
 	}
 	return true
 }
 
-func replaceBackends(epName string, klName string, svc *k8slbrp.Service, backendsSet types.BackendsSet) error {
-	l := log.WithValues(
-		"k8slbrp", klName,
-		"service", fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto),
+func replaceK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service, newBackendsSet types.BackendsSet, epName string) error {
+	log := log.WithValues(
+		"k8slbrp", klName, "service", fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto),
 	)
 
-	var newBackends []k8slbrp.ServiceBackend
-	for b := range backendsSet {
-		newBackends = append(newBackends, k8slbrp.ServiceBackend{
+	var newSvcBackends []k8slbrp.ServiceBackend
+	for b := range newBackendsSet {
+		newSvcBackends = append(newSvcBackends, k8slbrp.ServiceBackend{
 			Name:   epName,
 			Ip:     b.Ip,
 			Port:   b.Port,
 			Weight: 1, // TODO mocked
 		})
 	}
-	resp, err := k8sLbrpAPI.ReplaceK8sLbrpServiceBackendListByID(
-		context.TODO(),
-		klName,
-		svc.Vip,
-		svc.Vport,
-		svc.Proto,
-		newBackends,
-	)
-	if err != nil {
-		l.V(2).Error(
-			err,
-			"failed to replace k8s lbrp service backends",
-			"response", fmt.Sprintf("%+v", resp),
+
+	if resp, err := k8sLbrpAPI.ReplaceK8sLbrpServiceBackendListByID(
+		context.TODO(), klName, svc.Vip, svc.Vport, svc.Proto, newSvcBackends,
+	); err != nil {
+		log.V(1).Error(
+			err, "failed to replace k8s lbrp service backends", "response", fmt.Sprintf("%+v", resp),
 		)
 		return fmt.Errorf("failed to replace k8s lbrp service backends")
 	}
-	l.V(2).Info("deleted k8s lbrp service")
+	log.V(1).Info("replaced k8s lbrp service backends")
 	return nil
 }
 
-func SyncK8sLbrpsServicesBackends(epsName string, epsDetail *types.EndpointsDetail) error {
-	type ExitStatus struct {
-		subject string
-		err     error
-	}
+func deleteK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service) error {
+	log := log.WithValues(
+		"k8slbrp", klName, "service", fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto),
+	)
 
-	// retrieving the k8s lbrp list
-	kls, resp, err := k8sLbrpAPI.ReadK8sLbrpListByID(context.TODO())
-	if err != nil {
-		log.Error(err, "failed to retrieve the k8s lbrp list", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to retrieve the k8s lbrp list")
-	}
-	listLen := len(kls)
-	if listLen != 2 {
-		log.Error(
-			errors.New("unexpected length"), "unexpected k8s lbrp list",
-			"found", listLen, "required", 2,
+	if resp, err := k8sLbrpAPI.DeleteK8sLbrpServiceBackendListByID(
+		context.TODO(), klName, svc.Vip, svc.Vport, svc.Proto,
+	); err != nil {
+		log.V(1).Error(
+			err, "failed to delete k8s lbrp service backends", "response", fmt.Sprintf("%+v", resp),
 		)
+		return fmt.Errorf("failed to delete k8s lbrp service backends")
+	}
+	log.V(1).Info("deleted k8s lbrp service backends")
+	return nil
+}
+
+func SyncK8sLbrpsServicesBackends(epsDetail *types.EndpointsDetail) (bool, error) {
+	epsId := epsDetail.EndpointsId
+	log := log.WithValues("epsId", epsId)
+
+	kls, err := getK8sLbrps()
+	if err != nil {
+		log.Error(err, "failed to retrieve the k8s lbrp list")
+		return false, errors.New("failed to retrieve the k8s lbrp list")
 	}
 
-	var lastErr error
-
-	c := make(chan ExitStatus)
-	wg := &sync.WaitGroup{}
-	wg.Add(listLen)
+	iklName := conf.intK8sLbrpName
+	actualClusterIPServiceNum := 0
+	expectedClusterIPServiceNum := len(epsDetail.ClusterIPServiceToBackends)
+	actualNodePortServiceNum := 0
+	expectedNodePortServiceNum := len(epsDetail.NodePortServiceToBackends)
 
 	for _, kl := range kls {
-		go func(kl *k8slbrp.K8sLbrp) {
-			for _, svc := range kl.Service {
-				if svc.Name == epsName {
-					var backendsSet types.BackendsSet
-					svcId := fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto)
-					if kl.Name == conf.intK8sLbrpName {
-						backendsSet = epsDetail.ClusterIPServiceToBackends.GetBackendsSet(svcId)
-					} else {
-						backendsSet = epsDetail.NodePortServiceToBackends.GetBackendsSet(svcId)
+		log := log.WithValues("k8slbrp", kl.Name)
+		for _, svc := range kl.Service {
+			if svc.Name == epsId {
+				var backendsSet types.BackendsSet
+				svcId := fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, strings.ToUpper(svc.Proto))
+				log := log.WithValues("svcId", svcId)
+				if kl.Name == iklName {
+					backendsSet = epsDetail.ClusterIPServiceToBackends.GetBackendsSet(svcId)
+					actualClusterIPServiceNum++
+				} else {
+					backendsSet = epsDetail.NodePortServiceToBackends.GetBackendsSet(svcId)
+					actualNodePortServiceNum++
+				}
+				log.V(1).Info("retrieved proper backend set",
+					"set", fmt.Sprintf("%+v", backendsSet),
+				)
+				log.V(1).Info("retrieved actual k8s lbrp service backends",
+					"backends", fmt.Sprintf("%+v", svc.Backend),
+				)
+				if areBackendsEqual(svc.Backend, backendsSet) {
+					log.V(1).Info("k8s lbrp service backends already synced")
+					continue
+				}
+				if len(backendsSet) == 0 {
+					if err := deleteK8sLbrpServiceBackends(kl.Name, &svc); err != nil {
+						log.Error(err, "error during k8s lbrp service backends deletion")
+						return false, errors.New("error during k8s lbrp service backends deletion")
 					}
-					if areBackendsEqual(svc.Backend, backendsSet) {
-						return
-					}
-					if err := replaceBackends(epsName, kl.Name, &svc, backendsSet); err != nil {
-						c <- ExitStatus{subject: kl.Name, err: err}
-						return
+				} else {
+					if err := replaceK8sLbrpServiceBackends(kl.Name, &svc, backendsSet, epsId); err != nil {
+						log.Error(err, "error during k8s lbrp service backends replacement")
+						return false, errors.New("error during k8s lbrp service backends replacement")
 					}
 				}
 			}
-			c <- ExitStatus{subject: kl.Name, err: nil}
-		}(&kl)
-	}
-
-	go func() {
-		wg.Wait()
-		close(c)
-	}()
-	for exitStatus := range c {
-		if exitStatus.err != nil {
-			lastErr = err
-			log.V(1).Error(exitStatus.err, "operation failed on lbrp", "lbrp", exitStatus.subject)
 		}
 	}
-	return lastErr
+	if actualClusterIPServiceNum < expectedClusterIPServiceNum || actualNodePortServiceNum < expectedNodePortServiceNum {
+		log.V(1).Info("some services have not been registered yet")
+		return true, nil
+	}
+	log.V(1).Info("synced k8s lbrps services backends")
+	return false, nil
 }
