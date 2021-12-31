@@ -198,7 +198,6 @@ func main() {
 
 	//if err = (&controllers.NodeReconciler{
 	//	Client: mgr.GetClient(),
-	//	Log:    ctrl.Log.WithName("node-controller"),
 	//	Scheme: mgr.GetScheme(),
 	//}).SetupWithManager(mgr); err != nil {
 	//	setupLog.Error(err, "unable to create controller", "controller", "Node")
@@ -206,7 +205,6 @@ func main() {
 	//}
 	if err = (&controllers.ServiceReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("service-controller"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Service")
@@ -214,7 +212,6 @@ func main() {
 	}
 	if err = (&controllers.EndpointsReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("endpoints-controller"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Endpoints")

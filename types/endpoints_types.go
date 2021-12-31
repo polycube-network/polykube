@@ -7,9 +7,12 @@ type Backend struct {
 }
 type BackendsSet map[Backend]struct{}
 
-func (fs BackendsSet) Contains(b Backend) bool {
-	_, ok := fs[b]
+func (bs BackendsSet) Contains(b Backend) bool {
+	_, ok := bs[b]
 	return ok
+}
+func (bs BackendsSet) Add(b Backend) {
+	bs[b] = struct{}{}
 }
 
 type ServiceToBackends map[string]BackendsSet
