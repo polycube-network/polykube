@@ -75,20 +75,19 @@ func createIntK8sLbrp() error {
 
 // createRouter creates a polycube router cube
 func createRouter() error {
-	extIface := node.Conf.ExtIface
-	vxlanIface := node.Conf.VxlanIface
-	podsGwInfo := node.Conf.PodGwInfo
-	nodeGwInfo := node.Conf.NodeGwInfo
 	rName := conf.rName
 	l := log.WithValues("name", rName)
 
 	// defining the router port that will be connected to the internal k8s lbrp
+	podsGwIPNetStr := node.Conf.PodGwInfo.IPNet.String()
+	podsGwMACStr := node.Conf.PodGwInfo.MAC.String()
 	rToIklPort := router.Ports{
 		Name: conf.rToIklPortName,
-		Ip:   podsGwInfo.IPNet.String(),
-		Mac:  podsGwInfo.MAC.String(),
+		Ip:   podsGwIPNetStr,
+		Mac:  podsGwMACStr,
 	}
 	// defining the router port that will be connected to the vxlan interface
+	vxlanIface := node.Conf.VxlanIface
 	rToVxlanPort := router.Ports{
 		Name: conf.rToVxlanPortName,
 		Ip:   vxlanIface.IPNet.String(),
@@ -96,6 +95,7 @@ func createRouter() error {
 		Peer: vxlanIface.Link.Attrs().Name,
 	}
 	// defining the router port that will be connected to the external k8s lbrp
+	extIface := node.Conf.ExtIface
 	rToEklPort := router.Ports{
 		Name: conf.rToEklPortName,
 		Ip:   extIface.IPNet.String(),
@@ -104,24 +104,31 @@ func createRouter() error {
 	rPorts := []router.Ports{rToIklPort, rToVxlanPort, rToEklPort}
 
 	// defining router default route and setting static arp table entry for the default gateway
+	nodeGwIPStr := node.Conf.NodeGwInfo.IPNet.IP.String()
+	nodeGwMACStr := node.Conf.NodeGwInfo.MAC.String()
 	routes := []router.Route{
 		{
 			Network:    "0.0.0.0/0",
-			Nexthop:    nodeGwInfo.IPNet.IP.String(),
+			Nexthop:    nodeGwIPStr,
+			Interface_: conf.kToEklPortName,
+		},
+		{
+			Network:    node.Conf.VPodIPNet.String(),
+			Nexthop:    nodeGwIPStr,
 			Interface_: conf.kToEklPortName,
 		},
 	}
 	arptable := []router.ArpTable{
 		{
-			Address:    nodeGwInfo.IPNet.IP.String(),
-			Mac:        nodeGwInfo.MAC.String(),
+			Address:    nodeGwIPStr,
+			Mac:        nodeGwMACStr,
 			Interface_: conf.kToEklPortName,
 		},
 	}
 	r := router.Router{
-		Name:  rName,
-		Ports: rPorts,
-		//Loglevel: "TRACE",
+		Name:     rName,
+		Ports:    rPorts,
+		Loglevel: "TRACE",
 		Route:    routes,
 		ArpTable: arptable,
 	}
@@ -181,11 +188,12 @@ func createK8sDispatcher() error {
 		Type_: "BACKEND",
 	}
 	// defining the k8sdispatcher port that will be connected to the node external interface
+	extIface := node.Conf.ExtIface
 	kToIntPort := k8sdispatcher.Ports{
 		Name:  conf.kToIntPortName,
 		Type_: "FRONTEND",
-		Ip_:   node.Conf.ExtIface.IPNet.IP.String(),
-		Peer:  node.Conf.ExtIface.Link.Attrs().Name,
+		Ip_:   extIface.IPNet.IP.String(),
+		Peer:  extIface.Link.Attrs().Name,
 	}
 	kPorts := []k8sdispatcher.Ports{kToEklPort, kToIntPort}
 
@@ -193,8 +201,8 @@ func createK8sDispatcher() error {
 		Name: kName,
 		//Loglevel:      "TRACE",
 		Ports:         kPorts,
-		InternalSrcIp: "3.3.1.3", // TODO mocked
-		NodeportRange: conf.nodePortRange,
+		InternalSrcIp: node.Conf.VPodIPNet.IP.String(),
+		NodeportRange: node.Env.NodePortRange,
 	}
 
 	l = l.WithValues("k8sdispatcher", fmt.Sprintf("%+v", k))
@@ -352,12 +360,22 @@ func ensureCubes() error {
 		if err := createIntK8sLbrp(); err != nil {
 			return err
 		}
+	} else {
+		l.Info("cleaning up services of the already existing internal k8s lbrp...")
+		if err := CleanupK8sLbrpServices(iklName); err != nil {
+			return err
+		}
 	}
 	// creating external k8s lbrp if it doesn't exist
 	l = log.WithValues("name", eklName)
 	if !eklExist {
 		l.Info("failed to find external k8s lbrp: creating it...")
 		if err := createExtK8sLbrp(); err != nil {
+			return err
+		}
+	} else {
+		l.Info("cleaning up services of the already existing external k8s lbrp...")
+		if err := CleanupK8sLbrpServices(eklName); err != nil {
 			return err
 		}
 	}
@@ -384,6 +402,11 @@ func ensureCubes() error {
 		if err := createRouter(); err != nil {
 			return err
 		}
+	} else {
+		l.Info("cleaning up routes of the already existing router...")
+		if err := CleanupRouterRoutes(); err != nil {
+			return err
+		}
 	}
 
 	// retrieving the k8s dispatcher list
@@ -406,6 +429,11 @@ func ensureCubes() error {
 	if !kdExist {
 		l.Info("failed to find k8s dispatcher: creating it...")
 		if err := createK8sDispatcher(); err != nil {
+			return err
+		}
+	} else {
+		l.Info("cleaning up NodePort rules of the already existing k8s dispatcher...")
+		if err := CleanupK8sDispatcherNodePortRules(); err != nil {
 			return err
 		}
 	}
@@ -437,8 +465,6 @@ func InitConf() {
 		eklToKPortName:   "to_" + ec.K8sDispName,
 		kToEklPortName:   "to_" + ec.ExtK8sLbrpName,
 		kToIntPortName:   "to_int",
-		vClusterCIDR:     ec.ClusterIPCIDR,
-		nodePortRange:    ec.NodePortRange,
 	}
 }
 

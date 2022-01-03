@@ -36,12 +36,6 @@ func CheckRouteExistence(nodePodCIDR *net.IPNet, nodeVtepIP net.IP) (bool, error
 	nexthop := nodeVtepIP.String()
 	l := log.WithValues("router", rName, "network", network, "nexthop", nexthop)
 
-	//_, resp, err := routerAPI.ReadRouterRouteByID(context.TODO(), rName, url.QueryEscape(network), nexthop)
-	//if err != nil {
-	//	l.Error(err, "failed to verify router route existence", "response", fmt.Sprintf("%+v", resp))
-	//	return false, nil // TODO how to verify the type if it is a server error or the route doesn't exist?
-	//}
-
 	rrs, resp, err := routerAPI.ReadRouterRouteListByID(context.TODO(), rName)
 	if err != nil {
 		l.Error(err, "failed to retrieve router route list", "response", fmt.Sprintf("%+v", resp))
@@ -113,5 +107,40 @@ func DeleteRouteToNodePodCIDR(nodePodCIDR *net.IPNet, nodeVtepIP net.IP) error {
 		)
 	}
 	l.V(1).Info("deleted router route")
+	return nil
+}
+
+// DeleteRouterRoute deletes the route on the polycube router
+func DeleteRouterRoute(network, nexthop string) error {
+	rName := conf.rName
+	log := log.WithValues("router", rName, "network", network, "nexthop", nexthop)
+
+	// delete route to router in order to make node pod CIDR unreachable throw vxlan interface
+	if resp, err := routerAPI.DeleteRouterRouteByID(
+		context.TODO(), rName, url.QueryEscape(network), nexthop,
+	); err != nil && resp.StatusCode != 409 {
+		log.Error(err, "failed to delete router route", "response", fmt.Sprintf("%+v", resp))
+		return errors.New("failed to delete router route")
+	}
+	log.V(1).Info("deleted router route")
+	return nil
+}
+
+func CleanupRouterRoutes() error {
+	rName := conf.rName
+	log := log.WithValues("router", rName)
+	routes, resp, err := routerAPI.ReadRouterRouteListByID(context.TODO(), rName)
+	if err != nil {
+		log.Error(err, "failed to retrieve router routes", "response", fmt.Sprintf("%+v", resp))
+		return errors.New("failed to retrieve router routes")
+	}
+	for _, route := range routes {
+		if route.Nexthop != "local" {
+			if err := DeleteRouterRoute(route.Network, route.Nexthop); err != nil {
+				return err
+			}
+		}
+	}
+	log.V(1).Info("deleted all non-local router route")
 	return nil
 }

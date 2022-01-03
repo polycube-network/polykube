@@ -206,8 +206,8 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 	return nil
 }
 
-// CleanupK8sLbrpsServices deletes all the lbrp services associated with the provided service ID
-func CleanupK8sLbrpsServices(svcId string) error {
+// CleanupK8sLbrpsServicesById deletes all the lbrp services associated with the provided service ID
+func CleanupK8sLbrpsServicesById(svcId string) error {
 	log := log.WithValues("svcId", svcId)
 
 	kls, err := getK8sLbrps()
@@ -231,5 +231,17 @@ func CleanupK8sLbrpsServices(svcId string) error {
 		}
 	}
 	log.V(1).Info("cleaned up k8s lbrps services")
+	return nil
+}
+
+// CleanupK8sLbrpServices deletes all the lbrp services
+func CleanupK8sLbrpServices(klName string) error {
+	log := log.WithValues("k8slbrp", klName)
+	resp, err := k8sLbrpAPI.DeleteK8sLbrpServiceListByID(context.TODO(), klName)
+	if err != nil {
+		log.Error(err, "failed to delete all k8s lbrp services", "response", fmt.Sprintf("%+v", resp))
+		return errors.New("failed to delete all k8s lbrp services")
+	}
+	log.V(1).Info("deleted all k8s lbrp services")
 	return nil
 }

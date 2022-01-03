@@ -73,3 +73,19 @@ func CalcPodDefaultGatewayIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
 	)
 	return gwIPNet, nil
 }
+
+// CalcVPodIPNet calculates the virtual pod IP and prefix length starting from the pod CIDR.
+// The convention that the IP of the virtual pod is the first IP of pod CIDR other than the network ID
+// (e.g.: if the pod CIDR is /24, then the virtual pod IP will be .1) is used
+func CalcVPodIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
+	log := log.WithValues("podCIDR", podCIDR)
+
+	nodeVPodIPNet := &net.IPNet{
+		IP:   ip.NextIP(podCIDR.IP),
+		Mask: net.IPv4Mask(255, 255, 255, 255),
+	}
+	log.V(1).Info(
+		"calculated virtual Pod address for cluster node", "vPod", fmt.Sprintf("%+v", nodeVPodIPNet),
+	)
+	return nodeVPodIPNet, nil
+}

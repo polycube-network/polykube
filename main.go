@@ -133,17 +133,20 @@ func main() {
 	// obtaining environment configuration by taking it from env variables
 	if err := node.LoadEnvironment(); err != nil {
 		setupLog.Error(err, "failed to load environment configuration from environment variables")
-		os.Exit(3)
+		os.Exit(1)
 	}
 
 	if err := node.LoadConfig(); err != nil {
 		setupLog.Error(err, "failed to load node configuration")
-		os.Exit(4)
+		os.Exit(2)
 	}
 
 	if err := node.EnsureVxlanIface(); err != nil {
 		setupLog.Error(err, "failed to ensure vxlan interface")
-		os.Exit(5)
+		os.Exit(3)
+	}
+	if err := node.CleanupFdb(); err != nil {
+		setupLog.Error(err, "failed to cleanup fdb")
 	}
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -157,30 +160,30 @@ func main() {
 
 	if err := polycube.EnsureConnection(); err != nil {
 		setupLog.Error(err, "failed to ensure polycubed connection")
-		os.Exit(6)
+		os.Exit(4)
 	}
 
 	if err := polycube.EnsureDeployment(); err != nil {
 		setupLog.Error(err, "failed to ensure polycube infrastructure deployment")
-		os.Exit(6)
+		os.Exit(5)
 	}
 
 	podGwMAC, err := polycube.GetRouterToIntK8sLbrpPortMAC()
 	if err != nil {
 		setupLog.Error(err, "failed to load node pod default gateway mac")
-		os.Exit(7)
+		os.Exit(6)
 	}
 	node.Conf.PodGwInfo.MAC = podGwMAC
 
 	if err := node.EnsureCNIConf(); err != nil {
 		setupLog.Error(err, "failed to ensure CNI configuration")
-		os.Exit(8)
+		os.Exit(7)
 	}
 
 	//time.Sleep(24 * 60 * 60 * time.Second)
 
 	//if err := attachPods(); err != nil {
-	//	os.Exit(9)
+	//	os.Exit(8)
 	//}
 	// ---
 
@@ -193,40 +196,40 @@ func main() {
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
-		os.Exit(1)
+		os.Exit(9)
 	}
 
-	//if err = (&controllers.NodeReconciler{
-	//	Client: mgr.GetClient(),
-	//	Scheme: mgr.GetScheme(),
-	//}).SetupWithManager(mgr); err != nil {
-	//	setupLog.Error(err, "unable to create controller", "controller", "Node")
-	//	os.Exit(1)
-	//}
+	if err = (&controllers.NodeReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Node")
+		os.Exit(10)
+	}
 	if err = (&controllers.ServiceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Service")
-		os.Exit(1)
+		os.Exit(11)
 	}
 	if err = (&controllers.EndpointsReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Endpoints")
-		os.Exit(1)
+		os.Exit(12)
 	}
 
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
-		os.Exit(1)
+		os.Exit(13)
 	}
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up ready check")
-		os.Exit(1)
+		os.Exit(14)
 	}
 
 	polycube.PollPolycube()
@@ -234,6 +237,6 @@ func main() {
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
-		os.Exit(1)
+		os.Exit(15)
 	}
 }

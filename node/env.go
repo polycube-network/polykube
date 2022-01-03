@@ -83,34 +83,6 @@ func LoadEnvironment() error {
 	}
 	env.VtepCIDR = vtepCIDR
 
-	// VirtualPodCIDR
-	virtualPodCIDRStr := getEnvVar("VIRTUAL_POD_CIDR", "3.3.0.0/16")
-	_, virtualPodCIDR, err := net.ParseCIDR(virtualPodCIDRStr)
-	if err != nil {
-		log.Error(
-			err,
-			"failed to parse env variable",
-			"envVar", "VIRTUAL_POD_CIDR",
-			"value", virtualPodCIDRStr,
-		)
-		return errors.New("failed to parse VIRTUAL_POD_CIDR")
-	}
-	env.VirtualPodCIDR = virtualPodCIDR
-
-	// ClusterIPCIDR
-	clusterIPCIDRStr := getEnvVar("CLUSTER_IP_CIDR", "10.96.0.0/12")
-	_, clusterIPCIDR, err := net.ParseCIDR(clusterIPCIDRStr)
-	if err != nil {
-		log.Error(
-			err,
-			"failed to parse env variable",
-			"envVar", "CLUSTER_IP_CIDR",
-			"value", clusterIPCIDRStr,
-		)
-		return errors.New("failed to parse CLUSTER_IP_CIDR")
-	}
-	env.ClusterIPCIDR = clusterIPCIDR
-
 	// NodePortRange
 	env.NodePortRange = getEnvVar("NODEPORT_RANGE", "30000-32767")
 
@@ -158,7 +130,6 @@ func EnsureCNIConf() error {
 	}
 	defer f.Close()
 
-	podCIDR := Conf.PodCIDR
 	podGwIP := Conf.PodGwInfo.IPNet.IP
 	podGwMAC := Conf.PodGwInfo.MAC
 
@@ -168,9 +139,9 @@ func EnsureCNIConf() error {
 		Env.IntK8sLbrpName,
 		podGwIP.String(),
 		podGwMAC.String(),
-		podCIDR.String(),
-		ip.NextIP(podCIDR.IP).String(), // .1
-		ip.PrevIP(podGwIP).String(),    // .253
+		Conf.PodCIDR.String(),
+		ip.NextIP(Conf.VPodIPNet.IP).String(), // .2
+		ip.PrevIP(podGwIP).String(),           // .253
 		podGwIP.String(),
 	); err != nil {
 		log.Error(

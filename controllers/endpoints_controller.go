@@ -22,7 +22,6 @@ import (
 	"github.com/ekoops/polykube-operator/node"
 	"github.com/ekoops/polykube-operator/polycube"
 	"github.com/ekoops/polykube-operator/types"
-	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"net"
@@ -39,7 +38,6 @@ import (
 // EndpointsReconciler reconciles an Endpoints object
 type EndpointsReconciler struct {
 	client.Client
-	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
