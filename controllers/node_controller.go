@@ -50,7 +50,7 @@ func buildNodeDetail(n *corev1.Node) (*types.NodeDetail, error) {
 		return nil, errors.New("failed to parse node Pod CIDR")
 	}
 
-	vtepIPNet, err := node.CalcVtepIPNet(n)
+	vtepIPNet, err := node.CalcVtepIPNet(podCIDR)
 	if err != nil {
 		return nil, errors.New("failed to calculate node vtep")
 	}

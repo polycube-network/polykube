@@ -98,6 +98,11 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: vtepCidr
+            - name: CLUSTER_CIDR
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: clusterCidr
             - name: NODEPORT_RANGE
               valueFrom:
                 configMapKeyRef:

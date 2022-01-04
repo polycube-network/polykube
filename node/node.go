@@ -232,7 +232,7 @@ func LoadConfig() error {
 		return err
 	}
 
-	nodeVtepIPNet, err := CalcVtepIPNet(node)
+	nodeVtepIPNet, err := CalcVtepIPNet(podCIDR)
 	if err != nil {
 		return err
 	}

@@ -8,10 +8,10 @@ import (
 )
 
 type Environment struct {
-	NodeName       string
-	VxlanIfaceName string
-	VtepCIDR       *net.IPNet
-	//VirtualPodCIDR  *net.IPNet
+	NodeName        string
+	VxlanIfaceName  string
+	VtepCIDR        *net.IPNet
+	ClusterCIDR     *net.IPNet
 	NodePortRange   string
 	CNIConfFilePath string
 	MTU             int
