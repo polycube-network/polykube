@@ -25,7 +25,7 @@ func GetRouterToIntK8sLbrpPortMAC() (net.HardwareAddr, error) {
 		l.Error(err, "failed to parse router port MAC")
 		return nil, errors.New("failed to parse router port MAC")
 	}
-	l.V(1).Info("retrieved router to internal k8s lbrp port MAC")
+	l.V(1).Info("retrieved router to internal k8s lbrp port MAC", "MAC", MAC.String())
 	return MAC, nil
 }
 

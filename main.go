@@ -17,18 +17,13 @@ limitations under the License.
 package main
 
 import (
-	"encoding/hex"
 	"flag"
 	"github.com/ekoops/polykube-operator/controllers"
 	"github.com/ekoops/polykube-operator/node"
 	"github.com/ekoops/polykube-operator/polycube"
-	"github.com/ekoops/polykube-operator/utils"
-	v1 "k8s.io/api/core/v1"
-	"net"
 	"os"
 	"os/signal"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sync"
 	"syscall"
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -53,67 +48,31 @@ func init() {
 	//+kubebuilder:scaffold:scheme
 }
 
-func attachPods() error {
+func ensurePodsAttachment() error {
 	pods, err := node.GetPods(node.Conf.Node.Name)
 	if err != nil {
-		setupLog.Error(err, "failed to retrieve node pods")
-		os.Exit(9)
+		return err
 	}
+
 	portsMap, err := polycube.GetIntK8sLbrpFrontendPortsMap()
 	if err != nil {
-		setupLog.Error(err, "failed to retrieve k8s lbrp frontend ports IPs set")
-		os.Exit(9)
+		setupLog.Error(err, "failed to retrieve retrieve actual infrastructure ports info")
+		return err
 	}
 
-	c := make(chan error)
-	wg := sync.WaitGroup{}
-	wg.Add(len(pods.Items))
-	for _, pod := range pods.Items {
-		go func(pod *v1.Pod) {
-			defer wg.Done()
-			if pod.Name == "this_pod_name" { // TODO mocked
-				c <- nil
-			}
-			podIP := net.ParseIP(pod.Status.PodIP)
-			if podIP == nil {
-				return
-			}
-			portId := hex.EncodeToString(podIP)
-
-			port, ok := portsMap[portId]
-			if !ok {
-				if err := polycube.CreateIntK8sLbrpFrontendPort(portId, podIP); err != nil {
-					c <- err
-					return
-				}
-				c <- nil
-				return
-			}
-
-			hostIfaceName := utils.GetHostIfaceName("eth0", portId)
-			if port.Peer != hostIfaceName {
-				// TODO cu ccu cazzu è ncucciatu?
-			}
-
-			if port.Status == "DOWN" {
-				// TODO how is it possible?
-			}
-			c <- nil
-		}(&pod)
+	if err := polycube.CreateIntK8sLbrpMissingFrontendPorts(pods.Items, portsMap); err != nil {
+		setupLog.Error(err, "failed to reattach cluster node pods to the infrastructure")
+		return err
 	}
 
-	go func() {
-		wg.Wait()
-		close(c)
-	}()
-
-	for err := range c {
-		if err != nil {
-			return err
-		}
-	}
-
+	setupLog.Info("ensured cluster node pods attachment")
 	return nil
+}
+
+func exit(code int) {
+	node.CleanupFdb()
+	node.DeleteVxlanIface()
+	os.Exit(code)
 }
 
 func main() {
@@ -148,43 +107,44 @@ func main() {
 	if err := node.CleanupFdb(); err != nil {
 		setupLog.Error(err, "failed to cleanup fdb")
 	}
+
 	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		<-c
-		node.CleanupFdb()
-		node.DeleteVxlanIface()
+		exit(16)
 	}()
 
 	polycube.InitConf()
 
 	if err := polycube.EnsureConnection(); err != nil {
 		setupLog.Error(err, "failed to ensure polycubed connection")
-		os.Exit(4)
+		exit(4)
 	}
 
 	if err := polycube.EnsureDeployment(); err != nil {
 		setupLog.Error(err, "failed to ensure polycube infrastructure deployment")
-		os.Exit(5)
+		exit(5)
 	}
 
 	podGwMAC, err := polycube.GetRouterToIntK8sLbrpPortMAC()
 	if err != nil {
-		setupLog.Error(err, "failed to load node pod default gateway mac")
-		os.Exit(6)
+		setupLog.Error(err, "failed to load cluster node pods default gateway mac")
+		exit(6)
 	}
 	node.Conf.PodGwInfo.MAC = podGwMAC
 
 	if err := node.EnsureCNIConf(); err != nil {
 		setupLog.Error(err, "failed to ensure CNI configuration")
-		os.Exit(7)
+		exit(7)
+	}
+
+	if err := ensurePodsAttachment(); err != nil {
+		exit(8)
 	}
 
 	//time.Sleep(24 * 60 * 60 * time.Second)
 
-	//if err := attachPods(); err != nil {
-	//	os.Exit(8)
-	//}
 	// ---
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
@@ -196,7 +156,7 @@ func main() {
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
-		os.Exit(9)
+		exit(9)
 	}
 
 	if err = (&controllers.NodeReconciler{
@@ -204,32 +164,32 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Node")
-		os.Exit(10)
+		exit(10)
 	}
 	if err = (&controllers.ServiceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Service")
-		os.Exit(11)
+		exit(11)
 	}
 	if err = (&controllers.EndpointsReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Endpoints")
-		os.Exit(12)
+		exit(12)
 	}
 
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
-		os.Exit(13)
+		exit(13)
 	}
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up ready check")
-		os.Exit(14)
+		exit(14)
 	}
 
 	polycube.PollPolycube()
@@ -237,6 +197,9 @@ func main() {
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
-		os.Exit(15)
+		exit(15)
 	}
+	// the following is used in order to stop the main goroutine waiting for the second main one to invoke os.Exit
+	s := make(chan int)
+	<-s
 }
