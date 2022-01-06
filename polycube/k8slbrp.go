@@ -26,7 +26,54 @@ func createK8sLbrpPorts(klName string, ports []k8slbrp.Ports) error {
 	return nil
 }
 
-func CreateIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod, portsMap map[string]*k8slbrp.Ports) error {
+// getIntK8sLbrpFrontendPortsMap returns a map containing all the internal k8s lbrp frontend ports indexed
+// by the hexadecimal representation of the port associated IP
+func getIntK8sLbrpFrontendPortsMap() (map[string]*k8slbrp.Ports, error) {
+	iklName := conf.intK8sLbrpName
+	l := log.WithValues("name", iklName)
+	ports, resp, err := k8sLbrpAPI.ReadK8sLbrpPortsListByID(context.TODO(), iklName)
+	if err != nil {
+		l.Error(
+			err, "failed to retrieve internal k8s lbrp ports list",
+			"response", fmt.Sprintf("%+v", resp),
+		)
+		return nil, errors.New("failed to retrieve internal k8s lbrp ports list")
+	}
+	m := make(map[string]*k8slbrp.Ports, len(ports)-1)
+	for _, port := range ports {
+		if port.Type_ == "backend" {
+			continue
+		}
+		portIp := net.ParseIP(port.Ip_)
+		if portIp == nil {
+			l.Error(
+				err, "failed to parse internal k8s lbrp frontend port IP",
+				"response", fmt.Sprintf("%+v", resp),
+			)
+			return nil, errors.New("failed to parse internal k8s lbrp frontend port IP")
+		}
+		portIp = portIp.To4()
+		if portIp == nil {
+			l.Error(
+				err, "failed to parse internal k8s lbrp frontend port IP",
+				"response", fmt.Sprintf("%+v", resp),
+			)
+			return nil, errors.New("failed to parse internal k8s lbrp frontend port IP")
+		}
+
+		portIpHexStr := hex.EncodeToString(portIp)
+		m[portIpHexStr] = &port
+	}
+	l.V(1).Info("retrieved k8s internal lbrp frontend ports info")
+	return m, nil
+}
+
+func EnsureIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod) error {
+	portsMap, err := getIntK8sLbrpFrontendPortsMap()
+	if err != nil {
+		return nil
+	}
+
 	thisPodName := node.Env.PodName
 
 	var portsToAdd []k8slbrp.Ports
@@ -65,48 +112,6 @@ func CreateIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod, portsMap map[string
 	}
 	log.V(1).Info("synced internal k8s lbrp frontend ports")
 	return nil
-}
-
-// GetIntK8sLbrpFrontendPortsMap returns a map containing all the internal k8s lbrp frontend ports indexed
-// by the hexadecimal representation of the port associated IP
-func GetIntK8sLbrpFrontendPortsMap() (map[string]*k8slbrp.Ports, error) {
-	iklName := conf.intK8sLbrpName
-	l := log.WithValues("name", iklName)
-	ports, resp, err := k8sLbrpAPI.ReadK8sLbrpPortsListByID(context.TODO(), iklName)
-	if err != nil {
-		l.Error(
-			err, "failed to retrieve internal k8s lbrp ports list",
-			"response", fmt.Sprintf("%+v", resp),
-		)
-		return nil, errors.New("failed to retrieve internal k8s lbrp ports list")
-	}
-	m := make(map[string]*k8slbrp.Ports, len(ports)-1)
-	for _, port := range ports {
-		if port.Type_ == "backend" {
-			continue
-		}
-		portIp := net.ParseIP(port.Ip_)
-		if portIp == nil {
-			l.Error(
-				err, "failed to parse internal k8s lbrp frontend port IP",
-				"response", fmt.Sprintf("%+v", resp),
-			)
-			return nil, errors.New("failed to parse internal k8s lbrp frontend port IP")
-		}
-		portIp = portIp.To4()
-		if portIp == nil {
-			l.Error(
-				err, "failed to parse internal k8s lbrp frontend port IP",
-				"response", fmt.Sprintf("%+v", resp),
-			)
-			return nil, errors.New("failed to parse internal k8s lbrp frontend port IP")
-		}
-
-		portIpHexStr := hex.EncodeToString(portIp)
-		m[portIpHexStr] = &port
-	}
-	l.V(1).Info("retrieved k8s internal lbrp frontend ports info")
-	return m, nil
 }
 
 func getK8sLbrps() ([]*k8slbrp.K8sLbrp, error) {
@@ -167,7 +172,7 @@ func extractK8sLbrpServicesToAddAndDel(
 	return klSvcsToAdd, klSvcsToDel
 }
 
-func addK8sLbrpServices(klName string, svcs []k8slbrp.Service) error {
+func createK8sLbrpServices(klName string, svcs []k8slbrp.Service) error {
 	log := log.WithValues("k8slbrp", klName, "services", fmt.Sprintf("%+v", svcs))
 
 	resp, err := k8sLbrpAPI.CreateK8sLbrpServiceListByID(context.TODO(), klName, svcs)
@@ -231,7 +236,7 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 		}
 
 		if lenToAdd > 0 {
-			if err := addK8sLbrpServices(kl.Name, klSvcsToAdd); err != nil {
+			if err := createK8sLbrpServices(kl.Name, klSvcsToAdd); err != nil {
 				log.Error(err, "error during k8s lbrp services addition")
 				return errors.New("error during k8s lbrp services addition")
 			}
@@ -276,7 +281,7 @@ func CleanupK8sLbrpsServicesById(svcId string) error {
 	return nil
 }
 
-// CleanupK8sLbrpServices deletes all the lbrp services
+// CleanupK8sLbrpServices deletes all the services of the specified k8s lbrp
 func CleanupK8sLbrpServices(klName string) error {
 	log := log.WithValues("k8slbrp", klName)
 	resp, err := k8sLbrpAPI.DeleteK8sLbrpServiceListByID(context.TODO(), klName)

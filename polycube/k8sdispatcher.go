@@ -106,7 +106,7 @@ func updateK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportR
 	return nil
 }
 
-func addK8sDispatcherNodePortRules(kdName string, nprs []k8sdispatcher.NodeportRule) error {
+func createK8sDispatcherNodePortRules(kdName string, nprs []k8sdispatcher.NodeportRule) error {
 	log := log.WithValues("k8sdisp", kdName, "rules", fmt.Sprintf("%+v", nprs))
 
 	resp, err := k8sDispatcherAPI.CreateK8sdispatcherNodeportRuleListByID(context.TODO(), kdName, nprs)
@@ -164,7 +164,7 @@ func SyncK8sDispatcherNodePortRules(svcDetail *types.ServiceDetail, nodeIP net.I
 	}
 
 	if lenToAdd > 0 {
-		if err := addK8sDispatcherNodePortRules(kdName, kdNprsToAdd); err != nil {
+		if err := createK8sDispatcherNodePortRules(kdName, kdNprsToAdd); err != nil {
 			log.Error(err, "error during k8s dispatcher NodePort rules addition")
 			return errors.New("error during k8s dispatcher NodePort rules addition")
 		}
