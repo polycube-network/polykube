@@ -22,7 +22,7 @@ func getK8sDispatcherNodePortRules() ([]k8sdispatcher.NodeportRule, error) {
 		return nil, errors.New("failed to retrieve k8s dispatcher NodePort rules")
 	}
 	log.V(1).Info(
-		"retrieved k8s dispatcher NodePort rules", "rules", fmt.Sprintf("%+v\n", nprs),
+		"retrieved k8s dispatcher NodePort rules", "rules", fmt.Sprintf("%+v", nprs),
 	)
 	return nprs, nil
 

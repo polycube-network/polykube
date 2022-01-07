@@ -140,7 +140,7 @@ func LoadEnvironment() error {
 	env.K8sDispName = getEnvVar("POLYCUBE_K8SDISP_NAME", "k0")
 
 	Env = env
-	log.V(1).Info("loaded environment configuration")
+	log.Info("loaded environment configuration")
 	return nil
 }
 

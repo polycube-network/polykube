@@ -177,7 +177,7 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	log.Info("endpoints object retrieved")
+	log.Info("retrieved endpoints object")
 
 	s := &corev1.Service{}
 	if err := r.Get(ctx, req.NamespacedName, s); err != nil {
@@ -187,7 +187,7 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	log.Info("associated service object retrieved")
+	log.Info("retrieved associated service object")
 
 	st := s.Spec.Type
 	// not able to handle services other than ClusterIP and NodePort ones
@@ -208,25 +208,43 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, err
 	}
 	if needResync {
-		log.Info("A resync is needed for endpoints object sync: a reschedule has been planned")
-		return ctrl.Result{Requeue: true}, nil // TODO evaluate RequeueAfter
+		log.Info("a resync is needed for endpoints object sync: a reschedule has been planned")
+		return ctrl.Result{Requeue: true}, nil
 	}
 
-	log.Info("cluster status reconciled for the endpoints object")
+	log.Info("reconciled cluster status for the endpoints object")
 
 	return ctrl.Result{}, nil
 }
 
-func endpointsControllerPredicates() predicate.Predicate {
+func endpointsControllerPredicate() predicate.Predicate {
 	return predicate.Funcs{
 		CreateFunc: func(e event.CreateEvent) bool {
-			return e.Object.GetObjectKind().GroupVersionKind().Kind != "Service" // TODO a better way to check it?
+			_, isEndpoints := e.Object.(*corev1.Endpoints)
+			return isEndpoints
 		},
 		UpdateFunc: func(e event.UpdateEvent) bool {
-			return true
+			_, isEndpoints := e.ObjectOld.(*corev1.Endpoints)
+			if isEndpoints {
+				return true
+			}
+			oldSvc, okOld := e.ObjectOld.(*corev1.Service)
+			newSvc, okNew := e.ObjectNew.(*corev1.Service)
+			if !okOld || !okNew {
+				return false
+			}
+			oldItp := "CLUSTER"
+			if oldSvc.Spec.InternalTrafficPolicy != nil && *oldSvc.Spec.InternalTrafficPolicy == corev1.ServiceInternalTrafficPolicyLocal {
+				oldItp = "LOCAL"
+			}
+			newItp := "CLUSTER"
+			if newSvc.Spec.InternalTrafficPolicy != nil && *newSvc.Spec.InternalTrafficPolicy == corev1.ServiceInternalTrafficPolicyLocal {
+				newItp = "LOCAL"
+			}
+			return oldItp != newItp || oldSvc.Spec.ExternalTrafficPolicy != newSvc.Spec.ExternalTrafficPolicy
 		},
 		DeleteFunc: func(e event.DeleteEvent) bool {
-			return e.Object.GetObjectKind().GroupVersionKind().Kind != "Service" // TODO a better way to check it?
+			return false
 		},
 	}
 }
@@ -236,6 +254,6 @@ func (r *EndpointsReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Endpoints{}).
 		Watches(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForObject{}).
-		WithEventFilter(endpointsControllerPredicates()).
+		WithEventFilter(endpointsControllerPredicate()).
 		Complete(r)
 }

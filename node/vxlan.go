@@ -195,7 +195,7 @@ func CheckFdbEntryExistence(nodeIP net.IP) (bool, error) {
 			return true, nil
 		}
 	}
-	log.V(1).Info("no bridge fdb entry related to the vxlan interface for the node IP")
+	log.V(1).Info("bridge fdb entry related to the vxlan interface for the node IP not found")
 	return false, nil
 }
 

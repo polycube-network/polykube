@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/ekoops/polykube-operator/node"
 	"github.com/ekoops/polykube-operator/polycube"
 	"github.com/ekoops/polykube-operator/types"
@@ -101,11 +102,11 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			return ctrl.Result{}, err
 		}
 		delete(NodeDetailMap, nId)
-		log.Info("cluster status reconciled after node object deletion event")
+		log.Info("reconciled cluster status after node object deletion event")
 		return ctrl.Result{}, nil
 	}
 
-	log.Info("node object retrieved")
+	log.Info("retrieved node object")
 
 	if !node.IsReady(n) {
 		// stop reconciliation since a new event will be fired when the node will be ready
@@ -147,18 +148,40 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		}
 	}
 
-	log.Info("cluster status reconciled for the node object")
+	log.Info("reconciled cluster status for the node object")
 
 	return ctrl.Result{}, nil
 }
 
-func nodeControllerPredicates() predicate.Predicate {
+func nodeControllerPredicate() predicate.Predicate {
 	return predicate.Funcs{
 		CreateFunc: func(e event.CreateEvent) bool {
 			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
 		},
 		UpdateFunc: func(e event.UpdateEvent) bool {
-			return e.ObjectOld.GetName() != node.Conf.Node.Name && e.ObjectOld.GetName() != "master"
+			oldNode, okOld := e.ObjectOld.(*corev1.Node)
+			newNode, okNew := e.ObjectNew.(*corev1.Node)
+			if !okOld || !okNew {
+				return false
+			}
+			oldReady := false
+			newReady := false
+			for _, c := range oldNode.Status.Conditions {
+				if c.Type == corev1.NodeReady && c.Status == corev1.ConditionTrue {
+					oldReady = true
+					break
+				}
+			}
+			for _, c := range newNode.Status.Conditions {
+				if c.Type == corev1.NodeReady && c.Status == corev1.ConditionTrue {
+					newReady = true
+					break
+				}
+			}
+			return e.ObjectOld.GetName() != node.Conf.Node.Name && e.ObjectOld.GetName() != "master" &&
+				(oldNode.Spec.PodCIDR != newNode.Spec.PodCIDR ||
+					fmt.Sprintf("%+v", oldNode.Status.Addresses) != fmt.Sprintf("%+v", newNode.Status.Addresses) ||
+					oldReady != newReady)
 		},
 		DeleteFunc: func(e event.DeleteEvent) bool {
 			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
@@ -171,6 +194,6 @@ func (r *NodeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	NodeDetailMap = make(map[string]*types.NodeDetail)
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Node{}).
-		WithEventFilter(nodeControllerPredicates()).
+		WithEventFilter(nodeControllerPredicate()).
 		Complete(r)
 }
