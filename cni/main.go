@@ -58,6 +58,8 @@ func init() {
 	k8sLbrpAPI = srK8sLbrp.K8sLbrpApi
 }
 
+// setupVeth creates a veth pair using the provided ends names and puts the container end inside the provided netns. It
+// returns a couple containing the container interface and the host interface info.
 func setupVeth(netns ns.NetNS, contIfName, hostIfName string, mtu int) (*current.Interface, *current.Interface, error) {
 	contIface := &current.Interface{}
 	hostIface := &current.Interface{}
@@ -88,7 +90,7 @@ func setupVeth(netns ns.NetNS, contIfName, hostIfName string, mtu int) (*current
 	return hostIface, contIface, nil
 }
 
-// loadNetConf load the network configuration from stdin (including the prevResult)
+// loadNetConf loads the network configuration from stdin (including the prevResult)
 func loadNetConf(stdin []byte) (*NetConf, error) {
 	conf := &NetConf{}
 
@@ -107,11 +109,11 @@ func loadNetConf(stdin []byte) (*NetConf, error) {
 	}
 
 	if conf.K8sLbrpName == "" {
-		return nil, errors.New("K8s lbrp name must be specified")
+		return nil, errors.New("internal k8s lbrp name must be specified")
 	}
 
 	if conf.Gw.IP == nil || conf.Gw.IP.To4() == nil {
-		return nil, errors.New("the gateway IP must be an ipv4 address")
+		return nil, errors.New("the gateway IP must be an IPv4 address")
 	}
 
 	// the mac address is put inside the field RawMAC as a string: it has to be parsed
@@ -125,6 +127,8 @@ func loadNetConf(stdin []byte) (*NetConf, error) {
 	return conf, nil
 }
 
+// configureNetns configures the provided address on the provided interface inside the provided netns. In addition,
+// also the netns routing table and ARP table is properly configured.
 func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *GwInfo) error {
 	if err := netns.Do(func(_ ns.NetNS) error {
 		// retrieving the veth interface
@@ -134,16 +138,16 @@ func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *G
 		}
 
 		// adding a /32 IPv4 address to the interface and setting the peer to the default gateway address
-		allOneMask := net.IPv4Mask(255, 255, 255, 255)
+		allOnesMask := net.IPv4Mask(255, 255, 255, 255)
 		addr := &netlink.Addr{
 			IPNet: &net.IPNet{
 				IP:   address.IP,
-				Mask: allOneMask,
+				Mask: allOnesMask,
 			},
 			Label: "",
 			Peer: &net.IPNet{
 				IP:   gwInfo.IP,
-				Mask: allOneMask,
+				Mask: allOnesMask,
 			},
 		}
 		if err = netlink.AddrAdd(link, addr); err != nil {
@@ -176,6 +180,95 @@ func configureNetns(netns ns.NetNS, ifName string, address *net.IPNet, gwInfo *G
 	return nil
 }
 
+// checkIface verifies that the provided interface is correctly configured.
+func checkIface(lg *log.Entry, netnsName string, iface *IFaceConf) error {
+	ifaceName := iface.Interface.Name
+	l := lg.WithField("iface", ifaceName)
+
+	// obtaining interface corresponding link
+	link, err := netlink.LinkByName(ifaceName)
+	if err != nil {
+		if _, notFound := err.(netlink.LinkNotFoundError); notFound {
+			l.WithField("detail", err).Fatal("iface doesn't exist")
+			return fmt.Errorf("%q iface doesn't exist into %q netns: %v", ifaceName, netnsName, err)
+		}
+		l.WithField("detail", err).Fatal("failed iface lookup")
+		return fmt.Errorf("failed %q iface lookup into %q netns: %v", ifaceName, netnsName, err)
+	}
+
+	// if no ip configuration are expected to be configured on link, simply return
+	if iface.IPConf == nil {
+		l.Info("netns iface checked")
+		return nil
+	}
+
+	// obtaining addresses configured on link
+	addrs, err := netlink.AddrList(link, netlink.FAMILY_V4)
+	if err != nil {
+		l.WithField("detail", err).Fatal("failed iface addresses lookup")
+		return fmt.Errorf("failed %q iface addresses lookup into %q netns: %v", ifaceName, netnsName, err)
+	}
+
+	// checking if the ip addresses are correctly configured on link
+	for _, addr := range addrs {
+		if addr.IPNet.String() == iface.IPConf.Address.String() {
+			l.Info("netns iface checked")
+			return nil
+		}
+	}
+	l.WithField("detail", err).Fatal("iface ip misconfiguration")
+	return fmt.Errorf("%q iface ip misconfiguration into %q netns: %v", ifaceName, netnsName, err)
+}
+
+// getIfaceConfs scans the prevResult.Interfaces in order to find the expected container and host interface created
+// during the ADD operation. If the two interfaces are found, they are returned in association with their IPConf
+func getIfaceConfs(prevResult *current.Result, contIfName, netnsName string) (*IFaceConf, *IFaceConf, error) {
+	var contIfaceConf, hostIfaceConf *IFaceConf
+	// scanning all prevResult interfaces
+	for i, iface := range prevResult.Interfaces {
+		// is this the container interface?
+		if iface.Name == contIfName && (netnsName == "" || netnsName == iface.Sandbox) {
+			contIfaceConf = &IFaceConf{
+				ResultIndex: i,
+				Interface:   iface,
+			}
+			// thc host interface is placed immediately after the container interface
+			hostIfaceConf = &IFaceConf{
+				ResultIndex: i + 1,
+				Interface:   prevResult.Interfaces[i+1],
+			}
+			break
+		}
+	}
+	// if the two interfaces were not found return an error
+	if contIfaceConf == nil {
+		return nil, nil, errors.New("unexpected interfaces: wrong or missing")
+	}
+	// scanning prevResult.IPs in order to associate the container interface to its ip configuration
+	for _, ipConf := range prevResult.IPs {
+		if *ipConf.Interface == hostIfaceConf.ResultIndex {
+			ipConf.Address.IP = ipConf.Address.IP.To4()
+			if ipConf.Address.IP == nil {
+				return nil, nil, errors.New("unexpected non IPv4 address configured on interface")
+			}
+			hostIfaceConf.IPConf = ipConf
+		}
+		if *ipConf.Interface == contIfaceConf.ResultIndex {
+			ipConf.Address.IP = ipConf.Address.IP.To4()
+			if ipConf.Address.IP == nil {
+				return nil, nil, errors.New("unexpected non IPv4 address configured on interface")
+			}
+			contIfaceConf.IPConf = ipConf
+		}
+	}
+	// checking that an ip configuration for the container interface and no configuration
+	// for the host interface were found
+	if contIfaceConf.IPConf == nil || hostIfaceConf.IPConf != nil {
+		return nil, nil, errors.New("unexpected ip configurations: wrong or missing")
+	}
+	return contIfaceConf, hostIfaceConf, nil
+}
+
 func cmdAdd(args *skel.CmdArgs) error {
 	// Defining the attachment identifier and the base logger. For the attachment, a truncation
 	// of ifName_containerId[0:10] up to 15 characters is used (since it is the max possible)
@@ -201,8 +294,8 @@ func cmdAdd(args *skel.CmdArgs) error {
 	// getting netns handle
 	netns, err := ns.GetNS(args.Netns)
 	if err != nil {
-		l.WithFields(log.Fields{"netns": args.Netns, "detail": err}).Fatal("failed to retrieve netns")
-		return fmt.Errorf("failed to open netns %q: %v", args.Netns, err)
+		l.WithFields(log.Fields{"netns": args.Netns, "detail": err}).Fatal("failed to open netns")
+		return fmt.Errorf("failed to open %q netns: %v", args.Netns, err)
 	}
 	defer netns.Close()
 
@@ -220,10 +313,10 @@ func cmdAdd(args *skel.CmdArgs) error {
 		l.WithFields(
 			log.Fields{"netns": args.Netns, "iface": args.IfName, "detail": err},
 		).Fatal("error during iface existence checking")
-		return fmt.Errorf("error during checking iface %q existence into netns %q: %v", args.IfName, args.Netns, err)
+		return fmt.Errorf("error during checking %q iface existence into %q netns: %v", args.IfName, args.Netns, err)
 	}
 
-	// getting ip from ipam plugin. Pay attention: the returned IP has a /24 prefix length, but eventually a /32 will
+	// getting IP from ipam plugin. Even if the returned IPv4 has a /24 prefix length, eventually a /32 will
 	// be configured on the container interface
 	addr, err := allocIP(conf.IPAM.Type, args.StdinData)
 	if err != nil {
@@ -259,7 +352,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 	})
 	if err := configureNetns(netns, contIfaceName, addr, &conf.Gw); err != nil {
 		nlog.WithField("detail", err).Fatal("failed to configure the netns")
-		return fmt.Errorf("failed to configure the netns %q: %v", args.Netns, err)
+		return fmt.Errorf("failed to configure the %q netns: %v", args.Netns, err)
 	}
 	nlog.Info("netns configured")
 
@@ -297,7 +390,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 	// The contIface will be placed at index len(result.Interfaces),
 	// so the hostIface will be placed at index len(result.Interfaces) + 1
 	contIp := &current.IPConfig{
-		Interface: current.Int(len(result.Interfaces)), // 0 if unchained
+		Interface: current.Int(len(result.Interfaces)), // 0 if the plugins is unchained
 		Address:   *addr,
 		Gateway:   conf.Gw.IP,
 	}
@@ -315,82 +408,6 @@ func cmdAdd(args *skel.CmdArgs) error {
 	result.Routes = append(result.Routes, contRoute)
 
 	return types.PrintResult(result, conf.CNIVersion)
-}
-
-func checkIface(l *log.Entry, netns string, iface *IFaceConf) error {
-	name := iface.Interface.Name
-	// obtaining interface corresponding link
-	link, err := netlink.LinkByName(name)
-	if err != nil {
-		if _, notFound := err.(netlink.LinkNotFoundError); notFound {
-			l.WithField("detail", err).Fatal("iface doesn't exist")
-			return fmt.Errorf("%q iface doesn't exist into %q netns: %v", name, netns, err)
-		}
-		l.WithField("detail", err).Fatal("failed iface lookup")
-		return fmt.Errorf("failed %q iface lookup into %q netns: %v", name, netns, err)
-	}
-
-	// if no ip configuration are expected to be configured on link, simply return
-	if iface.IPConf == nil {
-		return nil
-	}
-
-	// obtaining addresses configured on link
-	addrs, err := netlink.AddrList(link, netlink.FAMILY_V4)
-	if err != nil {
-		l.WithField("detail", err).Fatal("failed iface addresses lookup")
-		return fmt.Errorf("failed %q iface addresses lookup into %q netns: %v", name, netns, err)
-	}
-
-	// checking if the ip addresses are correctly configured on link
-	for _, a := range addrs {
-		if a.IPNet.String() == iface.IPConf.Address.String() {
-			return nil
-		}
-	}
-	l.WithField("detail", err).Fatal("iface ip misconfiguration")
-	return fmt.Errorf("%q iface ip misconfiguration into %q netns: %v", name, netns, err)
-}
-
-// getIfaceConfs scans the prevResult.Interfaces in order to find the expected container and host interface created
-// during the ADD operation. If the two interfaces are found, they are returned in association with their IPConf
-func getIfaceConfs(prevResult *current.Result, contIfName, netns string) (*IFaceConf, *IFaceConf, error) {
-	var contIfaceConf, hostIfaceConf *IFaceConf
-	// scanning all prevResult interfaces
-	for i, iface := range prevResult.Interfaces {
-		// is this the container interface?
-		if iface.Name == contIfName && (netns == "" || netns == iface.Sandbox) {
-			contIfaceConf = &IFaceConf{
-				ResultIndex: i,
-				Interface:   iface,
-			}
-			// thc host interface is placed immediately after the container interface
-			hostIfaceConf = &IFaceConf{
-				ResultIndex: i + 1,
-				Interface:   prevResult.Interfaces[i+1],
-			}
-			break
-		}
-	}
-	// if the two interfaces were not found return an error
-	if contIfaceConf == nil {
-		return nil, nil, errors.New("unexpected interfaces: wrong or missing")
-	}
-	// scanning prevResult.IPs in order to associate the container interface to its ip configuration
-	for _, ipConf := range prevResult.IPs {
-		if *ipConf.Interface == hostIfaceConf.ResultIndex {
-			hostIfaceConf.IPConf = ipConf
-		}
-		if *ipConf.Interface == contIfaceConf.ResultIndex {
-			contIfaceConf.IPConf = ipConf
-		}
-	}
-	// checking that an ip configuration for the container interface and no configuration
-	// for the host interface were found
-	if contIfaceConf.IPConf == nil || hostIfaceConf.IPConf != nil {
-		return nil, nil, errors.New("unexpected ip configurations: wrong or missing")
-	}
-	return contIfaceConf, hostIfaceConf, nil
 }
 
 // cmdCheck is called for CHECK requests
@@ -430,14 +447,13 @@ func cmdCheck(args *skel.CmdArgs) error {
 	// getting netns handle
 	netns, err := ns.GetNS(args.Netns)
 	if err != nil {
-		l.WithFields(log.Fields{"netns": args.Netns, "detail": err}).Fatal("failed to retrieve netns")
-		return fmt.Errorf("failed to open netns %q: %v", args.Netns, err)
+		l.WithFields(log.Fields{"netns": args.Netns, "detail": err}).Fatal("failed to open netns")
+		return fmt.Errorf("failed to open %q netns: %v", args.Netns, err)
 	}
 	defer netns.Close()
 
-	// extracting the container interface and the host interface with their own ip configurations
+	// extracting the container interface and the host interface with their own IP configurations
 	contIfaceConf, hostIfaceConf, err := getIfaceConfs(prevResult, args.IfName, args.Netns)
-
 	if err != nil {
 		l.WithFields(log.Fields{
 			"prevResult": fmt.Sprintf("%+v", *prevResult), "detail": err,
@@ -448,11 +464,9 @@ func cmdCheck(args *skel.CmdArgs) error {
 	// checking args.Netns netns interface and routes
 	nlog := l.WithField("netns", args.Netns)
 	if err := netns.Do(func(_ ns.NetNS) error {
-		ilog := nlog.WithField("iface", args.IfName)
-		if err := checkIface(ilog, args.Netns, contIfaceConf); err != nil {
+		if err := checkIface(nlog, args.Netns, contIfaceConf); err != nil {
 			return err
 		}
-		ilog.Info("netns iface checked")
 
 		// checking that routes are correctly configured
 		if err := ip.ValidateExpectedRoute(prevResult.Routes); err != nil {
@@ -468,25 +482,22 @@ func cmdCheck(args *skel.CmdArgs) error {
 
 	// checking root netns interface
 	nlog = l.WithField("netns", "root")
-	ilog := nlog.WithField("iface", hostIfaceConf.Interface.Name)
-	if err := checkIface(ilog, "root", hostIfaceConf); err != nil {
+	if err := checkIface(nlog, "root", hostIfaceConf); err != nil {
 		return err
 	}
-	ilog.Info("netns iface checked")
 	nlog.Info("netns checked")
 
-	// checking k8slbrp
+	// checking k8slbrp port connection
 	k8sLbrpName := conf.K8sLbrpName
 	contIP := contIfaceConf.IPConf.Address.IP
 	k8sLbrpPortName := hex.EncodeToString(contIP)
 	k8sLbrpPortPeer := hostIfaceConf.Interface.Name
-	llog := l.WithField("k8slbrp", k8sLbrpName) // load balancer logger
+	klog := l.WithField("k8slbrp", k8sLbrpName) // k8s lbrp logger
 	if err := checkK8sLbrpPort(k8sLbrpName, k8sLbrpPortName, k8sLbrpPortPeer, contIP.String()); err != nil {
-		llog.WithField("detail", err).Fatal("failed k8slbrp checking")
+		klog.WithField("detail", err).Fatal("failed k8slbrp checking")
 		return fmt.Errorf("failed %q k8slbrp port checking: %v", k8sLbrpName, err)
 	}
-	llog.Info("k8slbrp checked")
-
+	klog.Info("k8slbrp checked")
 	return nil
 }
 
@@ -523,7 +534,7 @@ func cmdDel(args *skel.CmdArgs) error {
 		}).Fatal("unexpected prevResult")
 		return fmt.Errorf("unexpected prevResult: %v", err)
 	}
-	contIP := contIfaceConf.IPConf.Address.IP.To4()
+	contIP := contIfaceConf.IPConf.Address.IP
 
 	// releasing IP address
 	if err := ipam.ExecDel(conf.IPAM.Type, args.StdinData); err != nil {
@@ -535,11 +546,11 @@ func cmdDel(args *skel.CmdArgs) error {
 	// deleting k8slbrp port
 	k8sLbrpName := conf.K8sLbrpName
 	k8sLbrpPortName := hex.EncodeToString(contIP)
-	l = l.WithFields(log.Fields{"k8slbrp": k8sLbrpName, "port": k8sLbrpPortName})
+	klog := l.WithFields(log.Fields{"k8slbrp": k8sLbrpName, "port": k8sLbrpPortName})
 	if resp, err := k8sLbrpAPI.DeleteK8sLbrpPortsByID(
 		context.TODO(), k8sLbrpName, k8sLbrpPortName,
 	); err != nil && resp.StatusCode != 409 {
-		l.WithFields(log.Fields{
+		klog.WithFields(log.Fields{
 			"response": fmt.Sprintf("%+v", resp), "detail": err,
 		}).Fatal("failed to delete internal k8s lbrp port")
 		return fmt.Errorf(
@@ -547,13 +558,13 @@ func cmdDel(args *skel.CmdArgs) error {
 			k8sLbrpPortName, k8sLbrpName, err, resp,
 		)
 	}
-	l.Info("internal k8s lbrp port deleted")
+	klog.Info("internal k8s lbrp port deleted")
 
 	// deleting netns iface and related stuff (routes, arpentry, etc...)
 	if args.Netns != "" {
 		// There is a netns so try to clean up. Delete can be called multiple times
 		// so don't return an error if the device is already removed.
-		l := l.WithFields(log.Fields{"netns": args.Netns, "iface": args.IfName})
+		nlog := l.WithFields(log.Fields{"netns": args.Netns, "iface": args.IfName})
 		if err := ns.WithNetNSPath(args.Netns, func(_ ns.NetNS) error {
 			if err = ip.DelLinkByName(args.IfName); err != nil && err != ip.ErrLinkNotFound {
 				// if there is an error different from ip.ErrLinkNotFound, returns error
@@ -563,11 +574,11 @@ func cmdDel(args *skel.CmdArgs) error {
 		}); err != nil {
 			// if netns is not found, continue anyway.
 			if _, notFound := err.(ns.NSPathNotExistErr); !notFound {
-				l.Fatal("failed to delete iface")
+				nlog.Fatal("failed to delete iface")
 				return fmt.Errorf("failed to delete iface %q into netns %q: %v", args.IfName, args.Netns, err)
 			}
 		}
-		l.Info("netns iface and related stuff (routes, arpentry, etc...) deleted")
+		nlog.Info("netns iface and related stuff (routes, arpentry, etc...) deleted")
 	}
 
 	return nil
