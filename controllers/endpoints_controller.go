@@ -228,9 +228,9 @@ func endpointsControllerPredicate() predicate.Predicate {
 			if isEndpoints {
 				return true
 			}
-			oldSvc, okOld := e.ObjectOld.(*corev1.Service)
-			newSvc, okNew := e.ObjectNew.(*corev1.Service)
-			if !okOld || !okNew {
+			oldSvc, isOldSvc := e.ObjectOld.(*corev1.Service)
+			newSvc, isNewSvc := e.ObjectNew.(*corev1.Service)
+			if !isOldSvc || !isNewSvc {
 				return false
 			}
 			oldItp := "CLUSTER"

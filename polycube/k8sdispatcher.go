@@ -84,28 +84,6 @@ func extractK8sDispatcherNodePortRulesToAddUpdAndDel(
 	return nprToAdd, nprToUpd, nprToDel
 }
 
-func createK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportRule) error {
-	log := log.WithValues("k8sdisp", kdName, "nodePortRule", fmt.Sprintf("%+v", *npr))
-	resp, err := k8sDispatcherAPI.CreateK8sdispatcherNodeportRuleByID(context.TODO(), kdName, npr.Port, npr.Proto, *npr)
-	if err != nil && resp.StatusCode != 409 {
-		log.Error(err, "failed to create k8s dispatcher NodePort rule", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to create k8s dispatcher NodePort rule")
-	}
-	log.V(1).Info("created k8s dispatcher NodePort rule")
-	return nil
-}
-
-func updateK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportRule) error {
-	log := log.WithValues("k8sdisp", kdName, "nodePortRule", fmt.Sprintf("%+v", *npr))
-	resp, err := k8sDispatcherAPI.UpdateK8sdispatcherNodeportRuleByID(context.TODO(), kdName, npr.Port, npr.Proto, *npr)
-	if err != nil && resp.StatusCode != 409 {
-		log.Error(err, "failed to update k8s dispatcher NodePort rule", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to update k8s dispatcher NodePort rule")
-	}
-	log.V(1).Info("updated k8s dispatcher NodePort rule")
-	return nil
-}
-
 func createK8sDispatcherNodePortRules(kdName string, nprs []k8sdispatcher.NodeportRule) error {
 	log := log.WithValues("k8sdisp", kdName, "rules", fmt.Sprintf("%+v", nprs))
 
@@ -176,18 +154,6 @@ func SyncK8sDispatcherNodePortRules(svcDetail *types.ServiceDetail, nodeIP net.I
 		}
 	}
 
-	//for _, npr := range kdNprsToAdd {
-	//	if err := createK8sDispatcherNodePortRule(kdName, &npr); err != nil {
-	//		log.Error(err, "error during k8s dispatcher NodePort rule creation")
-	//		return errors.New("error during k8s dispatcher NodePort rule creation")
-	//	}
-	//}
-	//for _, npr := range kdNprsToUpd {
-	//	if err := updateK8sDispatcherNodePortRule(kdName, &npr); err != nil {
-	//		log.Error(err, "error during k8s dispatcher NodePort rule update")
-	//		return errors.New("error during k8s dispatcher NodePort rule update")
-	//	}
-	//}
 	for _, npr := range kdNprsToDel {
 		if err := deleteK8sDispatcherNodePortRule(kdName, &npr); err != nil {
 			log.Error(err, "error during k8s dispatcher NodePort rule deletion")

@@ -9,63 +9,6 @@ import (
 	"strings"
 )
 
-func areBackendsSynced(actualBackendsList []k8slbrp.ServiceBackend, expectedBackendsSet types.BackendsSet) bool {
-	if len(actualBackendsList) != len(expectedBackendsSet) {
-		return false
-	}
-	for _, sb := range actualBackendsList {
-		b := types.Backend{Ip: sb.Ip, Port: sb.Port, Weight: sb.Weight}
-		if !expectedBackendsSet.Contains(b) {
-			return false
-		}
-	}
-	return true
-}
-
-func replaceK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service, newBackendsSet types.BackendsSet, epsId string) error {
-	log := log.WithValues(
-		"k8slbrp", klName, "service", fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto),
-	)
-
-	var newSvcBackends []k8slbrp.ServiceBackend
-	for b := range newBackendsSet {
-		newSvcBackends = append(newSvcBackends, k8slbrp.ServiceBackend{
-			Name:   epsId,
-			Ip:     b.Ip,
-			Port:   b.Port,
-			Weight: b.Weight,
-		})
-	}
-
-	if resp, err := k8sLbrpAPI.ReplaceK8sLbrpServiceBackendListByID(
-		context.TODO(), klName, svc.Vip, svc.Vport, svc.Proto, newSvcBackends,
-	); err != nil {
-		log.Error(
-			err, "failed to replace k8s lbrp service backends", "response", fmt.Sprintf("%+v", resp),
-		)
-		return fmt.Errorf("failed to replace k8s lbrp service backends")
-	}
-	log.V(1).Info("replaced k8s lbrp service backends")
-	return nil
-}
-
-func deleteK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service) error {
-	log := log.WithValues(
-		"k8slbrp", klName, "service", fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto),
-	)
-
-	if resp, err := k8sLbrpAPI.DeleteK8sLbrpServiceBackendListByID(
-		context.TODO(), klName, svc.Vip, svc.Vport, svc.Proto,
-	); err != nil {
-		log.V(1).Error(
-			err, "failed to delete all k8s lbrp service backends", "response", fmt.Sprintf("%+v", resp),
-		)
-		return fmt.Errorf("failed to all delete k8s lbrp service backends")
-	}
-	log.V(1).Info("deleted all k8s lbrp service backends")
-	return nil
-}
-
 func backendToK8sLbrpServiceBackend(b *types.Backend, epsId string) *k8slbrp.ServiceBackend {
 	return &k8slbrp.ServiceBackend{
 		Name:   epsId,
@@ -203,22 +146,6 @@ func SyncK8sLbrpsServicesBackends(epsDetail *types.EndpointsDetail) (bool, error
 						return false, errors.New("error during k8s lbrp service backend deletion")
 					}
 				}
-
-				//if areBackendsSynced(svc.Backend, backendsSet) {
-				//	log.V(1).Info("k8s lbrp service backends already synced")
-				//	continue
-				//}
-				//if len(backendsSet) == 0 {
-				//	if err := deleteK8sLbrpServiceBackends(kl.Name, &svc); err != nil {
-				//		log.Error(err, "error during k8s lbrp service backends deletion")
-				//		return false, errors.New("error during k8s lbrp service backends deletion")
-				//	}
-				//} else {
-				//	if err := replaceK8sLbrpServiceBackends(kl.Name, &svc, backendsSet, epsId); err != nil {
-				//		log.Error(err, "error during k8s lbrp service backends replacement")
-				//		return false, errors.New("error during k8s lbrp service backends replacement")
-				//	}
-				//}
 			}
 		}
 	}
