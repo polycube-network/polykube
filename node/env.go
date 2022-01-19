@@ -139,6 +139,20 @@ func LoadEnvironment() error {
 	// K8sDispName
 	env.K8sDispName = getEnvVar("POLYCUBE_K8SDISP_NAME", "k0")
 
+	// IsCPNodesDeployAllowed
+	isCPNodesDeployAllowedStr := getEnvVar("IS_CP_NODES_DEPLOY_ALLOWED", "false")
+	isCPNodesDeployAllowed, err := strconv.ParseBool(isCPNodesDeployAllowedStr)
+	if err != nil {
+		log.Error(
+			err,
+			"failed to parse env variable",
+			"envVar", "IS_CP_NODES_DEPLOY_ALLOWED",
+			"value", isCPNodesDeployAllowedStr,
+		)
+		return errors.New("failed to parse IS_CP_NODES_DEPLOY_ALLOWED")
+	}
+	env.IsCPNodesDeployAllowed = isCPNodesDeployAllowed
+
 	Env = env
 	log.Info("loaded environment configuration")
 	return nil

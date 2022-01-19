@@ -142,6 +142,11 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: k8sDispName
+            - name: IS_CP_NODES_DEPLOY_ALLOWED
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: isCPNodesDeployAllowed
           volumeMounts:
             - name: opt-cni-bin
               mountPath: /host/opt/cni/bin
@@ -157,24 +162,20 @@ spec:
         - name: var-log   # destination the polycube log into the right host folder: used by polycube
           hostPath:
             path: /var/log
-        - name: lib-modules   # kernel headers and other kernel stuff # TODO required?
+        - name: lib-modules   # kernel headers and other kernel stuff
           hostPath:
             path: /lib/modules
-        - name: usr-src     # kernel headers and other kernel stuff # TODO required?
+        - name: usr-src     # kernel headers and other kernel stuff
           hostPath:
             path: /usr/src
       tolerations:
         - effect: NoSchedule
           key: node.kubernetes.io/not-ready
-#  Uncomment the following lines in order to allow deployment on master node
-#        - effect: NoSchedule
-#          key: node-role.kubernetes.io/master
+        #  Uncomment the following lines in order to allow deployment on master node
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
         - effect: NoSchedule
           key: node.cloudprovider.kubernetes.io/uninitialized
           value: "true"
         - key: CriticalAddonsOnly
           operator: "Exists"
-        - key: "dedicated"    # TODO maybe this toleration may be removed?
-          operator: "Equal"
-          value: "master"
-          effect: "NoSchedule"

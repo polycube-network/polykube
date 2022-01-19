@@ -8,18 +8,19 @@ import (
 )
 
 type Environment struct {
-	PodName         string
-	NodeName        string
-	VxlanIfaceName  string
-	VtepCIDR        *net.IPNet
-	ClusterCIDR     *net.IPNet
-	NodePortRange   string
-	CNIConfFilePath string
-	MTU             int
-	IntK8sLbrpName  string
-	RouterName      string
-	ExtK8sLbrpName  string
-	K8sDispName     string
+	PodName                string
+	NodeName               string
+	VxlanIfaceName         string
+	VtepCIDR               *net.IPNet
+	ClusterCIDR            *net.IPNet
+	NodePortRange          string
+	CNIConfFilePath        string
+	MTU                    int
+	IntK8sLbrpName         string
+	RouterName             string
+	ExtK8sLbrpName         string
+	K8sDispName            string
+	IsCPNodesDeployAllowed bool
 }
 
 type Configuration struct {
