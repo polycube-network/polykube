@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/containernetworking/plugins/pkg/ip"
+	"github.com/ekoops/polykube-operator/utils"
 	"net"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -138,6 +140,17 @@ func LoadEnvironment() error {
 
 	// K8sDispName
 	env.K8sDispName = getEnvVar("POLYCUBE_K8SDISP_NAME", "k0")
+
+	// CubesLogLevel
+	defaultCubesLogLevel := "INFO"
+	cubesLogLevel := strings.ToUpper(getEnvVar("POLYCUBE_CUBES_LOG_LEVEL", defaultCubesLogLevel))
+	if !utils.IsValidCubeLogLevel(cubesLogLevel) {
+		log.Info("invalid cubes log level. Default value applied",
+			"POLYCUBE_CUBES_LOG_LEVEL", cubesLogLevel, "default", defaultCubesLogLevel,
+		)
+		cubesLogLevel = defaultCubesLogLevel
+	}
+	env.CubesLogLevel = cubesLogLevel
 
 	// IsCPNodesDeployAllowed
 	isCPNodesDeployAllowedStr := getEnvVar("IS_CP_NODES_DEPLOY_ALLOWED", "false")

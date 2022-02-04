@@ -1,6 +1,7 @@
 package polycube
 
 type configuration struct {
+	cubesLogLevel    string
 	intK8sLbrpName   string
 	rName            string
 	extK8sLbrpName   string
