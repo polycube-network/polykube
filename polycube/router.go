@@ -9,6 +9,24 @@ import (
 	"net/url"
 )
 
+// SetRouterToIntK8sLbrpPortMAC set the MAC of the polycube router interface representing the default gateway for
+// the pods subnet.
+func SetRouterToIntK8sLbrpPortMAC(MAC net.HardwareAddr) error {
+	rName := conf.rName
+	rToIklPortName := conf.rToIklPortName
+	MACStr := MAC.String()
+	log := log.WithValues("name", rName, "port", rToIklPortName, "MAC", MACStr)
+
+	resp, err := routerAPI.UpdateRouterPortsMacByID(context.TODO(), rName, rToIklPortName, MACStr)
+	if err != nil {
+		log.Error(err, "failed to set router port MAC", "response", fmt.Sprintf("%+v", resp))
+		return errors.New("failed to set router port MAC")
+	}
+
+	log.V(1).Info("set router to internal k8s lbrp port MAC")
+	return nil
+}
+
 // GetRouterToIntK8sLbrpPortMAC returns the MAC of the polycube router interface representing the default gateway for
 // the pods subnet.
 func GetRouterToIntK8sLbrpPortMAC() (net.HardwareAddr, error) {
