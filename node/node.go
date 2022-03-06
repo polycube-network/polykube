@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/containernetworking/plugins/pkg/ip"
 	"github.com/ekoops/polykube-operator/types"
 	"github.com/vishvananda/netlink"
 	v1 "k8s.io/api/core/v1"
@@ -251,6 +252,19 @@ func LoadConfig() error {
 		return err
 	}
 
+	// calculating the IPv4 addresses and prefix length that will be setup on the node polykube veth pair
+	// the chosen convention is to use the first available IPv4 address for the host end and the second available one
+	// for the net end
+	polykubeVethCIDR := Env.PolykubeVethPairCIDR
+	polykubeVethHostIPNet := &net.IPNet{
+		IP:   ip.NextIP(polykubeVethCIDR.IP), // .1
+		Mask: polykubeVethCIDR.Mask,
+	}
+	polykubeVethNetIPNet := &net.IPNet{
+		IP:   ip.NextIP(polykubeVethHostIPNet.IP), // .2
+		Mask: polykubeVethCIDR.Mask,
+	}
+
 	// retrieving info about the default gateway for the node external interface
 	nodeGwIPNet, err := GetDefaultGatewayIPNet(extIface)
 	if err != nil {
@@ -266,14 +280,16 @@ func LoadConfig() error {
 	}
 
 	Conf = &Configuration{
-		clientset:  cset,
-		Node:       node,
-		PodCIDR:    podCIDR,
-		PodGwInfo:  podGwInfo,
-		VPodIPNet:  vPodIPNet,
-		VtepIPNet:  vtepIPNet,
-		ExtIface:   extIface,
-		NodeGwInfo: nodeGwInfo,
+		clientset:             cset,
+		Node:                  node,
+		PodCIDR:               podCIDR,
+		PodGwInfo:             podGwInfo,
+		VPodIPNet:             vPodIPNet,
+		vtepIPNet:             vtepIPNet,
+		ExtIface:              extIface,
+		polykubeVethHostIPNet: polykubeVethHostIPNet,
+		polykubeVethNetIPNet:  polykubeVethNetIPNet,
+		NodeGwInfo:            nodeGwInfo,
 	}
 
 	log.Info("loaded node configuration", "node", name)

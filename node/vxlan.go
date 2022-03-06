@@ -123,7 +123,7 @@ func EnsureVxlanIface() error {
 		return errors.New("failed to retrieve the cluster node vxlan interface IPv4 addresses list")
 	}
 
-	vtepIPNet := Conf.VtepIPNet
+	vtepIPNet := Conf.vtepIPNet
 	vtepIPNetStr := vtepIPNet.String()
 	addrFound := false
 
@@ -143,7 +143,9 @@ func EnsureVxlanIface() error {
 			log.Error(err, "failed to set the IPv4 address on the cluster node vxlan interface")
 			return errors.New("failed to set the IPv4 address on the cluster node vxlan interface")
 		}
-		log.V(1).Info("set IPv4 address on the cluster node vxlan interface")
+		log.V(1).Info(
+			"set IPv4 address on the cluster node vxlan interface", "address", vtepIPNetStr,
+		)
 	}
 
 	Conf.VxlanIface = &types.Iface{
@@ -249,12 +251,13 @@ func cleanupFdb() error {
 		"bash", "-c", fmt.Sprintf("bridge fdb delete to 00:00:00:00:00:00 dev %s", vxlanIfName),
 	)
 
-	_, err := cmd.Output()
-	if err != nil {
-		errMsg := "failed to delete all the node bridge fdb entries related to the vxlan interface"
-		log.Error(err, errMsg)
-		return errors.New(errMsg)
-	}
+	cmd.Output()
+	//_, err := cmd.Output()
+	//if err != nil {
+	//	errMsg := "failed to delete all the node bridge fdb entries related to the vxlan interface"
+	//	log.Error(err, errMsg)
+	//	return errors.New(errMsg)
+	//}
 	log.V(1).Info("deleted all the node bridge fdb entries related to the vxlan interface")
 	return nil
 }

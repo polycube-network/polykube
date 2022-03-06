@@ -83,6 +83,9 @@ func LoadEnvironment() error {
 	// VxlanIfaceName
 	env.VxlanIfaceName = getEnvVar("VXLAN_IFACE_NAME", "vxlan0")
 
+	// PolykubeVethPairNamePrefix
+	env.PolykubeVethPairNamePrefix = getEnvVar("POLYKUBE_VETH_PAIR_NAME_PREFIX", "polykube")
+
 	// VtepCIDR
 	vtepCIDRStr := getEnvVar("VTEP_CIDR", "10.18.0.0/16")
 	_, vtepCIDR, err := net.ParseCIDR(vtepCIDRStr)
@@ -95,6 +98,19 @@ func LoadEnvironment() error {
 		return errors.New("failed to parse VTEP_CIDR")
 	}
 	env.VtepCIDR = vtepCIDR
+
+	// PolykubeVethPairCIDR
+	polykubeVethPairCIDRStr := getEnvVar("POLYKUBE_VETH_PAIR_CIDR", "172.18.0.0/30")
+	_, polykubeVethPairCIDR, err := net.ParseCIDR(polykubeVethPairCIDRStr)
+	if err != nil {
+		log.Error(
+			err, "failed to parse env variable",
+			"envVar", "POLYKUBE_VETH_PAIR_CIDR",
+			"value", polykubeVethPairCIDRStr,
+		)
+		return errors.New("failed to parse VTEP_CIDR")
+	}
+	env.PolykubeVethPairCIDR = polykubeVethPairCIDR
 
 	// ClusterCIDR
 	clusterCIDRStr := os.Getenv("CLUSTER_CIDR")
