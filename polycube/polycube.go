@@ -10,6 +10,7 @@ import (
 	"github.com/ekoops/polykube-operator/polycube/clients/router"
 	"github.com/ekoops/polykube-operator/utils"
 	"math"
+	"net"
 	"net/http"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"time"
@@ -97,12 +98,17 @@ func createRouter() error {
 	}
 
 	// defining the router port that will be connected to the polykube veth pair net end interface
-	netEndIface := node.Conf.PolykubeVeth.Net
+	vethNetEndIface := node.Conf.PolykubeVeth.Net
+	vethNetEndIfaceIPNet := &net.IPNet{
+		IP:   vethNetEndIface.IPNet.IP,
+		Mask: node.Env.PolykubeVethPairCIDR.Mask, // this CIDR is used in order to allow to reach the host veth pair end
+	}
 	rToHostPort := router.Ports{
 		Name: conf.rToHostPortName,
-		Ip:   netEndIface.IPNet.String(),
-		Mac:  netEndIface.Link.Attrs().HardwareAddr.String(),
-		Peer: netEndIface.Link.Attrs().Name,
+		Ip:   vethNetEndIfaceIPNet.String(),
+		Mac:  vethNetEndIface.Link.Attrs().HardwareAddr.String(),
+		// TODO: it is not possibile to set the peer here since in this way polycube will set the IP on the net end
+		//Peer: vethNetEndIface.Link.Attrs().Name,
 	}
 
 	// defining the router port that will be connected to the external k8s lbrp
@@ -117,23 +123,34 @@ func createRouter() error {
 	// defining router default route and setting static arp table entry for the default gateway
 	nodeGwIPStr := node.Conf.NodeGwInfo.IPNet.IP.String()
 	nodeGwMACStr := node.Conf.NodeGwInfo.MAC.String()
+
+	nodeIPNet := &net.IPNet{
+		IP:   node.Conf.ExtIface.IPNet.IP,
+		Mask: net.IPMask{255, 255, 255, 255}, //  /32 for allowing communication only with processes listening on the node physical interface
+	}
+
 	routes := []router.Route{
-		{
+		{ // default route through node gateway
 			Network:    "0.0.0.0/0",
 			Nexthop:    nodeGwIPStr,
-			Interface_: conf.kToEklPortName,
+			Interface_: conf.rToEklPortName,
 		},
-		{
+		{ // traffic for vpod address must go towards the k8sdispatcher
 			Network:    node.Conf.VPodIPNet.String(),
 			Nexthop:    nodeGwIPStr,
-			Interface_: conf.kToEklPortName,
+			Interface_: conf.rToEklPortName,
+		},
+		{ // traffic for node physical interface address must go towards the veth host end
+			Network:    nodeIPNet.String(),
+			Nexthop:    node.Conf.PolykubeVeth.Host.IPNet.IP.String(),
+			Interface_: conf.rToHostPortName,
 		},
 	}
 	arptable := []router.ArpTable{
 		{
 			Address:    nodeGwIPStr,
 			Mac:        nodeGwMACStr,
-			Interface_: conf.kToEklPortName,
+			Interface_: conf.rToEklPortName,
 		},
 	}
 	r := router.Router{
@@ -271,6 +288,30 @@ func EnsureCubesConnections() error {
 		Peer: rToIklPortPeer,
 	}
 	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToIklPortName, rToIklPort); err != nil {
+		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
+		return errors.New("failed to set router port peer")
+	}
+	l.V(1).Info("set router port peer")
+
+	// updating router "to_host" port in order to set peer=polykube_net
+	// Notice that the peer cannot be assigned in port creation since polycube try to enforce the IP address on the
+	// veth end: this is an unwanted behavior
+	// TODO: assigning the peer in port creation
+	rToHostPortName := conf.rToHostPortName
+	vethNetEndIface := node.Conf.PolykubeVeth.Net
+	rToHostPortPeer := vethNetEndIface.Link.Attrs().Name
+	vethNetEndIfaceIPNet := &net.IPNet{
+		IP:   vethNetEndIface.IPNet.IP,
+		Mask: node.Env.PolykubeVethPairCIDR.Mask, // this CIDR is used in order to allow to reach the host veth pair end
+	}
+	l = log.WithValues("name", rName, "port", rToHostPortName, "peer", rToHostPortPeer)
+	rToHostPort := router.Ports{
+		Name: rToHostPortName,
+		Ip:   vethNetEndIfaceIPNet.String(),
+		Mac:  vethNetEndIface.Link.Attrs().HardwareAddr.String(),
+		Peer: rToHostPortPeer,
+	}
+	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToHostPortName, rToHostPort); err != nil {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
 	}
