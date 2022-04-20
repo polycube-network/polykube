@@ -23,6 +23,7 @@ type Environment struct {
 	ExtK8sLbrpName             string
 	K8sDispName                string
 	CubesLogLevel              string
+	CNILogLevel                string
 	IsCPNodesDeployAllowed     bool
 }
 

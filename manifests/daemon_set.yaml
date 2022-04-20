@@ -157,6 +157,11 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: cubesLogLevel
+            - name: CNI_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: cniLogLevel
             - name: IS_CP_NODES_DEPLOY_ALLOWED
               valueFrom:
                 configMapKeyRef:

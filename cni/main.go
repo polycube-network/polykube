@@ -21,6 +21,7 @@ import (
 	"net"
 	"os"
 	"runtime"
+	"strings"
 )
 
 const (
@@ -110,6 +111,17 @@ func loadNetConf(stdin []byte) (*NetConf, error) {
 
 	if conf.K8sLbrpName == "" {
 		return nil, errors.New("internal k8s lbrp name must be specified")
+	}
+
+	logLevelStr := strings.ToLower(conf.LogLevel)
+	if logLevelStr == "off" {
+		log.SetOutput(ioutil.Discard)
+	} else {
+		logLevel, err := log.ParseLevel(logLevelStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse log level: %v", err)
+		}
+		log.SetLevel(logLevel)
 	}
 
 	if conf.Gw.IP == nil || conf.Gw.IP.To4() == nil {

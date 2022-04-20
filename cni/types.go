@@ -10,6 +10,7 @@ type NetConf struct {
 	types.NetConf
 	MTU         int    `json:"mtu"`
 	K8sLbrpName string `json:"intK8sLbrp"`
+	LogLevel    string `json:"logLevel"`
 	Gw          GwInfo `json:"gateway"`
 }
 
