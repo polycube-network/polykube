@@ -81,6 +81,34 @@ func LoadEnvironment() error {
 		return errors.New("K8S_NODE_NAME env variable not found")
 	}
 
+	// APIServerIP
+	APIServerIPStr := os.Getenv("API_SERVER_IP")
+	APIServerIP := net.ParseIP(APIServerIPStr)
+	if APIServerIP == nil {
+		log.Error(
+			errors.New("invalid API Server IP address"),
+			"failed to parse env variable",
+			"envVar", "API_SERVER_IP",
+			"value", APIServerIPStr,
+		)
+		return errors.New("failed to parse API_SERVER_IP")
+	}
+	env.APIServerIP = APIServerIP
+
+	// APIServerPort
+	APIServerPortStr := os.Getenv("API_SERVER_PORT")
+	APIServerPort, err := strconv.Atoi(APIServerPortStr)
+	if err != nil || APIServerPort < 1 || APIServerPort > 65535 {
+		log.Error(
+			errors.New("invalid API Server port number"),
+			"failed to parse env variable",
+			"envVar", "API_SERVER_PORT",
+			"value", APIServerPortStr,
+		)
+		return errors.New("failed to parse API_SERVER_PORT")
+	}
+	env.APIServerPort = APIServerPort
+
 	// VxlanIfaceName
 	env.VxlanIfaceName = getEnvVar("VXLAN_IFACE_NAME", "vxlan0")
 

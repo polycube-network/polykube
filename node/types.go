@@ -1,6 +1,7 @@
 package node
 
 import (
+	"fmt"
 	"github.com/ekoops/polykube-operator/types"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -10,6 +11,8 @@ import (
 type Environment struct {
 	PodName                    string
 	NodeName                   string
+	APIServerIP                net.IP
+	APIServerPort              int
 	VxlanIfaceName             string
 	PolykubeVethPairNamePrefix string
 	VtepCIDR                   *net.IPNet
@@ -25,6 +28,10 @@ type Environment struct {
 	CubesLogLevel              string
 	CNILogLevel                string
 	IsCPNodesDeployAllowed     bool
+}
+
+func (e *Environment) APIServerEndpoint() string {
+	return fmt.Sprintf("%s:%d", e.APIServerIP, e.APIServerPort)
 }
 
 type Configuration struct {

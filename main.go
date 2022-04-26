@@ -181,7 +181,11 @@ func main() {
 		exit(6)
 	}
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	mgrConfig := ctrl.GetConfigOrDie()
+	// changing the config host in such a way that the manager can talk directly with the API server
+	// without using the "kubernetes" ClusterIP Service
+	mgrConfig.Host = node.Env.APIServerEndpoint()
+	mgr, err := ctrl.NewManager(mgrConfig, ctrl.Options{
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,
 		Port:                   9443,

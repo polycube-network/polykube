@@ -5,6 +5,8 @@ metadata:
   name: polykube-cfg
   namespace: kube-system
 data:
+  apiServerIp: "REPLACE_WITH_API_SERVER_IP"
+  apiServerPort: "REPLACE_WITH_API_SERVER_PORT"
   vxlanIfaceName: "vxlan0"
   polykubeVethPairNamePrefix: "polykube"
   vtepCidr: "10.18.0.0/16"
