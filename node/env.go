@@ -128,19 +128,6 @@ func LoadEnvironment() error {
 	}
 	env.VtepCIDR = vtepCIDR
 
-	// PolykubeVethPairCIDR
-	polykubeVethPairCIDRStr := getEnvVar("POLYKUBE_VETH_PAIR_CIDR", "172.18.0.0/30")
-	_, polykubeVethPairCIDR, err := net.ParseCIDR(polykubeVethPairCIDRStr)
-	if err != nil {
-		log.Error(
-			err, "failed to parse env variable",
-			"envVar", "POLYKUBE_VETH_PAIR_CIDR",
-			"value", polykubeVethPairCIDRStr,
-		)
-		return errors.New("failed to parse VTEP_CIDR")
-	}
-	env.PolykubeVethPairCIDR = polykubeVethPairCIDR
-
 	// ClusterCIDR
 	clusterCIDRStr := os.Getenv("CLUSTER_CIDR")
 	_, clusterCIDR, err := net.ParseCIDR(clusterCIDRStr)
@@ -248,8 +235,8 @@ func EnsureCNIConf() error {
 		podGwIP.String(),
 		podGwMAC.String(),
 		Conf.PodCIDR.String(),
-		ip.NextIP(Conf.VPodIPNet.IP).String(), // .2
-		ip.PrevIP(podGwIP).String(),           // .253
+		ip.NextIP(Conf.PolykubeVeth.Net.IPNet.IP).String(), // .4
+		ip.PrevIP(podGwIP).String(),                        // .253
 		podGwIP.String(),
 	); err != nil {
 		log.Error(err, "failed to write to CNI configuration file", "path", fPath)

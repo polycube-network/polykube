@@ -10,7 +10,6 @@ data:
   vxlanIfaceName: "vxlan0"
   polykubeVethPairNamePrefix: "polykube"
   vtepCidr: "10.18.0.0/16"
-  polykubeVethPairCidr: "172.18.0.0/30"
   clusterCidr: "192.178.0.0/16"
   nodePortRange: "30000-32767"
   cniConfFilePath: "/host/etc/cni/net.d/00-polykube.json"
