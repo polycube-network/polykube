@@ -117,7 +117,8 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		return ctrl.Result{}, err
 	}
 
-	if _, isControlPlaneNode := n.Labels[controlPlaneLabel]; isControlPlaneNode || !node.IsReady(n) {
+	_, isControlPlaneNode := n.Labels[controlPlaneLabel]
+	if (isControlPlaneNode && !node.Env.IsCPNodesDeployAllowed) || !node.IsReady(n) {
 		if err := polycube.DeleteRouterRoute(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
 			log.Error(err, "something wrong during route deletion")
 			return ctrl.Result{}, err
@@ -170,6 +171,9 @@ func nodeControllerPredicate() predicate.Predicate {
 		CreateFunc: func(e event.CreateEvent) bool {
 			if e.Object.GetName() == node.Conf.Node.Name {
 				return false
+			}
+			if node.Env.IsCPNodesDeployAllowed {
+				return true
 			}
 			n, ok := e.Object.(*corev1.Node)
 			if !ok {
@@ -224,6 +228,9 @@ func nodeControllerPredicate() predicate.Predicate {
 		DeleteFunc: func(e event.DeleteEvent) bool {
 			if e.Object.GetName() == node.Conf.Node.Name {
 				return false
+			}
+			if node.Env.IsCPNodesDeployAllowed {
+				return true
 			}
 			n, ok := e.Object.(*corev1.Node)
 			if !ok {

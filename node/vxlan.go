@@ -14,10 +14,11 @@ import (
 
 // CalcVtepIPNet calculates the vxlan tunnel endpoint IP and prefix length starting from the pod CIDR.
 // Starting from the clusterCIDR, only the part that identify the pod CIDR is isolated and is placed at the end of
-// the vtep CIDR to create the new address. Example:
+// the vtep CIDR incremented by 1 to create the new address. Example:
 // given clusterIP = 192.178.0.0/16, podCIDR = 192.178.1.0/24 and vtepCIDR = 10.18.0.0/16
-// the .1. part of the pod CIDR is extracted and placed at the end of the vtepCIDR tp create the new address:
-// 10.18.0.1/24
+// the .1. part of the pod CIDR is extracted and placed at the end of the vtepCIDR incremented by one in order to
+// create the new address:
+// 10.18.0.2/24
 func CalcVtepIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
 	log := log.WithValues("podCIDR", podCIDR)
 
@@ -36,6 +37,7 @@ func CalcVtepIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
 	n := binary.BigEndian.Uint32(podCIDR.IP)
 	n >>= 32 - podCIDROnes
 	n &= (1 << lenDiff) - 1
+	n++
 	addr := make(net.IP, 4)
 	binary.BigEndian.PutUint32(addr, binary.BigEndian.Uint32(Env.VtepCIDR.IP)|n)
 
