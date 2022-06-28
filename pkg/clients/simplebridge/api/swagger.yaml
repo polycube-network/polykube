@@ -1,0 +1,1964 @@
+---
+swagger: "2.0"
+info:
+  description: "simplebridge API generated from simplebridge.yang"
+  version: "1.0.0"
+  title: "simplebridge API"
+  x-yang-path: "/input/simplebridge.yang"
+host: "localhost:8080"
+basePath: "/"
+tags:
+- name: "simplebridge"
+schemes:
+- "http"
+paths:
+  /simplebridge/{name}/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read simplebridge by ID"
+      description: "Read operation of resource: simplebridge"
+      operationId: "readSimplebridgeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Simplebridge"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create simplebridge by ID"
+      description: "Create operation of resource: simplebridge"
+      operationId: "createSimplebridgeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "simplebridge"
+        description: "simplebridgebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Simplebridge"
+        x-exportParamName: "Simplebridge"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+      x-has-default-impl: true
+    put:
+      tags:
+      - "simplebridge"
+      summary: "Replace simplebridge by ID"
+      description: "Replace operation of resource: simplebridge"
+      operationId: "replaceSimplebridgeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "simplebridge"
+        description: "simplebridgebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Simplebridge"
+        x-exportParamName: "Simplebridge"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+      x-has-default-impl: true
+    delete:
+      tags:
+      - "simplebridge"
+      summary: "Delete simplebridge by ID"
+      description: "Delete operation of resource: simplebridge"
+      operationId: "deleteSimplebridgeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+      x-has-default-impl: true
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update simplebridge by ID"
+      description: "Update operation of resource: simplebridge"
+      operationId: "updateSimplebridgeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "simplebridge"
+        description: "simplebridgebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Simplebridge"
+        x-exportParamName: "Simplebridge"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read simplebridge by ID"
+      description: "Read operation of resource: simplebridge"
+      operationId: "readSimplebridgeListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Simplebridge"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-has-default-impl: true
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update simplebridge by ID"
+      description: "Update operation of resource: simplebridge"
+      operationId: "updateSimplebridgeListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "simplebridge"
+        description: "simplebridgebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Simplebridge"
+        x-exportParamName: "Simplebridge"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/uuid/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read uuid by ID"
+      description: "Read operation of resource: uuid"
+      operationId: "readSimplebridgeUuidByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            description: "UUID of the Cube"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/type/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read type by ID"
+      description: "Read operation of resource: type"
+      operationId: "readSimplebridgeTypeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Type of the Cube (TC, XDP_SKB, XDP_DRV)"
+            example: "TC"
+            enum:
+            - "TC"
+            - "XDP_SKB"
+            - "XDP_DRV"
+            default: "TC"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/service-name/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read service-name by ID"
+      description: "Read operation of resource: service-name"
+      operationId: "readSimplebridgeServiceNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            example: "helloworld"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/loglevel/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read loglevel by ID"
+      description: "Read operation of resource: loglevel"
+      operationId: "readSimplebridgeLoglevelByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Defines the logging level of a service instance, from none\
+              \ (OFF) to the most verbose (TRACE)"
+            example: "INFO"
+            enum:
+            - "TRACE"
+            - "DEBUG"
+            - "INFO"
+            - "WARN"
+            - "ERR"
+            - "CRITICAL"
+            - "OFF"
+            default: "INFO"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update loglevel by ID"
+      description: "Update operation of resource: loglevel"
+      operationId: "updateSimplebridgeLoglevelByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "loglevel"
+        description: "Defines the logging level of a service instance, from none (OFF)\
+          \ to the most verbose (TRACE)"
+        required: true
+        schema:
+          type: "string"
+          description: "Defines the logging level of a service instance, from none\
+            \ (OFF) to the most verbose (TRACE)"
+          example: "INFO"
+          enum:
+          - "TRACE"
+          - "DEBUG"
+          - "INFO"
+          - "WARN"
+          - "ERR"
+          - "CRITICAL"
+          - "OFF"
+          default: "INFO"
+        x-is-enum: "true"
+        x-exportParamName: "Loglevel"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/ports/{ports_name}/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read ports by ID"
+      description: "Read operation of resource: ports"
+      operationId: "readSimplebridgePortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Ports"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create ports by ID"
+      description: "Create operation of resource: ports"
+      operationId: "createSimplebridgePortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "simplebridge"
+      summary: "Replace ports by ID"
+      description: "Replace operation of resource: ports"
+      operationId: "replaceSimplebridgePortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "simplebridge"
+      summary: "Delete ports by ID"
+      description: "Delete operation of resource: ports"
+      operationId: "deleteSimplebridgePortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update ports by ID"
+      description: "Update operation of resource: ports"
+      operationId: "updateSimplebridgePortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/ports/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read ports by ID"
+      description: "Read operation of resource: ports"
+      operationId: "readSimplebridgePortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Ports"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create ports by ID"
+      description: "Create operation of resource: ports"
+      operationId: "createSimplebridgePortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "simplebridge"
+      summary: "Replace ports by ID"
+      description: "Replace operation of resource: ports"
+      operationId: "replaceSimplebridgePortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "simplebridge"
+      summary: "Delete ports by ID"
+      description: "Delete operation of resource: ports"
+      operationId: "deleteSimplebridgePortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update ports by ID"
+      description: "Update operation of resource: ports"
+      operationId: "updateSimplebridgePortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/ports/{ports_name}/uuid/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read uuid by ID"
+      description: "Read operation of resource: uuid"
+      operationId: "readSimplebridgePortsUuidByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            description: "UUID of the port"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/ports/{ports_name}/status/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read status by ID"
+      description: "Read operation of resource: status"
+      operationId: "readSimplebridgePortsStatusByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Status of the port (UP or DOWN)"
+            enum:
+            - "UP"
+            - "DOWN"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/ports/{ports_name}/peer/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read peer by ID"
+      description: "Read operation of resource: peer"
+      operationId: "readSimplebridgePortsPeerByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Peer name, such as a network interfaces (e.g., 'veth0')\
+              \ or another cube (e.g., 'br1:port2')"
+            example: "r0:port1"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update peer by ID"
+      description: "Update operation of resource: peer"
+      operationId: "updateSimplebridgePortsPeerByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "peer"
+        description: "Peer name, such as a network interfaces (e.g., 'veth0') or another\
+          \ cube (e.g., 'br1:port2')"
+        required: true
+        schema:
+          type: "string"
+          description: "Peer name, such as a network interfaces (e.g., 'veth0') or\
+            \ another cube (e.g., 'br1:port2')"
+          example: "r0:port1"
+        x-exportParamName: "Peer"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/shadow/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read shadow by ID"
+      description: "Read operation of resource: shadow"
+      operationId: "readSimplebridgeShadowByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "boolean"
+            description: "Defines if the service is visible in Linux"
+            default: "false"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/span/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read span by ID"
+      description: "Read operation of resource: span"
+      operationId: "readSimplebridgeSpanByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "boolean"
+            description: "Defines if all traffic is sent to Linux"
+            default: "false"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update span by ID"
+      description: "Update operation of resource: span"
+      operationId: "updateSimplebridgeSpanByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "span"
+        description: "Defines if all traffic is sent to Linux"
+        required: true
+        schema:
+          type: "boolean"
+          description: "Defines if all traffic is sent to Linux"
+          default: "false"
+        x-exportParamName: "Span"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /simplebridge/{name}/fdb/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read fdb by ID"
+      description: "Read operation of resource: fdb"
+      operationId: "readSimplebridgeFdbByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Fdb"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create fdb by ID"
+      description: "Create operation of resource: fdb"
+      operationId: "createSimplebridgeFdbByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "fdb"
+        description: "fdbbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Fdb"
+        x-exportParamName: "Fdb"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "simplebridge"
+      summary: "Replace fdb by ID"
+      description: "Replace operation of resource: fdb"
+      operationId: "replaceSimplebridgeFdbByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "fdb"
+        description: "fdbbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Fdb"
+        x-exportParamName: "Fdb"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "simplebridge"
+      summary: "Delete fdb by ID"
+      description: "Delete operation of resource: fdb"
+      operationId: "deleteSimplebridgeFdbByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update fdb by ID"
+      description: "Update operation of resource: fdb"
+      operationId: "updateSimplebridgeFdbByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "fdb"
+        description: "fdbbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Fdb"
+        x-exportParamName: "Fdb"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/fdb/aging-time/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read aging-time by ID"
+      description: "Read operation of resource: aging-time"
+      operationId: "readSimplebridgeFdbAgingTimeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "integer"
+            format: "uint32"
+            description: "Aging time of the filtering database (in seconds)"
+            example: "300"
+            default: 300
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update aging-time by ID"
+      description: "Update operation of resource: aging-time"
+      operationId: "updateSimplebridgeFdbAgingTimeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "aging-time"
+        description: "Aging time of the filtering database (in seconds)"
+        required: true
+        schema:
+          type: "integer"
+          format: "uint32"
+          description: "Aging time of the filtering database (in seconds)"
+          example: "300"
+          default: 300
+        x-exportParamName: "AgingTime"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/fdb/entry/{address}/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read entry by ID"
+      description: "Read operation of resource: entry"
+      operationId: "readSimplebridgeFdbEntryByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/FdbEntry"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create entry by ID"
+      description: "Create operation of resource: entry"
+      operationId: "createSimplebridgeFdbEntryByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "entry"
+        description: "entrybody object"
+        required: true
+        schema:
+          $ref: "#/definitions/FdbEntry"
+        x-exportParamName: "Entry"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "simplebridge"
+      summary: "Replace entry by ID"
+      description: "Replace operation of resource: entry"
+      operationId: "replaceSimplebridgeFdbEntryByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "entry"
+        description: "entrybody object"
+        required: true
+        schema:
+          $ref: "#/definitions/FdbEntry"
+        x-exportParamName: "Entry"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "simplebridge"
+      summary: "Delete entry by ID"
+      description: "Delete operation of resource: entry"
+      operationId: "deleteSimplebridgeFdbEntryByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update entry by ID"
+      description: "Update operation of resource: entry"
+      operationId: "updateSimplebridgeFdbEntryByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "entry"
+        description: "entrybody object"
+        required: true
+        schema:
+          $ref: "#/definitions/FdbEntry"
+        x-exportParamName: "Entry"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/fdb/entry/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read entry by ID"
+      description: "Read operation of resource: entry"
+      operationId: "readSimplebridgeFdbEntryListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/FdbEntry"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create entry by ID"
+      description: "Create operation of resource: entry"
+      operationId: "createSimplebridgeFdbEntryListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "entry"
+        description: "entrybody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/FdbEntry"
+        x-exportParamName: "Entry"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "simplebridge"
+      summary: "Replace entry by ID"
+      description: "Replace operation of resource: entry"
+      operationId: "replaceSimplebridgeFdbEntryListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "entry"
+        description: "entrybody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/FdbEntry"
+        x-exportParamName: "Entry"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "simplebridge"
+      summary: "Delete entry by ID"
+      description: "Delete operation of resource: entry"
+      operationId: "deleteSimplebridgeFdbEntryListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update entry by ID"
+      description: "Update operation of resource: entry"
+      operationId: "updateSimplebridgeFdbEntryListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "entry"
+        description: "entrybody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/FdbEntry"
+        x-exportParamName: "Entry"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/fdb/entry/{address}/port/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read port by ID"
+      description: "Read operation of resource: port"
+      operationId: "readSimplebridgeFdbEntryPortByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Output port name"
+            example: "port2"
+            x-is-required: true
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "simplebridge"
+      summary: "Update port by ID"
+      description: "Update operation of resource: port"
+      operationId: "updateSimplebridgeFdbEntryPortByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      - in: "body"
+        name: "port"
+        description: "Output port name"
+        required: true
+        schema:
+          type: "string"
+          description: "Output port name"
+          example: "port2"
+          x-is-required: true
+        x-exportParamName: "Port"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /simplebridge/{name}/fdb/entry/{address}/age/:
+    get:
+      tags:
+      - "simplebridge"
+      summary: "Read age by ID"
+      description: "Read operation of resource: age"
+      operationId: "readSimplebridgeFdbEntryAgeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "address"
+        in: "path"
+        description: "ID of address"
+        required: true
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        x-exportParamName: "Address"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "integer"
+            format: "uint32"
+            description: "Age of the current filtering database entry"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+  /simplebridge/{name}/fdb/flush/:
+    post:
+      tags:
+      - "simplebridge"
+      summary: "Create flush by ID"
+      description: "Create operation of resource: flush"
+      operationId: "createSimplebridgeFdbFlushByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/FdbFlushOutput"
+        "404":
+          description: "Not found: Operation not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful operation"
+      x-is-yang-action: true
+definitions:
+  Ports:
+    properties:
+      name:
+        type: "string"
+        example: "port1"
+        description: "Port Name"
+        x-has-default-impl: true
+        x-is-required: true
+        x-is-key: true
+      uuid:
+        type: "string"
+        format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        description: "UUID of the port"
+        readOnly: true
+        x-is-base-datamodel: true
+      status:
+        type: "string"
+        description: "Status of the port (UP or DOWN)"
+        readOnly: true
+        enum:
+        - "UP"
+        - "DOWN"
+        x-is-base-datamodel: true
+      peer:
+        type: "string"
+        example: "r0:port1"
+        description: "Peer name, such as a network interfaces (e.g., 'veth0') or another\
+          \ cube (e.g., 'br1:port2')"
+        x-is-base-datamodel: true
+      tcubes:
+        type: "array"
+        items:
+          type: "string"
+          description: "List of transparent cubes attached to this port"
+          readOnly: true
+        x-is-base-datamodel: true
+    example:
+      tcubes:
+      - "tcubes"
+      - "tcubes"
+      peer: "r0:port1"
+      name: "port1"
+      uuid: "uuid"
+      status: "UP"
+    x-inherits-from: "polycube::service::Port"
+    x-is-list: "true"
+    x-parent: "Simplebridge"
+  FdbEntry:
+    properties:
+      address:
+        type: "string"
+        format: "[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}"
+        example: "C5:13:2D:36:27:9B"
+        description: "Address of the filtering database entry"
+        x-is-required: true
+        x-is-key: true
+      port:
+        type: "string"
+        example: "port2"
+        description: "Output port name"
+        x-is-required: true
+      age:
+        type: "integer"
+        format: "uint32"
+        description: "Age of the current filtering database entry"
+        readOnly: true
+    example:
+      address: "C5:13:2D:36:27:9B"
+      port: "port2"
+      age: 0
+    x-is-list: "true"
+    x-parent: "Fdb"
+  Fdb:
+    properties:
+      aging-time:
+        type: "integer"
+        format: "uint32"
+        example: 300
+        description: "Aging time of the filtering database (in seconds)"
+      entry:
+        type: "array"
+        description: "Entry associated with the filtering database"
+        items:
+          $ref: "#/definitions/FdbEntry"
+        x-key:
+        - "address"
+        x-key-list:
+        - name: "address"
+          type: "string"
+    example:
+      entry:
+      - address: "C5:13:2D:36:27:9B"
+        port: "port2"
+        age: 0
+      - address: "C5:13:2D:36:27:9B"
+        port: "port2"
+        age: 0
+      aging-time: 300
+    x-has-yang-actions: true
+    x-yang-actions:
+    - x-yang-action-name-lower-camelcase: "flush"
+      x-yang-action-name-upper-camelcase: "Flush"
+      x-yang-action-output-object: "FdbFlushOutput"
+      x-yang-action-has-output: true
+      x-yang-action-has-input: false
+      x-yang-action-baseName: "flush"
+    x-parent: "Simplebridge"
+  Simplebridge:
+    properties:
+      name:
+        type: "string"
+        example: "simplebridge1"
+        description: "Name of the simplebridge service"
+        x-has-default-impl: true
+        x-is-required: true
+        x-is-key: true
+        x-is-cube-name: true
+      uuid:
+        type: "string"
+        format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        description: "UUID of the Cube"
+        readOnly: true
+        x-is-base-datamodel: true
+      type:
+        type: "string"
+        example: "TC"
+        description: "Type of the Cube (TC, XDP_SKB, XDP_DRV)"
+        readOnly: true
+        default: "TC"
+        enum:
+        - "TC"
+        - "XDP_SKB"
+        - "XDP_DRV"
+        x-is-base-datamodel: true
+      service-name:
+        type: "string"
+        example: "helloworld"
+        readOnly: true
+        x-is-base-datamodel: true
+      loglevel:
+        type: "string"
+        example: "INFO"
+        description: "Defines the logging level of a service instance, from none (OFF)\
+          \ to the most verbose (TRACE)"
+        default: "INFO"
+        enum:
+        - "TRACE"
+        - "DEBUG"
+        - "INFO"
+        - "WARN"
+        - "ERR"
+        - "CRITICAL"
+        - "OFF"
+        x-is-base-datamodel: true
+      ports:
+        type: "array"
+        description: "Entry of the ports table"
+        items:
+          $ref: "#/definitions/Ports"
+        x-is-port-class: true
+        x-key:
+        - "name"
+        x-key-list:
+        - name: "name"
+          type: "string"
+      shadow:
+        type: "boolean"
+        description: "Defines if the service is visible in Linux"
+        readOnly: true
+        default: false
+        x-is-base-datamodel: true
+      span:
+        type: "boolean"
+        description: "Defines if all traffic is sent to Linux"
+        default: false
+        x-is-base-datamodel: true
+      fdb:
+        $ref: "#/definitions/Fdb"
+    example:
+      service-name: "helloworld"
+      shadow: false
+      fdb:
+        entry:
+        - address: "C5:13:2D:36:27:9B"
+          port: "port2"
+          age: 0
+        - address: "C5:13:2D:36:27:9B"
+          port: "port2"
+          age: 0
+        aging-time: 300
+      loglevel: "INFO"
+      name: "simplebridge1"
+      type: "TC"
+      ports:
+      - tcubes:
+        - "tcubes"
+        - "tcubes"
+        peer: "r0:port1"
+        name: "port1"
+        uuid: "uuid"
+        status: "UP"
+      - tcubes:
+        - "tcubes"
+        - "tcubes"
+        peer: "r0:port1"
+        name: "port1"
+        uuid: "uuid"
+        status: "UP"
+      uuid: "uuid"
+      span: false
+    x-is-list: "true"
+    x-is-standard: true
+    x-parent: "Simplebridge"
+  FdbFlushOutput:
+    properties:
+      flushed:
+        type: "boolean"
+        description: "Returns true if the Filtering database has been flushed. False\
+          \ otherwise"
+        x-is-required: true
+    example:
+      flushed: true
+    x-is-yang-action-object: true
+    x-parent: "Fdb"
