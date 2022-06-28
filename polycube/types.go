@@ -9,6 +9,7 @@ type configuration struct {
 	iklToRPortName   string
 	rToIklPortName   string
 	rToVxlanPortName string
+	rToHostPortName  string
 	rToEklPortName   string
 	eklToRPortName   string
 	eklToKPortName   string

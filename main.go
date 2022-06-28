@@ -57,6 +57,7 @@ func init() {
 
 func exit(code int) {
 	node.DeleteVxlanIface()
+	node.DeletePolykubeVethPair()
 	os.Exit(code)
 }
 
@@ -66,7 +67,7 @@ func setupSignalHandler() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		<-c
-		exit(4)
+		exit(5)
 	}()
 }
 
@@ -124,7 +125,7 @@ func startPolycubedPolling() {
 				setupLog.Info("lost polycubed connection, waiting for it...")
 				if err := ensureDeployment(); err != nil {
 					setupLog.Error(err, "failed to network infrastructure deployment")
-					exit(12)
+					exit(13)
 				}
 				setupLog.Info("re-established network infrastructure deployment after connection loss")
 			}
@@ -163,6 +164,12 @@ func main() {
 		os.Exit(3)
 	}
 
+	// ensuring polykube veth pair on the node
+	if err := node.EnsurePolykubeVethPair(); err != nil {
+		setupLog.Error(err, "failed to ensure polykube veth pair")
+		exit(4)
+	}
+
 	setupSignalHandler()
 
 	// initialize polycube package internal state
@@ -171,7 +178,7 @@ func main() {
 	// ensure that the network infrastructure is correctly deployed and connected to the already existing entities
 	if err := ensureDeployment(); err != nil {
 		setupLog.Error(err, "failed to ensure network infrastructure deployment")
-		exit(5)
+		exit(6)
 	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
@@ -183,7 +190,7 @@ func main() {
 	})
 	if err != nil {
 		setupLog.Error(err, "failed to create manager")
-		exit(6)
+		exit(7)
 	}
 
 	if err = (&controllers.NodeReconciler{
@@ -191,32 +198,32 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "failed to create controller", "controller", "node-controller")
-		exit(7)
+		exit(8)
 	}
 	if err = (&controllers.ServiceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "failed to create controller", "controller", "service-controller")
-		exit(8)
+		exit(9)
 	}
 	if err = (&controllers.EndpointsReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "failed to create controller", "controller", "endpoints-controller")
-		exit(9)
+		exit(10)
 	}
 
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "failed to set up health check")
-		exit(10)
+		exit(11)
 	}
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
 		setupLog.Error(err, "failed to set up ready check")
-		exit(11)
+		exit(12)
 	}
 
 	// the following is used in order to react to a possible polycubed crash
@@ -225,8 +232,12 @@ func main() {
 	setupLog.Info("starting manager...")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "failed to start manager")
-		exit(13)
+		exit(14)
 	}
-	// the following is used in order to stop the main goroutine waiting for the second main one to invoke os.Exit
+
+	// If this point is reached, a SIGTERM or a SIGNINT signal has occurred. The termination must be handled by
+	// the goroutine created by the setupSignalHandler function, that calls os.Exit at the end of a cleanup procedure.
+	// In order to avoid that the main goroutine is destroyed before the cleanup procedure and the call to os.Exit,
+	// the following is used in order to stop it undefinetely
 	<-make(chan struct{})
 }

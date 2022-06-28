@@ -97,11 +97,21 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: vxlanIfaceName
+            - name: POLYKUBE_VETH_PAIR_NAME_PREFIX
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: polykubeVethPairNamePrefix
             - name: VTEP_CIDR
               valueFrom:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: vtepCidr
+            - name: POLYKUBE_VETH_PAIR_CIDR
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: polykubeVethPairCidr
             - name: CLUSTER_CIDR
               valueFrom:
                 configMapKeyRef:
@@ -176,7 +186,7 @@ spec:
       tolerations:
         - effect: NoSchedule
           key: node.kubernetes.io/not-ready
-        #  Uncomment the following lines in order to allow deployment on master node
+        #  Uncomment/Comment the following toleration in order to allow/disallow deployment on master node
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
         - effect: NoSchedule

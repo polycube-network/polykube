@@ -95,6 +95,16 @@ func createRouter() error {
 		Mac:  vxlanIface.Link.Attrs().HardwareAddr.String(),
 		Peer: vxlanIface.Link.Attrs().Name,
 	}
+
+	// defining the router port that will be connected to the polykube veth pair net end interface
+	netEndIface := node.Conf.PolykubeVeth.Net
+	rToHostPort := router.Ports{
+		Name: conf.rToHostPortName,
+		Ip:   netEndIface.IPNet.String(),
+		Mac:  netEndIface.Link.Attrs().HardwareAddr.String(),
+		Peer: netEndIface.Link.Attrs().Name,
+	}
+
 	// defining the router port that will be connected to the external k8s lbrp
 	extIface := node.Conf.ExtIface
 	rToEklPort := router.Ports{
@@ -102,7 +112,7 @@ func createRouter() error {
 		Ip:   extIface.IPNet.String(),
 		Mac:  extIface.Link.Attrs().HardwareAddr.String(),
 	}
-	rPorts := []router.Ports{rToIklPort, rToVxlanPort, rToEklPort}
+	rPorts := []router.Ports{rToIklPort, rToVxlanPort, rToHostPort, rToEklPort}
 
 	// defining router default route and setting static arp table entry for the default gateway
 	nodeGwIPStr := node.Conf.NodeGwInfo.IPNet.IP.String()
@@ -481,6 +491,7 @@ func InitConf() {
 		iklToRPortName:   "to_" + ec.RouterName,
 		rToIklPortName:   "to_" + ec.IntK8sLbrpName,
 		rToVxlanPortName: "to_" + ec.VxlanIfaceName,
+		rToHostPortName:  "to_host",
 		rToEklPortName:   "to_" + ec.ExtK8sLbrpName,
 		eklToRPortName:   "to_" + ec.RouterName,
 		eklToKPortName:   "to_" + ec.K8sDispName,
