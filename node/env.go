@@ -54,8 +54,20 @@ func getEnvVar(envVar string, defaultVal string) string {
 // LoadEnvironment initializes an env object taking values from environment variables and in some cases, if the environment
 // variable is not defined, defaulting them
 func LoadEnvironment() error {
-	// NodeName
 	env := &Environment{}
+
+	// PodName
+	env.PodName = os.Getenv("POD_NAME")
+	if env.PodName == "" {
+		log.Error(
+			errors.New("env variable not found"),
+			"failed to parse env variable",
+			"envVar", "POD_NAME",
+		)
+		return errors.New("POD_NAME env variable not found")
+	}
+
+	// NodeName
 	env.NodeName = os.Getenv("NODE_K8S_NAME")
 	if env.NodeName == "" {
 		log.Error(

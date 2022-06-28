@@ -5,31 +5,65 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/ekoops/polykube-operator/node"
 	k8slbrp "github.com/ekoops/polykube-operator/polycube/clients/k8slbrp"
 	"github.com/ekoops/polykube-operator/types"
 	"github.com/ekoops/polykube-operator/utils"
+	corev1 "k8s.io/api/core/v1"
 	"net"
 	"strings"
 )
 
-func CreateIntK8sLbrpFrontendPort(portId string, IP net.IP) error {
-	iklName := conf.intK8sLbrpName
-	port := k8slbrp.Ports{
-		Name:  portId,
-		Peer:  utils.GetHostIfaceName("eth0", portId),
-		Type_: "frontend",
-		Ip_:   IP.String(),
-	}
-	l := log.WithValues("name", iklName, "port", fmt.Sprintf("%+v", port))
-	resp, err := k8sLbrpAPI.CreateK8sLbrpPortsByID(context.TODO(), iklName, portId, port)
+func createK8sLbrpPorts(klName string, ports []k8slbrp.Ports) error {
+	log := log.WithValues("k8slbrp", klName, "ports", fmt.Sprintf("%+v", ports))
+
+	resp, err := k8sLbrpAPI.CreateK8sLbrpPortsListByID(context.TODO(), klName, ports)
 	if err != nil {
-		l.Error(
-			err, "failed to create internal k8s lbrp frontend port",
-			"response", fmt.Sprintf("%+v", resp),
-		)
-		return errors.New("failed to create internal k8s lbrp frontend port")
+		log.Error(err, "failed to create k8s lbrp ports", "response", fmt.Sprintf("%+v", resp))
+		return fmt.Errorf("failed to create k8s lbrp ports")
 	}
-	l.V(1).Info("created internal k8s lbrp frontend port")
+	log.V(1).Info("created k8s lbrp ports")
+	return nil
+}
+
+func CreateIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod, portsMap map[string]*k8slbrp.Ports) error {
+	thisPodName := node.Env.PodName
+
+	var portsToAdd []k8slbrp.Ports
+	for _, pod := range pods {
+		if pod.Name == thisPodName || pod.Spec.HostNetwork == true { // TODO adjust check
+			continue
+		}
+		podIP := net.ParseIP(pod.Status.PodIP)
+		if podIP == nil {
+			continue
+		}
+		podIP = podIP.To4()
+		if podIP == nil {
+			continue
+		}
+		portId := hex.EncodeToString(podIP)
+
+		_, ok := portsMap[portId]
+		if !ok {
+			portsToAdd = append(portsToAdd, k8slbrp.Ports{
+				Name:  portId,
+				Type_: "frontend",
+				Ip_:   podIP.String(),
+				Peer:  utils.GetHostIfaceName("eth0", portId), // TODO how to return eth0 from api-server?
+			})
+		}
+	}
+
+	if len(portsToAdd) == 0 {
+		log.V(1).Info("internal k8s lbrp frontend ports already synced")
+		return nil
+	}
+	if err := createK8sLbrpPorts(conf.intK8sLbrpName, portsToAdd); err != nil {
+		log.Error(err, "something went wrong during internal k8s lbrp frontend ports creation")
+		return errors.New("something went wrong during internal k8s lbrp frontend ports creation")
+	}
+	log.V(1).Info("synced internal k8s lbrp frontend ports")
 	return nil
 }
 
@@ -46,7 +80,7 @@ func GetIntK8sLbrpFrontendPortsMap() (map[string]*k8slbrp.Ports, error) {
 		)
 		return nil, errors.New("failed to retrieve internal k8s lbrp ports list")
 	}
-	var m map[string]*k8slbrp.Ports
+	m := make(map[string]*k8slbrp.Ports, len(ports)-1)
 	for _, port := range ports {
 		if port.Type_ == "backend" {
 			continue
@@ -59,11 +93,19 @@ func GetIntK8sLbrpFrontendPortsMap() (map[string]*k8slbrp.Ports, error) {
 			)
 			return nil, errors.New("failed to parse internal k8s lbrp frontend port IP")
 		}
+		portIp = portIp.To4()
+		if portIp == nil {
+			l.Error(
+				err, "failed to parse internal k8s lbrp frontend port IP",
+				"response", fmt.Sprintf("%+v", resp),
+			)
+			return nil, errors.New("failed to parse internal k8s lbrp frontend port IP")
+		}
 
 		portIpHexStr := hex.EncodeToString(portIp)
 		m[portIpHexStr] = &port
 	}
-	l.V(1).Info("retrieved k8s internal lbrp frontend ports IPs set")
+	l.V(1).Info("retrieved k8s internal lbrp frontend ports info")
 	return m, nil
 }
 

@@ -8,6 +8,7 @@ import (
 )
 
 type Environment struct {
+	PodName         string
 	NodeName        string
 	VxlanIfaceName  string
 	VtepCIDR        *net.IPNet

@@ -84,6 +84,10 @@ spec:
 #            initialDelaySeconds: 5
 #            periodSeconds: 10
           env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: NODE_K8S_NAME
               valueFrom:
                 fieldRef:
