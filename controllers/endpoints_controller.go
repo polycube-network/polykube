@@ -28,7 +28,12 @@ import (
 	"net"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/source"
+	"strings"
 )
 
 // EndpointsReconciler reconciles an Endpoints object
@@ -43,6 +48,7 @@ type EndpointsReconciler struct {
 // associated backends.
 func buildServiceToBackends(ep *corev1.Endpoints) types.ServiceToBackends {
 	stb := make(types.ServiceToBackends)
+
 	for _, sub := range ep.Subsets {
 		// each EndpointPort object is associated one-to-one with a virtual service
 		for _, p := range sub.Ports {
@@ -91,10 +97,12 @@ func isInternalTrafficPolicyCompliant(b *types.Backend, itp *corev1.ServiceInter
 }
 
 // buildEndpointsDetail builds a struct containing the info about the backends sets organized per service.
-func buildEndpointsDetail(s *corev1.Service, stb types.ServiceToBackends) *types.EndpointsDetail {
+func buildEndpointsDetail(s *corev1.Service, epsId string, stb types.ServiceToBackends) *types.EndpointsDetail {
 	itp := s.Spec.InternalTrafficPolicy
 	etp := s.Spec.ExternalTrafficPolicy
-	sd := &types.EndpointsDetail{
+	nip := node.Conf.ExtIface.IPNet.IP.String()
+	ed := &types.EndpointsDetail{
+		EndpointsId:                epsId,
 		ClusterIPServiceToBackends: make(types.ServiceToBackends),
 		NodePortServiceToBackends:  make(types.ServiceToBackends),
 	}
@@ -104,7 +112,7 @@ func buildEndpointsDetail(s *corev1.Service, stb types.ServiceToBackends) *types
 	// the ServiceToBackends struct using the port name or the "-" placeholder in
 	// case of a single port.
 	for _, p := range s.Spec.Ports {
-		var backends map[types.Backend]struct{}
+		var backends types.BackendsSet
 		if p.Name == "" {
 			backends = stb.GetBackendsSet("-")
 		} else {
@@ -112,25 +120,25 @@ func buildEndpointsDetail(s *corev1.Service, stb types.ServiceToBackends) *types
 		}
 		for _, vip := range s.Spec.ClusterIPs {
 			// the virtual service will be identified by the triple vip:vport:proto
-			id := fmt.Sprintf("%s:%d:%s", vip, p.Port, p.Protocol)
+			id := fmt.Sprintf("%s:%d:%s", vip, p.Port, strings.ToUpper(string(p.Protocol)))
 			for b := range backends {
 				if !isInternalTrafficPolicyCompliant(&b, itp) {
 					continue
 				}
-				sd.ClusterIPServiceToBackends.Add(id, b)
+				ed.ClusterIPServiceToBackends.Add(id, b)
 			}
 		}
 		if s.Spec.Type == corev1.ServiceTypeNodePort {
-			id := fmt.Sprintf("%s:%d:%s", node.Conf.ExtIface.IPNet.IP, p.NodePort, p.Protocol)
+			id := fmt.Sprintf("%s:%d:%s", nip, p.NodePort, p.Protocol)
 			for b := range backends {
 				if !isExternalTrafficPolicyCompliant(&b, etp) {
 					continue
 				}
-				sd.NodePortServiceToBackends.Add(id, b)
+				ed.NodePortServiceToBackends.Add(id, b)
 			}
 		}
 	}
-	return sd
+	return ed
 }
 
 //+kubebuilder:rbac:groups=core,resources=endpoints,verbs=get;list;watch
@@ -147,7 +155,7 @@ func buildEndpointsDetail(s *corev1.Service, stb types.ServiceToBackends) *types
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.10.0/pkg/reconcile
 func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	epsId := req.NamespacedName.String()
-	l := ctrllog.FromContext(ctx, "endpoints", epsId)
+	l := ctrllog.FromContext(ctx)
 
 	eps := &corev1.Endpoints{}
 	if err := r.Get(ctx, req.NamespacedName, eps); err != nil {
@@ -178,10 +186,19 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	}
 
 	serviceToBackends := buildServiceToBackends(eps)
-	endpointsDetail := buildEndpointsDetail(s, serviceToBackends)
-	if err := polycube.SyncK8sLbrpsServicesBackends(eps.Name, endpointsDetail); err != nil {
+	endpointsDetail := buildEndpointsDetail(s, epsId, serviceToBackends)
+
+	l.V(1).WithValues(
+		"detail", fmt.Sprintf("%+v", endpointsDetail),
+	).Info("built endpoints detail")
+	needResync, err := polycube.SyncK8sLbrpsServicesBackends(endpointsDetail)
+	if err != nil {
 		l.Error(err, "something went wrong during k8s lbrps services backends sync")
 		return ctrl.Result{}, err
+	}
+	if needResync {
+		l.Info("A resync is needed for endpoints object sync: a reschedule has been planned")
+		return ctrl.Result{Requeue: true}, nil // TODO evaluate RequeueAfter
 	}
 
 	l.Info("cluster status reconciled for the endpoints object")
@@ -189,9 +206,25 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	return ctrl.Result{}, nil
 }
 
+func endpointsControllerPredicates() predicate.Predicate {
+	return predicate.Funcs{
+		CreateFunc: func(e event.CreateEvent) bool {
+			return e.Object.GetObjectKind().GroupVersionKind().Kind != "Service" // TODO a better way to check it?
+		},
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			return true
+		},
+		DeleteFunc: func(e event.DeleteEvent) bool {
+			return e.Object.GetObjectKind().GroupVersionKind().Kind != "Service" // TODO a better way to check it?
+		},
+	}
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *EndpointsReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&corev1.Service{}).
+		For(&corev1.Endpoints{}).
+		Watches(&source.Kind{Type: &corev1.Service{}}, &handler.EnqueueRequestForObject{}).
+		WithEventFilter(endpointsControllerPredicates()).
 		Complete(r)
 }

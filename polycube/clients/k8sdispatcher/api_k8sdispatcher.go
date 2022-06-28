@@ -256,13 +256,11 @@ K8sdispatcherApiService Create nodeport-rule by ID
 Create operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param nodeportRule nodeport-rulebody object
-
-
 */
-func (a *K8sdispatcherApiService) CreateK8sdispatcherNodeportRuleByID(ctx context.Context, name string, port int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
+func (a *K8sdispatcherApiService) CreateK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Post")
 		localVarPostBody   interface{}
@@ -271,9 +269,9 @@ func (a *K8sdispatcherApiService) CreateK8sdispatcherNodeportRuleByID(ctx contex
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -767,12 +765,10 @@ K8sdispatcherApiService Delete nodeport-rule by ID
 Delete operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
-
-
 */
-func (a *K8sdispatcherApiService) DeleteK8sdispatcherNodeportRuleByID(ctx context.Context, name string, port int32, proto string) (*http.Response, error) {
+func (a *K8sdispatcherApiService) DeleteK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Delete")
 		localVarPostBody   interface{}
@@ -781,9 +777,9 @@ func (a *K8sdispatcherApiService) DeleteK8sdispatcherNodeportRuleByID(ctx contex
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1860,12 +1856,11 @@ K8sdispatcherApiService Read nodeport-rule by ID
 Read operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
-
 @return NodeportRule
 */
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleByID(ctx context.Context, name string, port int32, proto string) (NodeportRule, *http.Response, error) {
+func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string) (NodeportRule, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -1875,9 +1870,9 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleByID(ctx context.
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1947,16 +1942,16 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleByID(ctx context.
 }
 
 /*
-K8sdispatcherApiService Read name by ID
-Read operation of resource: name
+K8sdispatcherApiService Read nodeport-name by ID
+Read operation of resource: nodeport-name
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
 
 @return string
 */
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleNameByID(ctx context.Context, name string, port int32, proto string) (string, *http.Response, error) {
+func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleNameByID(ctx context.Context, name string, nodeportPort int32, proto string) (string, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -1966,9 +1961,9 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleNameByID(ctx cont
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/name/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/nodeport-name/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -2129,12 +2124,12 @@ K8sdispatcherApiService Read service-type by ID
 Read operation of resource: service-type
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
 
 @return string
 */
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleServiceTypeByID(ctx context.Context, name string, port int32, proto string) (string, *http.Response, error) {
+func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleServiceTypeByID(ctx context.Context, name string, nodeportPort int32, proto string) (string, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -2144,9 +2139,9 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleServiceTypeByID(c
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/service-type/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -3502,13 +3497,11 @@ K8sdispatcherApiService Replace nodeport-rule by ID
 Replace operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param nodeportRule nodeport-rulebody object
-
-
 */
-func (a *K8sdispatcherApiService) ReplaceK8sdispatcherNodeportRuleByID(ctx context.Context, name string, port int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
+func (a *K8sdispatcherApiService) ReplaceK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Put")
 		localVarPostBody   interface{}
@@ -3517,9 +3510,9 @@ func (a *K8sdispatcherApiService) ReplaceK8sdispatcherNodeportRuleByID(ctx conte
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -4472,13 +4465,11 @@ K8sdispatcherApiService Update nodeport-rule by ID
 Update operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param nodeportRule nodeport-rulebody object
-
-
 */
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleByID(ctx context.Context, name string, port int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
+func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Patch")
 		localVarPostBody   interface{}
@@ -4487,9 +4478,9 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleByID(ctx contex
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -4548,13 +4539,13 @@ K8sdispatcherApiService Update ruleName by ID
 Update operation of resource: ruleName
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
- * @param ruleName An optional name for the NodePort rule
+ * @param nodeportName An optional name for the NodePort rule
 
 
 */
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx context.Context, name string, port int32, proto string, ruleName string) (*http.Response, error) {
+func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportName string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Patch")
 		localVarPostBody   interface{}
@@ -4563,9 +4554,9 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx co
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/name/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/nodeport-name/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -4590,7 +4581,7 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx co
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
 	// body params
-	localVarPostBody = &ruleName
+	localVarPostBody = &nodeportName
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
@@ -4696,13 +4687,13 @@ K8sdispatcherApiService Update service-type by ID
 Update operation of resource: service-type
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param port ID of port
+ * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param serviceType Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoint
 
 
 */
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleServiceTypeByID(ctx context.Context, name string, port int32, proto string, serviceType string) (*http.Response, error) {
+func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleServiceTypeByID(ctx context.Context, name string, nodeportPort int32, proto string, serviceType string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Patch")
 		localVarPostBody   interface{}
@@ -4711,9 +4702,9 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleServiceTypeByID
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{port}/{proto}/service-type/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"port"+"}", fmt.Sprintf("%v", port), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)

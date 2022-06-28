@@ -61,7 +61,6 @@ func createIntK8sLbrp() error {
 		Loglevel:  "TRACE",
 		Ports:     iklPorts,
 		PortMode_: "MULTI",
-		//PortMode_: "SINGLE",
 	}
 
 	l = l.WithValues("k8slbrp", fmt.Sprintf("%+v", ikl))
@@ -92,6 +91,8 @@ func createRouter() error {
 	// defining the router port that will be connected to the vxlan interface
 	rToVxlanPort := router.Ports{
 		Name: conf.rToVxlanPortName,
+		Ip:   vxlanIface.IPNet.String(),
+		Mac:  vxlanIface.Link.Attrs().HardwareAddr.String(),
 		Peer: vxlanIface.Link.Attrs().Name,
 	}
 	// defining the router port that will be connected to the external k8s lbrp
@@ -118,9 +119,9 @@ func createRouter() error {
 		},
 	}
 	r := router.Router{
-		Name:     rName,
-		Ports:    rPorts,
-		Loglevel: "TRACE",
+		Name:  rName,
+		Ports: rPorts,
+		//Loglevel: "TRACE",
 		Route:    routes,
 		ArpTable: arptable,
 	}
@@ -189,8 +190,8 @@ func createK8sDispatcher() error {
 	kPorts := []k8sdispatcher.Ports{kToEklPort, kToIntPort}
 
 	k := k8sdispatcher.K8sdispatcher{
-		Name:          kName,
-		Loglevel:      "TRACE",
+		Name: kName,
+		//Loglevel:      "TRACE",
 		Ports:         kPorts,
 		InternalSrcIp: "3.3.1.3", // TODO mocked
 		NodeportRange: conf.nodePortRange,
@@ -218,7 +219,10 @@ func ensureCubesConnections() error {
 	iklToRPortName := conf.iklToRPortName
 	iklToRPortPeer := utils.CreatePeer(rName, conf.rToIklPortName)
 	l := log.WithValues("name", iklName, "port", iklToRPortName, "peer", iklToRPortPeer)
-	iklToRPort := k8slbrp.Ports{Peer: iklToRPortPeer}
+	iklToRPort := k8slbrp.Ports{
+		Name: iklToRPortName,
+		Peer: iklToRPortPeer,
+	}
 	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), iklName, iklToRPortName, iklToRPort); err != nil {
 		l.Error(
 			err,
@@ -233,8 +237,14 @@ func ensureCubesConnections() error {
 	// updating router "to_ikl0" port in order to set peer=ikl0:to_r0
 	rToIklPortName := conf.rToIklPortName
 	rToIklPortPeer := utils.CreatePeer(iklName, conf.iklToRPortName)
+	podsGwInfo := node.Conf.PodGwInfo
 	l = log.WithValues("name", rName, "port", rToIklPortName, "peer", rToIklPortPeer)
-	rToIklPort := router.Ports{Peer: rToIklPortPeer}
+	rToIklPort := router.Ports{
+		Name: rToIklPortName,
+		Ip:   podsGwInfo.IPNet.String(),
+		Mac:  podsGwInfo.MAC.String(),
+		Peer: rToIklPortPeer,
+	}
 	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToIklPortName, rToIklPort); err != nil {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
@@ -244,8 +254,14 @@ func ensureCubesConnections() error {
 	// updating router "to_ekl0" port in order to set peer=ekl0:to_r0
 	rToEklPortName := conf.rToEklPortName
 	rToEklPortPeer := utils.CreatePeer(eklName, conf.eklToRPortName)
+	extIface := node.Conf.ExtIface
 	l = log.WithValues("name", rName, "port", rToEklPortName, "peer", rToEklPortPeer)
-	rToEklPort := router.Ports{Peer: rToEklPortPeer}
+	rToEklPort := router.Ports{
+		Name: conf.rToEklPortName,
+		Ip:   extIface.IPNet.String(),
+		Mac:  extIface.Link.Attrs().HardwareAddr.String(),
+		Peer: rToEklPortPeer,
+	}
 	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToEklPortName, rToEklPort); err != nil {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
@@ -257,7 +273,10 @@ func ensureCubesConnections() error {
 	eklToRPortName := conf.eklToRPortName
 	eklToRPortPeer := utils.CreatePeer(rName, conf.rToEklPortName)
 	l = log.WithValues("name", eklName, "port", eklToRPortName, "peer", eklToRPortPeer)
-	eklToRPort := k8slbrp.Ports{Peer: eklToRPortPeer}
+	eklToRPort := k8slbrp.Ports{
+		Name: eklToRPortName,
+		Peer: eklToRPortPeer,
+	}
 	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), eklName, eklToRPortName, eklToRPort); err != nil {
 		l.Error(
 			err,
@@ -272,7 +291,10 @@ func ensureCubesConnections() error {
 	eklToKPortName := conf.eklToKPortName
 	eklToKPortPeer := utils.CreatePeer(kName, conf.kToEklPortName)
 	l = log.WithValues("name", eklName, "port", eklToKPortName, "peer", eklToKPortPeer)
-	eklToKPort := k8slbrp.Ports{Peer: eklToKPortPeer}
+	eklToKPort := k8slbrp.Ports{
+		Name: eklToKPortName,
+		Peer: eklToKPortPeer,
+	}
 	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), eklName, eklToKPortName, eklToKPort); err != nil {
 		l.Error(
 			err,
@@ -288,7 +310,10 @@ func ensureCubesConnections() error {
 	kToEklPortName := conf.kToEklPortName
 	kToEklPortPeer := utils.CreatePeer(eklName, conf.eklToKPortName)
 	l = log.WithValues("name", kName, "port", kToEklPortName, "peer", kToEklPortPeer)
-	kToEklPort := k8sdispatcher.Ports{Peer: kToEklPortPeer}
+	kToEklPort := k8sdispatcher.Ports{
+		Name: kToEklPortName,
+		Peer: kToEklPortPeer,
+	}
 	if resp, err := k8sDispatcherAPI.UpdateK8sdispatcherPortsByID(
 		context.TODO(), kName, kToEklPortName, kToEklPort,
 	); err != nil {

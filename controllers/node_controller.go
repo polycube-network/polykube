@@ -151,7 +151,7 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	return ctrl.Result{}, nil
 }
 
-func predicates() predicate.Predicate {
+func nodeControllerPredicates() predicate.Predicate {
 	return predicate.Funcs{
 		CreateFunc: func(e event.CreateEvent) bool {
 			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
@@ -170,6 +170,6 @@ func (r *NodeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	NodeDetailMap = make(map[string]*types.NodeDetail)
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&corev1.Node{}).
-		WithEventFilter(predicates()).
+		WithEventFilter(nodeControllerPredicates()).
 		Complete(r)
 }
