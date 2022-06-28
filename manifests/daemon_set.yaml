@@ -37,7 +37,7 @@ spec:
           securityContext:
             privileged: true
           command: ["polycubed",
-                    "--loglevel=TRACE",
+                    "--loglevel=INFO",
                     "--addr=0.0.0.0",
                     "--logfile=/host/var/log/polycubed.polykube.log"]
 #          livenessProbe: # TODO maybe the livenessProbe might be removed
@@ -142,6 +142,11 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: k8sDispName
+            - name: POLYCUBE_CUBES_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: cubesLogLevel
             - name: IS_CP_NODES_DEPLOY_ALLOWED
               valueFrom:
                 configMapKeyRef:

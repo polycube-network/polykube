@@ -57,7 +57,7 @@ func createIntK8sLbrp() error {
 	iklPorts := []k8slbrp.Ports{iklToRPort}
 	ikl := k8slbrp.K8sLbrp{
 		Name:      iklName,
-		Loglevel:  "TRACE",
+		Loglevel:  conf.cubesLogLevel,
 		Ports:     iklPorts,
 		PortMode_: "MULTI",
 	}
@@ -129,7 +129,7 @@ func createRouter() error {
 	r := router.Router{
 		Name:     rName,
 		Ports:    rPorts,
-		Loglevel: "TRACE",
+		Loglevel: conf.cubesLogLevel,
 		Route:    routes,
 		ArpTable: arptable,
 	}
@@ -164,7 +164,7 @@ func createExtK8sLbrp() error {
 	eklPorts := []k8slbrp.Ports{eklToRPort, eklToKPort}
 	ekl := k8slbrp.K8sLbrp{
 		Name:      eklName,
-		Loglevel:  "TRACE",
+		Loglevel:  conf.cubesLogLevel,
 		Ports:     eklPorts,
 		PortMode_: "SINGLE",
 	}
@@ -203,7 +203,7 @@ func createK8sDispatcher() error {
 
 	kd := k8sdispatcher.K8sdispatcher{
 		Name:          kdName,
-		Loglevel:      "TRACE",
+		Loglevel:      conf.cubesLogLevel,
 		Ports:         kPorts,
 		InternalSrcIp: node.Conf.VPodIPNet.IP.String(),
 		NodeportRange: node.Env.NodePortRange,
@@ -473,6 +473,7 @@ func EnsureConnection() error {
 func InitConf() {
 	ec := node.Env
 	conf = &configuration{
+		cubesLogLevel:    ec.CubesLogLevel,
 		intK8sLbrpName:   ec.IntK8sLbrpName,
 		rName:            ec.RouterName,
 		extK8sLbrpName:   ec.ExtK8sLbrpName,

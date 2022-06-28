@@ -20,6 +20,7 @@ type Environment struct {
 	RouterName             string
 	ExtK8sLbrpName         string
 	K8sDispName            string
+	CubesLogLevel          string
 	IsCPNodesDeployAllowed bool
 }
 

@@ -16,6 +16,7 @@ data:
   routerName: "r0"
   extK8sLbrpName: "ekl0"
   k8sDispName: "k0"
+  cubesLogLevel: "INFO"
   # if the following is set to true, the following toleration has to be
   # added to the daemonset container tolerations:
   # - effect: NoSchedule
