@@ -79,72 +79,75 @@ var NodeDetailMap map[string]*types.NodeDetail
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.10.0/pkg/reconcile
 func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	nId := req.NamespacedName.String()
-	l := ctrllog.FromContext(ctx)
+	log := ctrllog.FromContext(ctx)
 
 	n := &corev1.Node{}
 	if err := r.Get(ctx, req.NamespacedName, n); err != nil {
-		if apierrors.IsNotFound(err) {
-			nodeDetail, found := NodeDetailMap[nId]
-			if !found {
-				return ctrl.Result{}, nil
-			}
-			if err := polycube.DeleteRouteToNodePodCIDR(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
-				return ctrl.Result{}, err
-			}
-
-			if err := node.DeleteFdbEntry(nodeDetail.IP); err != nil {
-				return ctrl.Result{}, err
-			}
-			delete(NodeDetailMap, nId)
+		// if the error is different from not found returns error...
+		if !apierrors.IsNotFound(err) {
+			log.Error(err, "failed to retrieve the node object")
+			return ctrl.Result{}, err
+		}
+		nodeDetail, found := NodeDetailMap[nId]
+		if !found {
 			return ctrl.Result{}, nil
 		}
-		l.Error(err, "failed to retrieve the node object")
-		return ctrl.Result{}, client.IgnoreNotFound(err)
+		if err := polycube.DeleteRouterRoute(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
+			log.Error(err, "something wrong during route deletion")
+			return ctrl.Result{}, err
+		}
+		if err := node.DeleteFdbEntry(nodeDetail.IP); err != nil {
+			log.Error(err, "something wrong during node bridge fdb entry deletion")
+			return ctrl.Result{}, err
+		}
+		delete(NodeDetailMap, nId)
+		log.Info("cluster status reconciled after node object deletion event")
+		return ctrl.Result{}, nil
 	}
 
-	l.Info("node object retrieved")
+	log.Info("node object retrieved")
 
 	if !node.IsReady(n) {
 		// stop reconciliation since a new event will be fired when the node will be ready
-		l.Info("node not ready")
+		log.Info("node not ready")
 		return ctrl.Result{}, nil
 	}
 
 	nodeDetail, err := buildNodeDetail(n)
 	if err != nil {
-		l.Error(err, "failed to build node detail")
+		log.Error(err, "failed to build node detail")
 		return ctrl.Result{}, err
 	}
 
 	// the following will create or update the entry related to the node inside the map
 	NodeDetailMap[nId] = nodeDetail
 
-	routeExist, err := polycube.CheckRouteExistence(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP)
+	routeExist, err := polycube.CheckRouterRouteExistence(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP)
 	if err != nil {
-		l.Error(err, "something wrong during route existence check")
+		log.Error(err, "something wrong during route existence check")
 		return ctrl.Result{}, err
 	}
 	if !routeExist {
-		l.Info("route doesn't exist: creating it...")
-		if err := polycube.CreateRouteToNodePodCIDR(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
-			l.Error(err, "something wrong during route creation")
+		log.Info("route doesn't exist: creating it...")
+		if err := polycube.CreateRouterRoute(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
+			log.Error(err, "something wrong during route creation")
 			return ctrl.Result{}, err
 		}
 	}
 
 	entryExist, err := node.CheckFdbEntryExistence(nodeDetail.IP)
 	if err != nil {
-		l.Error(err, "something wrong during fdb entry existence check")
+		log.Error(err, "something wrong during node bridge fdb entry existence check")
 		return ctrl.Result{}, err
 	}
 	if !entryExist {
 		if err := node.CreateFdbEntry(nodeDetail.IP); err != nil {
-			l.Error(err, "something wrong during fdb entry creation")
+			log.Error(err, "something wrong during node bridge fdb entry creation")
 			return ctrl.Result{}, err
 		}
 	}
 
-	l.Info("cluster status reconciled for the node object")
+	log.Info("cluster status reconciled for the node object")
 
 	return ctrl.Result{}, nil
 }

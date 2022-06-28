@@ -166,53 +166,53 @@ func buildEndpointsDetail(s *corev1.Service, epsId string, stb types.ServiceToBa
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.10.0/pkg/reconcile
 func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	epsId := req.NamespacedName.String()
-	l := ctrllog.FromContext(ctx)
+	log := ctrllog.FromContext(ctx)
 
 	eps := &corev1.Endpoints{}
 	if err := r.Get(ctx, req.NamespacedName, eps); err != nil {
-		l.Error(err, "failed to retrieve the endpoints object")
+		log.Error(err, "failed to retrieve the endpoints object")
 		// if the endpoints resource is not found, it means that the associated
 		// service was deleted: in this case, let the service controller handle
 		// the cleanup
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	l.Info("endpoints object retrieved")
+	log.Info("endpoints object retrieved")
 
 	s := &corev1.Service{}
 	if err := r.Get(ctx, req.NamespacedName, s); err != nil {
-		l.Error(err, "failed to retrieve the associated service object")
+		log.Error(err, "failed to retrieve the associated service object")
 		// if the service resource is not found, the service controller will handle
 		// the cleanup
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	l.Info("associated service object retrieved")
+	log.Info("associated service object retrieved")
 
 	st := s.Spec.Type
 	// not able to handle services other than ClusterIP and NodePort ones
 	if st != corev1.ServiceTypeClusterIP && st != corev1.ServiceTypeNodePort {
-		l.Info("service type of the associated service not supported. Skipped.", "type", st)
+		log.Info("service type of the associated service not supported. Skipped.", "type", st)
 		return ctrl.Result{}, nil
 	}
 
 	serviceToBackends := buildServiceToBackends(eps)
 	endpointsDetail := buildEndpointsDetail(s, epsId, serviceToBackends)
 
-	l.V(1).WithValues(
+	log.V(1).WithValues(
 		"detail", fmt.Sprintf("%+v", endpointsDetail),
 	).Info("built endpoints detail")
 	needResync, err := polycube.SyncK8sLbrpsServicesBackends(endpointsDetail)
 	if err != nil {
-		l.Error(err, "something went wrong during k8s lbrps services backends sync")
+		log.Error(err, "something went wrong during k8s lbrps services backends sync")
 		return ctrl.Result{}, err
 	}
 	if needResync {
-		l.Info("A resync is needed for endpoints object sync: a reschedule has been planned")
+		log.Info("A resync is needed for endpoints object sync: a reschedule has been planned")
 		return ctrl.Result{Requeue: true}, nil // TODO evaluate RequeueAfter
 	}
 
-	l.Info("cluster status reconciled for the endpoints object")
+	log.Info("cluster status reconciled for the endpoints object")
 
 	return ctrl.Result{}, nil
 }

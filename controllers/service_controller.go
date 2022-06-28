@@ -96,53 +96,55 @@ func buildServiceDetail(s *corev1.Service, sId string, nodeIP net.IP) *types.Ser
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.10.0/pkg/reconcile
 func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	sId := req.NamespacedName.String()
-	l := ctrllog.FromContext(ctx)
+	log := ctrllog.FromContext(ctx)
 
 	s := &corev1.Service{}
 	if err := r.Get(ctx, req.NamespacedName, s); err != nil {
-		if errors.IsNotFound(err) {
-			// the following work for both the internal and the external load balancers.
-			// In case o services other than ClusterIP and NodePort ones, the following
-			// will not delete anything
-			if err := polycube.CleanupK8sLbrpsServicesById(sId); err != nil {
-				l.Error(err, "something went wrong during related k8s lbrp services cleanup")
-				return ctrl.Result{}, err
-			}
-			if err := polycube.CleanupK8sDispatcherNodePortRulesById(sId); err != nil {
-				l.Error(err, "something went wrong during related k8s dispatcher NodePort rules cleanup")
-			}
-			l.Info("cleanup performed on service object deletion event")
-			return ctrl.Result{}, nil
+		// if the error is different from not found returns error...
+		if !errors.IsNotFound(err) {
+			log.Error(err, "failed to retrieve the service object")
+			return ctrl.Result{}, err
 		}
-		l.Error(err, "failed to retrieve the service object")
-		return ctrl.Result{}, err
+		// the following work for both the internal and the external load balancers.
+		// In case o services other than ClusterIP and NodePort ones, the following
+		// will not delete anything
+		if err := polycube.CleanupK8sLbrpsServicesById(sId); err != nil {
+			log.Error(err, "something went wrong during related k8s lbrp services cleanup")
+			return ctrl.Result{}, err
+		}
+		if err := polycube.CleanupK8sDispatcherNodePortRulesById(sId); err != nil {
+			log.Error(err, "something went wrong during related k8s dispatcher NodePort rules cleanup")
+			return ctrl.Result{}, err
+		}
+		log.Info("cluster status reconciled after service object deletion event")
+		return ctrl.Result{}, nil
 	}
 
-	l.Info("service object retrieved")
+	log.Info("service object retrieved")
 
 	st := s.Spec.Type
 	// not able to handle services other than ClusterIP and NodePort ones
 	if st != corev1.ServiceTypeClusterIP && st != corev1.ServiceTypeNodePort {
-		l.Info("service type not supported. Skipped.", "type", st)
+		log.Info("service type not supported. Skipped.", "type", st)
 		return ctrl.Result{}, nil
 	}
 
 	nodeIP := node.Conf.ExtIface.IPNet.IP
 	sd := buildServiceDetail(s, sId, nodeIP)
 
-	l.V(1).WithValues("detail", fmt.Sprintf("%+v", sd)).Info("built service detail")
+	log.V(1).WithValues("detail", fmt.Sprintf("%+v", sd)).Info("built service detail")
 
 	if err := polycube.SyncK8sLbrpServices(sd); err != nil {
-		l.Error(err, "something went wrong during k8s lbrp services sync")
+		log.Error(err, "something went wrong during k8s lbrp services sync")
 		return ctrl.Result{}, err
 	}
 
 	if err := polycube.SyncK8sDispatcherNodePortRules(sd, nodeIP); err != nil {
-		l.Error(err, "something went wrong during k8s dispatcher NodePort rules sync")
+		log.Error(err, "something went wrong during k8s dispatcher NodePort rules sync")
 		return ctrl.Result{}, err
 	}
 
-	l.Info("cluster status reconciled for the service object")
+	log.Info("cluster status reconciled for the service object")
 
 	return ctrl.Result{}, nil
 }

@@ -140,7 +140,7 @@ func LoadEnvironment() error {
 	env.K8sDispName = getEnvVar("POLYCUBE_K8SDISP_NAME", "k0")
 
 	Env = env
-	log.V(1).Info("environment configuration loaded")
+	log.V(1).Info("loaded environment configuration")
 	return nil
 }
 
@@ -168,13 +168,9 @@ func EnsureCNIConf() error {
 		ip.PrevIP(podGwIP).String(),           // .253
 		podGwIP.String(),
 	); err != nil {
-		log.Error(
-			err,
-			"failed to write to file",
-			"path", fPath,
-		)
+		log.Error(err, "failed to write to file", "path", fPath)
 		return errors.New("failed to write to file")
 	}
-	log.Info("CNI configuration file created")
+	log.Info("ensured CNI configuration file")
 	return nil
 }

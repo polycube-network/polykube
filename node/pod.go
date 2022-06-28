@@ -14,43 +14,46 @@ import (
 // The request is performed using directly a kubernetes clientset (without using caching mechanisms from
 // the controller-runtime library
 func GetPods(nodeName string) (*v1.PodList, error) {
-	l := log.WithValues("node", nodeName)
+	log := log.WithValues("node", nodeName)
 	opts := metav1.ListOptions{
 		FieldSelector: fmt.Sprintf("spec.nodeName=%s", nodeName),
 	}
 	pods, err := Conf.clientset.CoreV1().Pods("").List(context.TODO(), opts)
 	if err != nil {
-		l.Error(err, "failed to retrieve cluster node pods")
+		log.Error(err, "failed to retrieve cluster node pods")
 		return nil, fmt.Errorf("failed to retrieve cluster node pods")
 	}
-	l.V(1).Info("cluster node pods retrieved")
+	log.V(1).Info("retrieved cluster node pods")
 	return pods, nil
 }
 
 // ParsePodCIDR returns the pod CIDR of the provided node
 func ParsePodCIDR(n *v1.Node) (*net.IPNet, error) {
 	rawPodCIDR := n.Spec.PodCIDR
-	l := log.WithValues("node", n.Name, "rawPodCIDR", rawPodCIDR)
+	log := log.WithValues("node", n.Name, "rawPodCIDR", rawPodCIDR)
 
+	// parsing pod CIDR
 	_, podCIDR, err := net.ParseCIDR(rawPodCIDR)
 	if err != nil {
-		l.Error(err, "failed to parse cluster node Pod CIDR")
-		return nil, errors.New("failed to parse cluster node Pod CIDR")
+		log.Error(err, "failed to parse cluster node pod CIDR")
+		return nil, errors.New("failed to parse cluster node pod CIDR")
 	}
+
 	// making sure that the pods CIDR is IPv4
 	podCIDR.IP = podCIDR.IP.To4()
 	if podCIDR.IP == nil {
-		l.Error(errors.New("unsupported IPv6 Pod CIDR"), "failed to parse cluster node Pod CIDR")
-		return nil, errors.New("failed to parse cluster node Pod CIDR")
+		log.Error(errors.New("unsupported IPv6 pod CIDR"), "failed to parse cluster node pod CIDR")
+		return nil, errors.New("failed to parse cluster node pod CIDR")
 	}
-	l.V(1).Info("parsed cluster node Pod CIDR", "podCIDR", podCIDR)
+
+	log.V(1).Info("parsed cluster node pod CIDR", "podCIDR", podCIDR)
 	return podCIDR, nil
 }
 
-// CalcPodDefaultGatewayIPNet calculates the pods default gateway IP and prefix length starting from the pod CIDR.
-// The convention that the IP of the default gateway is the last IP of pod CIDR other than the broadcast address
-// (e.g.: if the pod CIDR is /24, then the default gateway IP will be .254) is used
-func CalcPodDefaultGatewayIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
+// CalcPodsDefaultGatewayIPNet calculates the pods default gateway IP and prefix length starting from the pod CIDR.
+// The convention that the IP of the pods default gateway is the last IP of pod CIDR other than the broadcast address
+// (e.g.: if the pod CIDR is /24, then the default gateway IP will be .254) is used.
+func CalcPodsDefaultGatewayIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
 	// calculating the broadcast address
 	subIP := podCIDR.IP
 	subMask := podCIDR.Mask
@@ -67,25 +70,21 @@ func CalcPodDefaultGatewayIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
 	}
 
 	log.V(1).Info(
-		"calculated default gateway IP and prefix length from the Pod CIDR",
-		"podCIDR", fmt.Sprintf("%+v", podCIDR),
-		"gwIP", fmt.Sprintf("%+v", gwIPNet),
+		"calculated pods default gateway address from the Pod CIDR", "podCIDR", podCIDR, "IP", gwIPNet,
 	)
 	return gwIPNet, nil
 }
 
 // CalcVPodIPNet calculates the virtual pod IP and prefix length starting from the pod CIDR.
 // The convention that the IP of the virtual pod is the first IP of pod CIDR other than the network ID
-// (e.g.: if the pod CIDR is /24, then the virtual pod IP will be .1) is used
+// (e.g.: if the pod CIDR is /24, then the virtual pod IP will be .1) is used.
 func CalcVPodIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
-	log := log.WithValues("podCIDR", podCIDR)
-
-	nodeVPodIPNet := &net.IPNet{
+	vPodIPNet := &net.IPNet{
 		IP:   ip.NextIP(podCIDR.IP),
 		Mask: net.IPv4Mask(255, 255, 255, 255),
 	}
 	log.V(1).Info(
-		"calculated virtual Pod address for cluster node", "vPod", fmt.Sprintf("%+v", nodeVPodIPNet),
+		"calculated virtual pod address from the Pod CIDR", "podCIDR", podCIDR, "IP", vPodIPNet,
 	)
-	return nodeVPodIPNet, nil
+	return vPodIPNet, nil
 }

@@ -16,3 +16,5 @@ data:
   routerName: "r0"
   extK8sLbrpName: "ekl0"
   k8sDispName: "k0"
+  cubesLogLevel: "DEBUG"
+  operatorLogLevel: "DEBUG"

@@ -40,7 +40,7 @@ func replaceK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service, newBacke
 	if resp, err := k8sLbrpAPI.ReplaceK8sLbrpServiceBackendListByID(
 		context.TODO(), klName, svc.Vip, svc.Vport, svc.Proto, newSvcBackends,
 	); err != nil {
-		log.V(1).Error(
+		log.Error(
 			err, "failed to replace k8s lbrp service backends", "response", fmt.Sprintf("%+v", resp),
 		)
 		return fmt.Errorf("failed to replace k8s lbrp service backends")
@@ -109,7 +109,7 @@ func extractK8sLbrpServiceBackendsToAddAndDel(
 	}
 	return klBkdToAdd, klBkdToDel
 }
-func addK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service, sbs []k8slbrp.ServiceBackend) error {
+func createK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service, sbs []k8slbrp.ServiceBackend) error {
 	log := log.WithValues(
 		"k8slbrp", klName, "service", fmt.Sprintf("%s:%d:%s", svc.Vip, svc.Vport, svc.Proto),
 	)
@@ -191,7 +191,7 @@ func SyncK8sLbrpsServicesBackends(epsDetail *types.EndpointsDetail) (bool, error
 				}
 
 				if lenToAdd > 0 {
-					if err := addK8sLbrpServiceBackends(klName, &svc, klSbsToAdd); err != nil {
+					if err := createK8sLbrpServiceBackends(klName, &svc, klSbsToAdd); err != nil {
 						log.Error(err, "error during k8s lbrp service backends addition")
 						return false, errors.New("error during k8s lbrp service backends addition")
 					}

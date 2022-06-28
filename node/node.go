@@ -21,28 +21,28 @@ var (
 	Env  *Environment
 )
 
-// Get returns a node object describing the cluster node corresponding to the provided name.
+// getNode returns a node object describing the cluster node corresponding to the provided name.
 // The request is performed using directly the provided cset (without using caching mechanism from
 // the controller-runtime library
-func get(cset *kubernetes.Clientset, name string) (*v1.Node, error) {
-	l := log.WithValues("node", name)
+func getNode(cset *kubernetes.Clientset, name string) (*v1.Node, error) {
+	log := log.WithValues("node", name)
 	n, err := cset.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
-		l.Error(err, "failed to retrieve cluster node info")
+		log.Error(err, "failed to retrieve cluster node info")
 		return nil, fmt.Errorf("failed to retrieve cluster node info")
 	}
-	l.V(1).Info("cluster node info retrieved")
+	log.V(1).Info("cluster node info retrieved")
 	return n, nil
 }
 
 // GetExtIface returns info about the external interface of the provided node. The external interface is
-// found using the first parsable address of type NodeInternalIP inside the provided node object.
+// found using the first parsable IPv4 address of type NodeInternalIP inside the provided node object.
 func GetExtIface(n *v1.Node) (*types.Iface, error) {
-	l := log.WithValues("node", n.Name)
+	log := log.WithValues("node", n.Name)
 	// extracting ip of the node external interface
 	extIfaceIP := GetIP(n)
 	if extIfaceIP == nil {
-		l.Error(
+		log.Error(
 			errors.New("no NodeInternalIP found inside node object"),
 			"failed to extract the IP of the cluster node external interface",
 		)
@@ -52,17 +52,17 @@ func GetExtIface(n *v1.Node) (*types.Iface, error) {
 	// retrieving the list of all the interfaces in the node
 	links, err := netlink.LinkList()
 	if err != nil {
-		l.Error(err, "failed to retrieve the list of all the cluster node interfaces")
+		log.Error(err, "failed to retrieve the list of all the cluster node interfaces")
 		return nil, errors.New("failed to retrieve the list of all the cluster node interfaces")
 	}
 
 	// searching for the interface whose ip list contains the external interface ip
 	for _, link := range links {
 		linkName := link.Attrs().Name
-		linkLog := l.WithValues("interface", linkName)
+		log := log.WithValues("interface", linkName)
 		addrs, err := netlink.AddrList(link, netlink.FAMILY_V4)
 		if err != nil {
-			linkLog.Error(err, "failed to retrieve the list of the node interface addresses")
+			log.Error(err, "failed to retrieve the list of the node interface addresses")
 			return nil, errors.New("failed to retrieve the list of the node interface addresses")
 		}
 		// scanning the list of addresses of the current interface in order to determine if the list contains
@@ -74,24 +74,24 @@ func GetExtIface(n *v1.Node) (*types.Iface, error) {
 					IPNet: addr.IPNet,
 					Link:  link,
 				}
-				linkLog.WithValues(
-					"info", fmt.Sprintf("%+v", extIface),
-				).V(1).Info("obtained cluster node external interface info")
+				log.V(1).Info(
+					"obtained cluster node external interface info", "info", fmt.Sprintf("%+v", extIface),
+				)
 				return extIface, nil
 			}
 		}
 	}
-	l.Error(
+	log.Error(
 		errors.New("no interface for the retrieved interface external IP"),
 		"failed to retrieve cluster node external interface info", "IP", extIfaceIP)
 	return nil, errors.New("failed to retrieve cluster node external interface info")
 }
 
 // GetDefaultGatewayIPNet returns the IP address and prefix length of the default gateway for the cluster node
-// external interface
+// external interface.
 func GetDefaultGatewayIPNet(extIface *types.Iface) (*net.IPNet, error) {
 	extIfaceName := extIface.Link.Attrs().Name
-	l := log.WithValues("interface", extIfaceName)
+	log := log.WithValues("interface", extIfaceName)
 
 	// retrieving the default route by performing a query to an (hopefully) external IP address
 	// TODO temporary solution
@@ -113,11 +113,9 @@ func GetDefaultGatewayIPNet(extIface *types.Iface) (*net.IPNet, error) {
 	routeLI := route.LinkIndex
 	extIfaceLI := extIface.Link.Attrs().Index
 	if routeLI != extIfaceLI {
-		l.V(1).Error(
+		log.Error(
 			errors.New("the route link index doesn't match the external interface link index"),
-			"link index mismatch",
-			"routeLinkIndex", routeLI,
-			"extIfaceLinkIndex", extIfaceLI,
+			"link index mismatch", "routeLinkIndex", routeLI, "extIfaceLinkIndex", extIfaceLI,
 		)
 		return nil, errors.New("the route link index doesn't match the external interface link index")
 	}
@@ -134,62 +132,73 @@ func GetDefaultGatewayIPNet(extIface *types.Iface) (*net.IPNet, error) {
 	return gwIPNet, nil
 }
 
-// GetDefaultGatewayMAC returns the MAC of the default gateway for the cluster node external interface
+// GetDefaultGatewayMAC returns the MAC of the default gateway for the cluster node external interface.
 func GetDefaultGatewayMAC(extIface *types.Iface, gwIP net.IP) (net.HardwareAddr, error) {
 	extIfaceName := extIface.Link.Attrs().Name
 	extIfaceLI := extIface.Link.Attrs().Index
-	l := log.WithValues("interface", extIfaceName)
+	log := log.WithValues("interface", extIfaceName)
+
 	// retrieving the neighbor list of the external interface
 	neighs, err := netlink.NeighList(extIfaceLI, netlink.FAMILY_V4)
 	if err != nil {
-		l.Error(err, "failed to retrieve the external interface neighbor list")
-		return nil, errors.New("failed to retrieve the external interface neighbor list")
+		log.Error(err, "failed to retrieve the external interface neighbors list")
+		return nil, errors.New("failed to retrieve the external interface neighbors list")
 	}
-	// searching for a neighbor whose IP address is the default gateway one
+
+	// searching for a neighbor whose IP address is the default gateway for the external interface
 	for _, neigh := range neighs {
 		if neigh.IP.Equal(gwIP) {
 			gwMAC := neigh.HardwareAddr
-			l.V(1).Info("retrieved the MAC of the default gateway for the cluster node external interface", "MAC", gwMAC)
+			log.V(1).Info(
+				"retrieved the MAC of the default gateway for the cluster node external interface",
+				"MAC", gwMAC,
+			)
 			return gwMAC, nil
 		}
 	}
-	l.Error(
+	log.Error(
 		errors.New("no ARP entry for default gateway"),
 		"failed to retrieve the MAC of the default gateway for the cluster node external interface",
 	)
 	return nil, errors.New("failed to retrieve the MAC of the default gateway for the cluster node external interface")
 }
 
-// GetIP extract the first parsable address of type NodeInternalIP inside the provided node object
+// GetIP extracts the first parsable IPv4 address of type NodeInternalIP inside the provided node object.
 func GetIP(n *v1.Node) net.IP {
-	l := log.WithValues("node", n.Name)
+	log := log.WithValues("node", n.Name)
 	for _, addr := range n.Status.Addresses {
 		if addr.Type == v1.NodeInternalIP {
 			nodeIP := net.ParseIP(addr.Address)
 			if nodeIP == nil {
-				l.Error(errors.New("failed to parse"), "skipped node IP", "IP", addr.Address)
+				continue
 			}
-			l.V(1).Info("obtained node IP", "IP", nodeIP)
+			nodeIP = nodeIP.To4()
+			if nodeIP == nil {
+				continue
+			}
+			log.V(1).Info("obtained node IPv4 address", "IP", nodeIP)
 			return nodeIP
 		}
 	}
-	l.Error(errors.New("not found"), "failed to obtain node IP")
+	log.Error(errors.New("not found"), "failed to obtain node IPv4 address")
 	return nil
 }
 
-// IsReady returns true if the provided node is ready; false otherwise
+// IsReady returns true if the provided node is ready; false otherwise.
 func IsReady(n *v1.Node) bool {
-	l := log.WithValues("node", n.Name)
+	log := log.WithValues("node", n.Name)
 	for _, c := range n.Status.Conditions {
 		if c.Type == v1.NodeReady && c.Status == v1.ConditionTrue {
-			l.V(1).Info("the node is ready")
+			log.V(1).Info("the node is ready")
 			return true
 		}
 	}
-	l.V(1).Info("the node is not ready")
+	log.V(1).Info("the node is not ready")
 	return false
 }
 
+// LoadConfig load the node configuration in order to initialize the internal package configuration. Information like
+// the cluster node name, the PodCIDR assigned to the node, the already configured addresses and so on are inferred.
 func LoadConfig() error {
 	// creating the in-cluster config
 	clusterConfig, err := rest.InClusterConfig()
@@ -205,19 +214,17 @@ func LoadConfig() error {
 
 	name := Env.NodeName
 
-	node, err := get(cset, name)
+	node, err := getNode(cset, name)
 	if err != nil {
 		return err
 	}
+
 	podCIDR, err := ParsePodCIDR(node)
 	if err != nil {
 		return err
 	}
-	vPodIPNet, err := CalcVPodIPNet(podCIDR)
-	if err != nil {
-		return err
-	}
-	podGwIPNet, err := CalcPodDefaultGatewayIPNet(podCIDR)
+
+	podGwIPNet, err := CalcPodsDefaultGatewayIPNet(podCIDR)
 	if err != nil {
 		return err
 	}
@@ -227,16 +234,26 @@ func LoadConfig() error {
 		IPNet: podGwIPNet,
 	}
 
+	// calculating the IP address and prefix length that will be used for NATting external traffic directed to
+	// NodePort services with externalTrafficPolicy=Cluster
+	vPodIPNet, err := CalcVPodIPNet(podCIDR)
+	if err != nil {
+		return err
+	}
+
+	// calculating the IP address and prefix length that will be setup on the node vxlan interface
+	vtepIPNet, err := CalcVtepIPNet(podCIDR)
+	if err != nil {
+		return err
+	}
+
+	// getting info about the cluster node external interface
 	extIface, err := GetExtIface(node)
 	if err != nil {
 		return err
 	}
 
-	nodeVtepIPNet, err := CalcVtepIPNet(podCIDR)
-	if err != nil {
-		return err
-	}
-
+	// retrieving info about the default gateway for the node external interface
 	nodeGwIPNet, err := GetDefaultGatewayIPNet(extIface)
 	if err != nil {
 		return err
@@ -251,15 +268,16 @@ func LoadConfig() error {
 	}
 
 	Conf = &Configuration{
-		Node:          node,
-		PodCIDR:       podCIDR,
-		PodGwInfo:     podGwInfo,
-		VPodIPNet:     vPodIPNet,
-		ExtIface:      extIface,
-		NodeVtepIPNet: nodeVtepIPNet,
-		NodeGwInfo:    nodeGwInfo,
-		clientset:     cset,
+		clientset:  cset,
+		Node:       node,
+		PodCIDR:    podCIDR,
+		PodGwInfo:  podGwInfo,
+		VPodIPNet:  vPodIPNet,
+		VtepIPNet:  vtepIPNet,
+		ExtIface:   extIface,
+		NodeGwInfo: nodeGwInfo,
 	}
 
+	log.V(1).Info("loaded node configuration", "node", name)
 	return nil
 }

@@ -21,10 +21,13 @@ import (
 	"github.com/ekoops/polykube-operator/controllers"
 	"github.com/ekoops/polykube-operator/node"
 	"github.com/ekoops/polykube-operator/polycube"
+	"net/http"
 	"os"
 	"os/signal"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"syscall"
+	"time"
+
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -35,6 +38,10 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	//+kubebuilder:scaffold:imports
+)
+
+const (
+	polycubeBasePath = "http://127.0.0.1:9000/polycube/v1"
 )
 
 var (
@@ -48,31 +55,61 @@ func init() {
 	//+kubebuilder:scaffold:scheme
 }
 
-func ensurePodsAttachment() error {
+func exit(code int) {
+	node.DeleteVxlanIface()
+	os.Exit(code)
+}
+
+// setupSignalHandler sets up a handler for handling cleanup if SIGTERM or SIGINT interrupts occur
+func setupSignalHandler() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		<-c
+		exit(4)
+	}()
+}
+
+// ensureDeployment ensures the connection with polycubed, creates all the necessary polycube cubes and connects them
+// together and with the existing pods in order to allow network communications
+func ensureDeployment() error {
+	if err := polycube.EnsureConnection(); err != nil {
+		return err
+	}
+	if err := polycube.EnsureCubes(); err != nil {
+		return err
+	}
+	if err := polycube.EnsureCubesConnections(); err != nil {
+		return err
+	}
 	pods, err := node.GetPods(node.Conf.Node.Name)
 	if err != nil {
 		return err
 	}
-
-	portsMap, err := polycube.GetIntK8sLbrpFrontendPortsMap()
-	if err != nil {
-		setupLog.Error(err, "failed to retrieve retrieve actual infrastructure ports info")
+	if err := polycube.EnsureIntK8sLbrpMissingFrontendPorts(pods.Items); err != nil {
 		return err
 	}
-
-	if err := polycube.CreateIntK8sLbrpMissingFrontendPorts(pods.Items, portsMap); err != nil {
-		setupLog.Error(err, "failed to reattach cluster node pods to the infrastructure")
-		return err
-	}
-
-	setupLog.Info("ensured cluster node pods attachment")
+	setupLog.Info("ensured network infrastructure deployment")
 	return nil
 }
 
-func exit(code int) {
-	node.CleanupFdb()
-	node.DeleteVxlanIface()
-	os.Exit(code)
+// startPolycubedPolling starts an asynchronous task in order to periodically queries polycubed. If for some reason
+// polycubed is not reachable, an attempts to restore the connection and the polycube network infrastructure is made
+// by calling internally ensureDeployment
+func startPolycubedPolling() {
+	go func() {
+		for {
+			time.Sleep(10 * time.Second)
+			if _, err := http.Get(polycubeBasePath); err != nil {
+				setupLog.Info("lost polycubed connection, waiting for it...")
+				if err := ensureDeployment(); err != nil {
+					setupLog.Error(err, "failed to network infrastructure deployment")
+					exit(14)
+				}
+				setupLog.Info("re-established network infrastructure deployment after connection loss")
+			}
+		}
+	}()
 }
 
 func main() {
@@ -88,48 +125,38 @@ func main() {
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
-	// ---
 	// obtaining environment configuration by taking it from env variables
 	if err := node.LoadEnvironment(); err != nil {
 		setupLog.Error(err, "failed to load environment configuration from environment variables")
 		os.Exit(1)
 	}
 
+	// loading node configuration details
 	if err := node.LoadConfig(); err != nil {
-		setupLog.Error(err, "failed to load node configuration")
+		setupLog.Error(err, "failed to load cluster node configuration")
 		os.Exit(2)
 	}
 
+	// ensuring vxlan interface on the node
 	if err := node.EnsureVxlanIface(); err != nil {
 		setupLog.Error(err, "failed to ensure vxlan interface")
 		os.Exit(3)
 	}
-	if err := node.CleanupFdb(); err != nil {
-		setupLog.Error(err, "failed to cleanup fdb")
-	}
 
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
-	go func() {
-		<-c
-		exit(16)
-	}()
+	setupSignalHandler()
 
+	// initialize polycube package internal state
 	polycube.InitConf()
 
-	if err := polycube.EnsureConnection(); err != nil {
-		setupLog.Error(err, "failed to ensure polycubed connection")
-		exit(4)
-	}
-
-	if err := polycube.EnsureDeployment(); err != nil {
-		setupLog.Error(err, "failed to ensure polycube infrastructure deployment")
+	// ensure that the network infrastructure is correctly deployed and connected to the already existing entities
+	if err := ensureDeployment(); err != nil {
+		setupLog.Error(err, "failed to ensure network infrastructure deployment")
 		exit(5)
 	}
 
 	podGwMAC, err := polycube.GetRouterToIntK8sLbrpPortMAC()
 	if err != nil {
-		setupLog.Error(err, "failed to load cluster node pods default gateway mac")
+		setupLog.Error(err, "failed to load cluster node pods default gateway MAC")
 		exit(6)
 	}
 	node.Conf.PodGwInfo.MAC = podGwMAC
@@ -139,13 +166,7 @@ func main() {
 		exit(7)
 	}
 
-	if err := ensurePodsAttachment(); err != nil {
-		exit(8)
-	}
-
 	//time.Sleep(24 * 60 * 60 * time.Second)
-
-	// ---
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -155,51 +176,51 @@ func main() {
 		LeaderElection:         false,
 	})
 	if err != nil {
-		setupLog.Error(err, "unable to start manager")
-		exit(9)
+		setupLog.Error(err, "failed to create manager")
+		exit(8)
 	}
 
 	if err = (&controllers.NodeReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Node")
-		exit(10)
+		setupLog.Error(err, "failed to create controller", "controller", "node-controller")
+		exit(9)
 	}
 	if err = (&controllers.ServiceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Service")
-		exit(11)
+		setupLog.Error(err, "failed to create controller", "controller", "service-controller")
+		exit(10)
 	}
 	if err = (&controllers.EndpointsReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Endpoints")
-		exit(12)
+		setupLog.Error(err, "failed to create controller", "controller", "endpoints-controller")
+		exit(11)
 	}
 
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
-		setupLog.Error(err, "unable to set up health check")
-		exit(13)
+		setupLog.Error(err, "failed to set up health check")
+		exit(12)
 	}
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
-		setupLog.Error(err, "unable to set up ready check")
-		exit(14)
+		setupLog.Error(err, "failed to set up ready check")
+		exit(13)
 	}
 
-	polycube.PollPolycube()
+	// the following is used in order to react to a possible polycubed crash
+	startPolycubedPolling()
 
-	setupLog.Info("starting manager")
+	setupLog.Info("starting manager...")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
-		setupLog.Error(err, "problem running manager")
+		setupLog.Error(err, "failed to start manager")
 		exit(15)
 	}
 	// the following is used in order to stop the main goroutine waiting for the second main one to invoke os.Exit
-	s := make(chan int)
-	<-s
+	<-make(chan struct{})
 }

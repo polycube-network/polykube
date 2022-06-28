@@ -23,13 +23,13 @@ type Environment struct {
 }
 
 type Configuration struct {
-	Node          *v1.Node
-	PodCIDR       *net.IPNet
-	VPodIPNet     *net.IPNet
-	PodGwInfo     *types.GwInfo
-	VxlanIface    *types.Iface
-	ExtIface      *types.Iface
-	NodeVtepIPNet *net.IPNet
-	NodeGwInfo    *types.GwInfo
-	clientset     *kubernetes.Clientset
+	clientset  *kubernetes.Clientset
+	Node       *v1.Node
+	PodCIDR    *net.IPNet
+	PodGwInfo  *types.GwInfo
+	VPodIPNet  *net.IPNet
+	VtepIPNet  *net.IPNet
+	VxlanIface *types.Iface
+	ExtIface   *types.Iface
+	NodeGwInfo *types.GwInfo
 }

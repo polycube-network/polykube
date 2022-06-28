@@ -45,10 +45,9 @@ func init() {
 	k8sDispatcherAPI = srK8sdispatcher.K8sdispatcherApi
 }
 
-// createIntK8sLbrp creates the polycube internal k8s lbrp cube
+// createIntK8sLbrp creates the polycube internal k8s lbrp cube.
 func createIntK8sLbrp() error {
 	iklName := conf.intK8sLbrpName
-	l := log.WithValues("name", iklName)
 
 	// defining internal k8s lbrp port that will be connected to the router
 	iklToRPort := k8slbrp.Ports{
@@ -63,20 +62,22 @@ func createIntK8sLbrp() error {
 		PortMode_: "MULTI",
 	}
 
-	l = l.WithValues("k8slbrp", fmt.Sprintf("%+v", ikl))
 	// creating internal k8s lbrp
 	if resp, err := k8sLbrpAPI.CreateK8sLbrpByID(context.TODO(), iklName, ikl); err != nil {
-		l.Error(err, "failed to create internal k8s lbrp", "response", fmt.Sprintf("%+v", resp))
+		log.Error(
+			err, "failed to create internal k8s lbrp",
+			"k8slbrp", fmt.Sprintf("%+v", ikl),
+			"response", fmt.Sprintf("%+v", resp),
+		)
 		return errors.New("failed to create internal k8s lbrp")
 	}
-	l.Info("internal k8s lbrp created")
+	log.V(1).Info("created internal k8s lbrp", "name", iklName)
 	return nil
 }
 
-// createRouter creates a polycube router cube
+// createRouter creates a polycube router cube.
 func createRouter() error {
 	rName := conf.rName
-	l := log.WithValues("name", rName)
 
 	// defining the router port that will be connected to the internal k8s lbrp
 	podsGwIPNetStr := node.Conf.PodGwInfo.IPNet.String()
@@ -133,20 +134,21 @@ func createRouter() error {
 		ArpTable: arptable,
 	}
 
-	l = l.WithValues("router", fmt.Sprintf("%+v", r))
 	// creating router
 	if resp, err := routerAPI.CreateRouterByID(context.TODO(), rName, r); err != nil {
-		l.Error(err, "failed to create router", "response", fmt.Sprintf("%+v", resp))
+		log.Error(err, "failed to create router",
+			"router", fmt.Sprintf("%+v", r),
+			"response", fmt.Sprintf("%+v", resp),
+		)
 		return errors.New("failed to create router")
 	}
-	l.Info("router created")
+	log.V(1).Info("created router", "name", rName)
 	return nil
 }
 
-// createExtK8sLbrp creates the polycube external k8s lbrp cube
+// createExtK8sLbrp creates the polycube external k8s lbrp cube.
 func createExtK8sLbrp() error {
 	eklName := conf.extK8sLbrpName
-	l := log.WithValues("name", eklName)
 
 	// defining the external k8s lbrp port that will be connected to the router interface
 	eklToRPort := k8slbrp.Ports{
@@ -167,20 +169,22 @@ func createExtK8sLbrp() error {
 		PortMode_: "SINGLE",
 	}
 
-	l = l.WithValues("k8slbrp", fmt.Sprintf("%+v", ekl))
 	// creating external k8s lbrp
 	if resp, err := k8sLbrpAPI.CreateK8sLbrpByID(context.TODO(), eklName, ekl); err != nil {
-		l.Error(err, "failed to create external k8s lbrp", "response", fmt.Sprintf("%+v", resp))
+		log.Error(
+			err, "failed to create external k8s lbrp",
+			"k8slbrp", fmt.Sprintf("%+v", ekl),
+			"response", fmt.Sprintf("%+v", resp),
+		)
 		return errors.New("failed to create external k8s lbrp")
 	}
-	l.Info("external k8s lbrp created")
+	log.V(1).Info("created external k8s lbrp", "name", eklName)
 	return nil
 }
 
-// createK8sDispatcher creates a polycube k8sdispatcher cube for managing incoming connection
+// createK8sDispatcher creates a polycube k8s dispatcher cube for managing incoming connection.
 func createK8sDispatcher() error {
-	kName := conf.k8sDispName
-	l := log.WithValues("name", kName)
+	kdName := conf.k8sDispName
 
 	// defining the k8sdispatcher port that will be connected to the external k8s lbrp interface
 	kToEklPort := k8sdispatcher.Ports{
@@ -197,26 +201,30 @@ func createK8sDispatcher() error {
 	}
 	kPorts := []k8sdispatcher.Ports{kToEklPort, kToIntPort}
 
-	k := k8sdispatcher.K8sdispatcher{
-		Name: kName,
-		//Loglevel:      "TRACE",
+	kd := k8sdispatcher.K8sdispatcher{
+		Name:          kdName,
+		Loglevel:      "TRACE",
 		Ports:         kPorts,
 		InternalSrcIp: node.Conf.VPodIPNet.IP.String(),
 		NodeportRange: node.Env.NodePortRange,
 	}
 
-	l = l.WithValues("k8sdispatcher", fmt.Sprintf("%+v", k))
-	// creating k8sdispatcher
-	if resp, err := k8sDispatcherAPI.CreateK8sdispatcherByID(context.TODO(), kName, k); err != nil {
-		l.Error(err, "failed to create k8sdispatcher", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to create k8sdispatcher")
+	// creating k8s dispatcher
+	if resp, err := k8sDispatcherAPI.CreateK8sdispatcherByID(context.TODO(), kdName, kd); err != nil {
+		log.Error(
+			err, "failed to create k8s dispatcher",
+			"k8sdisp", fmt.Sprintf("%+v", kd),
+			"response", fmt.Sprintf("%+v", resp),
+		)
+		return errors.New("failed to create k8s dispatcher")
 	}
-	l.Info("k8sdispatcher created")
+	log.V(1).Info("created k8s dispatcher", "name", kdName)
 	return nil
 }
 
-// ensureCubesConnections connect each port of the already deployed polycube infrastructure with the right peer
-func ensureCubesConnections() error {
+// EnsureCubesConnections ensures that each port of the already deployed polycube infrastructure is connected with
+// the right peer.
+func EnsureCubesConnections() error {
 	iklName := conf.intK8sLbrpName
 	rName := conf.rName
 	eklName := conf.extK8sLbrpName
@@ -233,13 +241,12 @@ func ensureCubesConnections() error {
 	}
 	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), iklName, iklToRPortName, iklToRPort); err != nil {
 		l.Error(
-			err,
-			"failed to set internal k8s lbrp port peer",
+			err, "failed to set internal k8s lbrp port peer",
 			"response", fmt.Sprintf("%+v", resp),
 		)
 		return errors.New("failed to set internal k8s lbrp port peer")
 	}
-	l.Info("internal k8s lbrp port peer set")
+	l.V(1).Info("set internal k8s lbrp port peer")
 
 	// updating router ports
 	// updating router "to_ikl0" port in order to set peer=ikl0:to_r0
@@ -257,7 +264,7 @@ func ensureCubesConnections() error {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
 	}
-	l.Info("router port peer set")
+	l.V(1).Info("set router port peer")
 
 	// updating router "to_ekl0" port in order to set peer=ekl0:to_r0
 	rToEklPortName := conf.rToEklPortName
@@ -274,7 +281,7 @@ func ensureCubesConnections() error {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
 	}
-	l.Info("router port peer set")
+	l.V(1).Info("set router port peer")
 
 	// updating external k8s lbrp ports
 	// updating external k8s lbrp "to_r0" port in order to set peer=r0:to_ekl0
@@ -287,13 +294,12 @@ func ensureCubesConnections() error {
 	}
 	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), eklName, eklToRPortName, eklToRPort); err != nil {
 		l.Error(
-			err,
-			"failed to set external k8s lbrp port peer",
+			err, "failed to set external k8s lbrp port peer",
 			"response", fmt.Sprintf("%+v", resp),
 		)
 		return errors.New("failed to set external k8s lbrp port peer")
 	}
-	l.Info("external k8s lbrp port peer set")
+	l.V(1).Info("set external k8s lbrp port peer")
 
 	// updating external k8s lbrp "to_k0" port in order to set peer=k0:to_ekl0
 	eklToKPortName := conf.eklToKPortName
@@ -305,13 +311,12 @@ func ensureCubesConnections() error {
 	}
 	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), eklName, eklToKPortName, eklToKPort); err != nil {
 		l.Error(
-			err,
-			"failed to set external k8s lbrp port peer",
+			err, "failed to set external k8s lbrp port peer",
 			"response", fmt.Sprintf("%+v", resp),
 		)
 		return errors.New("failed to set external k8s lbrp port peer")
 	}
-	l.Info("external k8s lbrp port peer set")
+	l.V(1).Info("set external k8s lbrp port peer")
 
 	// updating k8sdispatcher ports
 	// updating k8sdispatcher "to_ekl0" port in order to set peer=ekl0:to_k0
@@ -325,15 +330,19 @@ func ensureCubesConnections() error {
 	if resp, err := k8sDispatcherAPI.UpdateK8sdispatcherPortsByID(
 		context.TODO(), kName, kToEklPortName, kToEklPort,
 	); err != nil {
-		l.Error(err, "failed to set k8sdispatcher port peer", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to set k8sdispatcher port peer")
+		l.Error(
+			err, "failed to set k8s dispatcher port peer",
+			"response", fmt.Sprintf("%+v", resp),
+		)
+		return errors.New("failed to set k8s dispatcher port peer")
 	}
-	l.Info("k8sdispatcher port peer set")
-
+	l.V(1).Info("set k8s dispatcher port peer")
 	return nil
 }
 
-func ensureCubes() error {
+// EnsureCubes ensures that the polycube infrastructure is correctly deployed: in order to do that, it creates
+// the cubes that don't exist yet and cleans up the configuration of the already existing ones.
+func EnsureCubes() error {
 	// retrieving the k8s lbrp list
 	kls, resp, err := k8sLbrpAPI.ReadK8sLbrpListByID(context.TODO())
 	if err != nil {
@@ -356,12 +365,12 @@ func ensureCubes() error {
 	// creating internal k8s lbrp if it doesn't exist
 	l := log.WithValues("name", iklName)
 	if !iklExist {
-		l.Info("failed to find internal k8s lbrp: creating it...")
+		l.V(1).Info("failed to find internal k8s lbrp: creating it...")
 		if err := createIntK8sLbrp(); err != nil {
 			return err
 		}
 	} else {
-		l.Info("cleaning up services of the already existing internal k8s lbrp...")
+		l.V(1).Info("cleaning up services of the already existing internal k8s lbrp...")
 		if err := CleanupK8sLbrpServices(iklName); err != nil {
 			return err
 		}
@@ -369,12 +378,12 @@ func ensureCubes() error {
 	// creating external k8s lbrp if it doesn't exist
 	l = log.WithValues("name", eklName)
 	if !eklExist {
-		l.Info("failed to find external k8s lbrp: creating it...")
+		l.V(1).Info("failed to find external k8s lbrp: creating it...")
 		if err := createExtK8sLbrp(); err != nil {
 			return err
 		}
 	} else {
-		l.Info("cleaning up services of the already existing external k8s lbrp...")
+		l.V(1).Info("cleaning up services of the already existing external k8s lbrp...")
 		if err := CleanupK8sLbrpServices(eklName); err != nil {
 			return err
 		}
@@ -398,12 +407,12 @@ func ensureCubes() error {
 		}
 	}
 	if !rExist {
-		l.Info("failed to find router: creating it...")
+		l.V(1).Info("failed to find router: creating it...")
 		if err := createRouter(); err != nil {
 			return err
 		}
 	} else {
-		l.Info("cleaning up routes of the already existing router...")
+		l.V(1).Info("cleaning up routes of the already existing router...")
 		if err := CleanupRouterRoutes(); err != nil {
 			return err
 		}
@@ -427,29 +436,40 @@ func ensureCubes() error {
 		}
 	}
 	if !kdExist {
-		l.Info("failed to find k8s dispatcher: creating it...")
+		l.V(1).Info("failed to find k8s dispatcher: creating it...")
 		if err := createK8sDispatcher(); err != nil {
 			return err
 		}
 	} else {
-		l.Info("cleaning up NodePort rules of the already existing k8s dispatcher...")
+		l.V(1).Info("cleaning up NodePort rules of the already existing k8s dispatcher...")
 		if err := CleanupK8sDispatcherNodePortRules(); err != nil {
 			return err
 		}
 	}
+
+	log.Info("ensured polycube cubes")
 	return nil
 }
 
-func EnsureDeployment() error {
-	if err := ensureCubes(); err != nil {
-		return err
+// EnsureConnection probes polycubed in order to be sure that it is up and running. If it is not immediately reachable,
+// up to 5 further attempts with an exponential backoff delay are made. If all the attempts fail, an error is returned.
+func EnsureConnection() error {
+	for i := 0; i < 6; i++ {
+		log.Info("waiting for polycubed...")
+		if i != 0 {
+			backoff := time.Duration(math.Pow(2, float64(i-1))) * time.Second
+			time.Sleep(backoff)
+		}
+		if _, err := http.Get(basePath); err == nil {
+			log.Info("polycubed is ready")
+			return nil
+		}
 	}
-	if err := ensureCubesConnections(); err != nil {
-		return err
-	}
-	return nil
+	log.Error(errors.New("polycubed is unreachable"), "failed to connect to polycubed")
+	return errors.New("failed to connect to polycubed")
 }
 
+// InitConf initializes the internal polycube configuration in order to allow easier polycube components name resolution.
 func InitConf() {
 	ec := node.Env
 	conf = &configuration{
@@ -466,38 +486,4 @@ func InitConf() {
 		kToEklPortName:   "to_" + ec.ExtK8sLbrpName,
 		kToIntPortName:   "to_int",
 	}
-}
-
-func EnsureConnection() error {
-	for i := 0; i < 6; i++ {
-		log.Info("waiting for polycubed...")
-		if i != 0 {
-			backoff := time.Duration(math.Pow(2, float64(i-1))) * time.Second
-			time.Sleep(backoff)
-		}
-		if _, err := http.Get(basePath); err == nil {
-			log.Info("polycubed is ready")
-			return nil
-		}
-	}
-	return errors.New("polycubed is unreachable")
-}
-
-func PollPolycube() {
-	go func() {
-		for {
-			time.Sleep(10 * time.Second)
-			if _, err := http.Get(basePath); err != nil {
-				log.Info("lost polycubed connection, waiting for it...")
-				panic("polycubed is not ready anymore")
-				// TODO stop manager
-				//if err := stopControllers(); err != nil {
-				//	// TODO panic?
-				//}
-				//if err := EnsureConnection(); err != nil {
-				//	// TODO panic?
-				//}
-			}
-		}
-	}()
 }
