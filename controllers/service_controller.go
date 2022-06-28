@@ -22,7 +22,6 @@ import (
 	"github.com/ekoops/polykube-operator/node"
 	"github.com/ekoops/polykube-operator/polycube"
 	"github.com/ekoops/polykube-operator/types"
-	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -35,7 +34,6 @@ import (
 // ServiceReconciler reconciles a Service object
 type ServiceReconciler struct {
 	client.Client
-	Log    logr.Logger
 	Scheme *runtime.Scheme
 }
 
@@ -106,11 +104,11 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			// the following work for both the internal and the external load balancers.
 			// In case o services other than ClusterIP and NodePort ones, the following
 			// will not delete anything
-			if err := polycube.CleanupK8sLbrpsServices(sId); err != nil {
+			if err := polycube.CleanupK8sLbrpsServicesById(sId); err != nil {
 				l.Error(err, "something went wrong during related k8s lbrp services cleanup")
 				return ctrl.Result{}, err
 			}
-			if err := polycube.CleanupK8sDispatcherNodePortRules(sId); err != nil {
+			if err := polycube.CleanupK8sDispatcherNodePortRulesById(sId); err != nil {
 				l.Error(err, "something went wrong during related k8s dispatcher NodePort rules cleanup")
 			}
 			l.Info("cleanup performed on service object deletion event")

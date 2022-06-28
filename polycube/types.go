@@ -1,7 +1,5 @@
 package polycube
 
-import "net"
-
 type configuration struct {
 	intK8sLbrpName   string
 	rName            string
@@ -15,6 +13,4 @@ type configuration struct {
 	eklToKPortName   string
 	kToEklPortName   string
 	kToIntPortName   string
-	vClusterCIDR     *net.IPNet
-	nodePortRange    string
 }

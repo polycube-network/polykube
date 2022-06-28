@@ -213,6 +213,10 @@ func LoadConfig() error {
 	if err != nil {
 		return err
 	}
+	vPodIPNet, err := CalcVPodIPNet(podCIDR)
+	if err != nil {
+		return err
+	}
 	podGwIPNet, err := CalcPodDefaultGatewayIPNet(podCIDR)
 	if err != nil {
 		return err
@@ -250,6 +254,7 @@ func LoadConfig() error {
 		Node:          node,
 		PodCIDR:       podCIDR,
 		PodGwInfo:     podGwInfo,
+		VPodIPNet:     vPodIPNet,
 		ExtIface:      extIface,
 		NodeVtepIPNet: nodeVtepIPNet,
 		NodeGwInfo:    nodeGwInfo,

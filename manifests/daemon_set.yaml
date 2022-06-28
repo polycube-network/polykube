@@ -98,16 +98,6 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: vtepCidr
-            - name: VIRTUAL_POD_CIDR
-              valueFrom:
-                configMapKeyRef:
-                  name: polykube-cfg
-                  key: virtualPodCidr
-            - name: CLUSTER_IP_CIDR
-              valueFrom:
-                configMapKeyRef:
-                  name: polykube-cfg
-                  key: clusterIpCidr
             - name: NODEPORT_RANGE
               valueFrom:
                 configMapKeyRef:
