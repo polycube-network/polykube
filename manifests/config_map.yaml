@@ -3,17 +3,17 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: polykube-env
+  name: polykube-cfg
   namespace: kube-system
 data:
   vxlanIfaceName: "vxlan0"
-  vtepCIDR: "10.18.0.0/16"
+  vtepCidr: "10.18.0.0/16"
+  virtualPodCidr: "3.3.0.0/16"
+  clusterIpCidr: "10.96.0.0/12"
   nodePortRange: "30000-32767"
-  cniConfFilePath: "/etc/cni/net.d/00-polykube.json"
-  clusterIPCIDR: "10.96.0.0/12"
-  virtualPodCIDR: "3.3.0.0/16"
+  cniConfFilePath: "/host/etc/cni/net.d/00-polykube.json"
   mtu: "1450"
-  bridgeName: "br0"
+  intK8sLbrpName: "ikl0"
   routerName: "r0"
-  lbrpName: "lbrp0"
+  extK8sLbrpName: "ekl0"
   k8sDispName: "k0"

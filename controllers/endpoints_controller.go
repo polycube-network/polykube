@@ -19,8 +19,9 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"github.com/ekoops/polykube-operator/pkg/node"
-	"github.com/ekoops/polykube-operator/pkg/polycube"
+	"github.com/ekoops/polykube-operator/node"
+	"github.com/ekoops/polykube-operator/polycube"
+	"github.com/ekoops/polykube-operator/types"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -40,8 +41,8 @@ type EndpointsReconciler struct {
 // buildServiceToBackends builds a map containing for each port (identified by the name
 // or, in case of a single service port, by the placeholder "-") a set containing all the
 // associated backends.
-func buildServiceToBackends(ep *corev1.Endpoints) ServiceToBackends {
-	stb := make(ServiceToBackends)
+func buildServiceToBackends(ep *corev1.Endpoints) types.ServiceToBackends {
+	stb := make(types.ServiceToBackends)
 	for _, sub := range ep.Subsets {
 		// each EndpointPort object is associated one-to-one with a virtual service
 		for _, p := range sub.Ports {
@@ -54,7 +55,7 @@ func buildServiceToBackends(ep *corev1.Endpoints) ServiceToBackends {
 			// each address along with the port of an EndpointPort identifies a backend that has to be associated to the
 			// virtual service
 			for _, addr := range sub.Addresses {
-				stb.Add(svcId, Backend{Ip: addr.IP, Port: p.Port})
+				stb.Add(svcId, types.Backend{Ip: addr.IP, Port: p.Port})
 			}
 		}
 	}
@@ -64,7 +65,7 @@ func buildServiceToBackends(ep *corev1.Endpoints) ServiceToBackends {
 // isExternalTrafficPolicyCompliant verifies that the provided backend is compliant with the provided external traffic
 // policy. A backend is always compliant if the external traffic policy is set to "Cluster". In case it was
 // set to "Local", the backend must have an IP contained in the local node Pod CIDR.
-func isExternalTrafficPolicyCompliant(b *Backend, etp corev1.ServiceExternalTrafficPolicyType) bool {
+func isExternalTrafficPolicyCompliant(b *types.Backend, etp corev1.ServiceExternalTrafficPolicyType) bool {
 	if etp == corev1.ServiceExternalTrafficPolicyTypeCluster {
 		return true
 	}
@@ -78,7 +79,7 @@ func isExternalTrafficPolicyCompliant(b *Backend, etp corev1.ServiceExternalTraf
 // isInternalTrafficPolicyCompliant verifies that the provided backend is compliant with the provided internal traffic
 // policy. A backend is always compliant if the external traffic policy is set to "Cluster" or is not defined.
 // In case it was set to "Local", the backend must have an IP contained in the local node Pod CIDR.
-func isInternalTrafficPolicyCompliant(b *Backend, itp *corev1.ServiceInternalTrafficPolicyType) bool {
+func isInternalTrafficPolicyCompliant(b *types.Backend, itp *corev1.ServiceInternalTrafficPolicyType) bool {
 	if itp == nil || *itp == corev1.ServiceInternalTrafficPolicyCluster {
 		return true
 	}
@@ -90,12 +91,12 @@ func isInternalTrafficPolicyCompliant(b *Backend, itp *corev1.ServiceInternalTra
 }
 
 // buildEndpointsDetail builds a struct containing the info about the backends sets organized per service.
-func buildEndpointsDetail(s *corev1.Service, stb ServiceToBackends) *EndpointsDetail {
+func buildEndpointsDetail(s *corev1.Service, stb types.ServiceToBackends) *types.EndpointsDetail {
 	itp := s.Spec.InternalTrafficPolicy
 	etp := s.Spec.ExternalTrafficPolicy
-	sd := &EndpointsDetail{
-		ClusterIPServiceToBackends: make(ServiceToBackends),
-		NodePortServiceToBackends:  make(ServiceToBackends),
+	sd := &types.EndpointsDetail{
+		ClusterIPServiceToBackends: make(types.ServiceToBackends),
+		NodePortServiceToBackends:  make(types.ServiceToBackends),
 	}
 
 	// each Frontend represents a virtual service. It has to be associated
@@ -103,7 +104,7 @@ func buildEndpointsDetail(s *corev1.Service, stb ServiceToBackends) *EndpointsDe
 	// the ServiceToBackends struct using the port name or the "-" placeholder in
 	// case of a single port.
 	for _, p := range s.Spec.Ports {
-		var backends map[Backend]struct{}
+		var backends map[types.Backend]struct{}
 		if p.Name == "" {
 			backends = stb.GetBackendsSet("-")
 		} else {
@@ -178,8 +179,8 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 	serviceToBackends := buildServiceToBackends(eps)
 	endpointsDetail := buildEndpointsDetail(s, serviceToBackends)
-	if err := polycube.SyncLbrpsServicesBackends(eps.Name, endpointsDetail); err != nil {
-		l.Error(err, "something went wrong during lbrps services backends sync")
+	if err := polycube.SyncK8sLbrpsServicesBackends(eps.Name, endpointsDetail); err != nil {
+		l.Error(err, "something went wrong during k8s lbrps services backends sync")
 		return ctrl.Result{}, err
 	}
 

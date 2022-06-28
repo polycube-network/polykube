@@ -9,28 +9,59 @@ spec:
   selector:
     matchLabels:
       k8s-app: polykube
-      kubernetes.io/cluster-service: "true"
+      # The following should not be necessary anymore
+      # kubernetes.io/cluster-service: "true"
   template:
     metadata:
       labels:
         k8s-app: polykube
-        kubernetes.io/cluster-service: "true"
-      annotations:
+        # The following should not be necessary anymore
+        # kubernetes.io/cluster-service: "true"
+      # annotations:
         # Mark polycube as critical, gets priority
         # https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
-        scheduler.alpha.kubernetes.io/critical-pod: ''
-        scheduler.alpha.kubernetes.io/tolerations: >-
-          [{"key":"dedicated","operator":"Equal","value":"master","effect":"NoSchedule"}]
+        # The following was replaced by .spec.priorityClassName: system-node-critical
+        # scheduler.alpha.kubernetes.io/critical-pod: ''
+        # The following was replaced by a toleration in the .spec.tolerations list
+        # scheduler.alpha.kubernetes.io/tolerations: >-
+        #  [{"key":"dedicated","operator":"Equal","value":"master","effect":"NoSchedule"}]
     spec:
-      #serviceAccountName: polycube
+      priorityClassName: system-node-critical
+      serviceAccountName: polykube-ctrl-mgr-sa
+      hostNetwork: true
       containers:
         - name: polycubed
-          image: polycubenets/polycube-k8s:latest
+          image: ekoops/polycube:latest  # TODO verify that this is the right way to proceed
           imagePullPolicy: Always
+          terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve the log from
+          securityContext:
+            privileged: true
           command: ["polycubed",
-                    "--loglevel=DEBUG",
-                    "--addr=0.0.0.0",
-                    "--logfile=/host/var/log/pcn_k8s"]
+                    "--loglevel=TRACE",
+                    "--addr=0.0.0.0", # TODO check if this can be set to localhost
+                    "--logfile=/host/var/log/polycubed.polykube.log"] # TODO determines the log file
+#          livenessProbe: # TODO maybe the livenessProbe might be removed
+#            httpGet:
+#              host: 127.0.0.1
+#              path: /polycube/v1/ # TODO change this
+#              port: 9000
+#            initialDelaySeconds: 60 # TODO check
+#            timeoutSeconds: 10 # TODO check
+#            periodSeconds: 20 # TODO check
+          volumeMounts:
+            - name: lib-modules
+              mountPath: /lib/modules
+            - name: usr-src
+              mountPath: /usr/src
+            - name: var-log
+              mountPath: /host/var/log
+        - name: polykube-operator
+          image: ekoops/polykube-operator:latest  # TODO verify that this is the right way to proceed
+          imagePullPolicy: Always
+          terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve the log from
+          securityContext:
+            privileged: true
+          command: ["/polykube"]
           lifecycle:
             postStart:
               exec:
@@ -40,137 +71,116 @@ spec:
               exec:
                 command:
                   - "/cni-uninstall.sh"
+#          livenessProbe:
+#            httpGet:
+#              path: /healthz
+#              port: 8081
+#            initialDelaySeconds: 15
+#            periodSeconds: 20
+#          readinessProbe:
+#            httpGet:
+#              path: /readyz
+#              port: 8081
+#            initialDelaySeconds: 5
+#            periodSeconds: 10
           env:
-            - name: K8S_NODE_NAME
+            - name: NODE_K8S_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: VXLAN_IFACE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: vxlanIfaceName
+            - name: VTEP_CIDR
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: vtepCidr
+            - name: VIRTUAL_POD_CIDR
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: virtualPodCidr
+            - name: CLUSTER_IP_CIDR
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: clusterIpCidr
+            - name: NODEPORT_RANGE
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: nodePortRange
+            - name: CNI_CONF_FILE_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: cniConfFilePath
             - name: POLYCUBE_MTU
               valueFrom:
                 configMapKeyRef:
-                  name: polycube-env
+                  name: polykube-cfg
                   key: mtu
-            - name: POLYCUBE_VPODS_RANGE
+            - name: POLYCUBE_INT_K8S_LBRP_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: polycube-env
-                  key: vPodsRange
+                  name: polykube-cfg
+                  key: intK8sLbrpName
+            - name: POLYCUBE_ROUTER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: routerName
+            - name: POLYCUBE_EXT_K8S_LBRP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: extK8sLbrpName
+            - name: POLYCUBE_K8SDISP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: k8sDispName
           volumeMounts:
-            - name: lib-modules
-              mountPath: /lib/modules
-            - name: usr-src
-              mountPath: /usr/src
-            - name: cni-path
+            - name: opt-cni-bin
               mountPath: /host/opt/cni/bin
             - name: etc-cni-netd
               mountPath: /host/etc/cni/net.d
-            - name: var-log
-              mountPath: /host/var/log
-            - name: kubeconfig
-              mountPath: /var/lib/pcn_k8s/
-          securityContext:
-            privileged: true
-          ports:
-            - name: polycubed
-              containerPort: 9000
-          terminationMessagePolicy: FallbackToLogsOnError
-        - name: polycube-k8s
-          image: polycubenets/polycube-k8s:latest
-          imagePullPolicy: Always
-          command: ["/pcn_k8s"]
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - "/cleanup.sh"
-          env:
-            - name: K8S_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: POLYCUBE_MTU
-              valueFrom:
-                configMapKeyRef:
-                  name: polycube-env
-                  key: mtu
-            - name: POLYCUBE_VPODS_RANGE
-              valueFrom:
-                configMapKeyRef:
-                  name: polycube-env
-                  key: vPodsRange
-            - name: POLYCUBE_VTEPS_RANGE
-              valueFrom:
-                configMapKeyRef:
-                  name: polycube-env
-                  key: vtepsRange
-            - name: POLYCUBE_ETCD_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: polycube-env
-                  key: etcd_url
-            - name: POLYCUBE_SERVICE_CLUSTERIP_RANGE
-              valueFrom:
-                configMapKeyRef:
-                  name: polycube-env
-                  key: serviceClusterIPRange
-            - name: POLYCUBE_SERVICE_NODEPORT_RANGE
-              valueFrom:
-                configMapKeyRef:
-                  name: polycube-env
-                  key: serviceNodePortRange
-          volumeMounts:
-            - name: netns
-              mountPath: /host/var/run/netns
-            - name: proc
-              mountPath: /host/proc/
-            - name: kubeconfig
-              mountPath: /var/lib/pcn_k8s/
-          securityContext:
-            privileged: true
-          terminationMessagePolicy: FallbackToLogsOnError
-          livenessProbe:
-            httpGet:
-              host: 127.0.0.1
-              path: /polycube/v1/k8switch0/
-              port: 9000
-            initialDelaySeconds: 60
-            timeoutSeconds: 10
-            periodSeconds: 20
-      hostNetwork: true
-      #restartPolicy: Never
       volumes:
-        - name: lib-modules
-          hostPath:
-            path: /lib/modules
-        - name: usr-src
-          hostPath:
-            path: /usr/src
-        - name: cni-path
+        - name: opt-cni-bin
           hostPath:
             path: /opt/cni/bin
-        - name: etc-cni-netd
+        - name: etc-cni-netd # installing polykube-00.conf into the right host folder: used by operator
           hostPath:
             path: /etc/cni/net.d
-        - name: var-log
+        - name: var-log   # destination the polycube log into the right host folder: used by polycube # TODO and the operator log?
           hostPath:
             path: /var/log
-        - name: netns
+        - name: lib-modules   # kernel headers and other kernel stuff # TODO required?
           hostPath:
-            path: /var/run/netns
-        - name: proc
+            path: /lib/modules
+        - name: usr-src     # kernel headers and other kernel stuff # TODO required?
           hostPath:
-            path: /proc/
-        - name: kubeconfig
-          configMap:
-            name: kube-proxy
-            #namespace: kube-public
-      tolerations:
+            path: /usr/src
+#        - name: netns # TODO required?
+#          hostPath:
+#            path: /var/run/netns
+#        - name: proc # TODO required?
+#          hostPath:
+#            path: /proc/
+      tolerations: # TODO verify tolerations
         - effect: NoSchedule
           key: node.kubernetes.io/not-ready
-        - effect: NoSchedule
-          key: node-role.kubernetes.io/master
+#        - effect: NoSchedule
+#          key: node-role.kubernetes.io/master # TODO I don't want that is scheduled on master: remove it?
         - effect: NoSchedule
           key: node.cloudprovider.kubernetes.io/uninitialized
           value: "true"
         - key: CriticalAddonsOnly
           operator: "Exists"
+        - key: "dedicated"    # TODO maybe this toleration may be removed?
+          operator: "Equal"
+          value: "master"
+          effect: "NoSchedule"

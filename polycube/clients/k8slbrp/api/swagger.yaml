@@ -1,0 +1,3456 @@
+---
+swagger: "2.0"
+info:
+  description: "k8slbrp API generated from k8slbrp.yang"
+  version: "1.0.0"
+  title: "k8slbrp API"
+  x-yang-path: "/input/k8slbrp.yang"
+host: "localhost:8080"
+basePath: "/"
+tags:
+- name: "k8slbrp"
+schemes:
+- "http"
+paths:
+  /k8slbrp/{name}/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read k8slbrp by ID"
+      description: "Read operation of resource: k8slbrp"
+      operationId: "readK8sLbrpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/K8sLbrp"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create k8slbrp by ID"
+      description: "Create operation of resource: k8slbrp"
+      operationId: "createK8sLbrpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "k8slbrp"
+        description: "k8slbrpbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/K8sLbrp"
+        x-exportParamName: "K8sLbrp"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+      x-has-default-impl: true
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace k8slbrp by ID"
+      description: "Replace operation of resource: k8slbrp"
+      operationId: "replaceK8sLbrpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "k8slbrp"
+        description: "k8slbrpbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/K8sLbrp"
+        x-exportParamName: "K8sLbrp"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+      x-has-default-impl: true
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete k8slbrp by ID"
+      description: "Delete operation of resource: k8slbrp"
+      operationId: "deleteK8sLbrpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+      x-has-default-impl: true
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update k8slbrp by ID"
+      description: "Update operation of resource: k8slbrp"
+      operationId: "updateK8sLbrpByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "k8slbrp"
+        description: "k8slbrpbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/K8sLbrp"
+        x-exportParamName: "K8sLbrp"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read k8slbrp by ID"
+      description: "Read operation of resource: k8slbrp"
+      operationId: "readK8sLbrpListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/K8sLbrp"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-has-default-impl: true
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update k8slbrp by ID"
+      description: "Update operation of resource: k8slbrp"
+      operationId: "updateK8sLbrpListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "k8slbrp"
+        description: "k8slbrpbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/K8sLbrp"
+        x-exportParamName: "K8sLbrp"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/uuid/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read uuid by ID"
+      description: "Read operation of resource: uuid"
+      operationId: "readK8sLbrpUuidByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            description: "UUID of the Cube"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/type/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read type by ID"
+      description: "Read operation of resource: type"
+      operationId: "readK8sLbrpTypeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Type of the Cube (TC, XDP_SKB, XDP_DRV)"
+            example: "TC"
+            enum:
+            - "TC"
+            - "XDP_SKB"
+            - "XDP_DRV"
+            default: "TC"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/service-name/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read service-name by ID"
+      description: "Read operation of resource: service-name"
+      operationId: "readK8sLbrpServiceNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            example: "helloworld"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/loglevel/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read loglevel by ID"
+      description: "Read operation of resource: loglevel"
+      operationId: "readK8sLbrpLoglevelByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Defines the logging level of a service instance, from none\
+              \ (OFF) to the most verbose (TRACE)"
+            example: "INFO"
+            enum:
+            - "TRACE"
+            - "DEBUG"
+            - "INFO"
+            - "WARN"
+            - "ERR"
+            - "CRITICAL"
+            - "OFF"
+            default: "INFO"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update loglevel by ID"
+      description: "Update operation of resource: loglevel"
+      operationId: "updateK8sLbrpLoglevelByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "loglevel"
+        description: "Defines the logging level of a service instance, from none (OFF)\
+          \ to the most verbose (TRACE)"
+        required: true
+        schema:
+          type: "string"
+          description: "Defines the logging level of a service instance, from none\
+            \ (OFF) to the most verbose (TRACE)"
+          example: "INFO"
+          enum:
+          - "TRACE"
+          - "DEBUG"
+          - "INFO"
+          - "WARN"
+          - "ERR"
+          - "CRITICAL"
+          - "OFF"
+          default: "INFO"
+        x-is-enum: "true"
+        x-exportParamName: "Loglevel"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/port_mode/:
+    get:
+      tags:
+        - "k8slbrp"
+      summary: "Read port mode by ID"
+      description: "Read operation of resource: port_mode"
+      operationId: "readK8sLbrpPortModeByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port"
+            example: "MULTI"
+            enum:
+              - "SINGLE"
+              - "MULTI"
+            default: "MULTI"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+        - "k8slbrp"
+      summary: "Update port mode by ID"
+      description: "Update operation of resource: port_mode"
+      operationId: "updateK8sLbrpPortModeByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - in: "body"
+          name: "port_mode"
+          description: "K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port"
+          required: true
+          schema:
+            type: "string"
+            description: "K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port"
+            example: "MULTI"
+            enum:
+              - "SINGLE"
+              - "MULTI"
+            default: "MULTI"
+          x-is-enum: "true"
+          x-exportParamName: "PortMode_"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/ports/{ports_name}/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read ports by ID"
+      description: "Read operation of resource: ports"
+      operationId: "readK8sLbrpPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Ports"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create ports by ID"
+      description: "Create operation of resource: ports"
+      operationId: "createK8sLbrpPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace ports by ID"
+      description: "Replace operation of resource: ports"
+      operationId: "replaceK8sLbrpPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete ports by ID"
+      description: "Delete operation of resource: ports"
+      operationId: "deleteK8sLbrpPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update ports by ID"
+      description: "Update operation of resource: ports"
+      operationId: "updateK8sLbrpPortsByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/ports/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read ports by ID"
+      description: "Read operation of resource: ports"
+      operationId: "readK8sLbrpPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Ports"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create ports by ID"
+      description: "Create operation of resource: ports"
+      operationId: "createK8sLbrpPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace ports by ID"
+      description: "Replace operation of resource: ports"
+      operationId: "replaceK8sLbrpPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete ports by ID"
+      description: "Delete operation of resource: ports"
+      operationId: "deleteK8sLbrpPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update ports by ID"
+      description: "Update operation of resource: ports"
+      operationId: "updateK8sLbrpPortsListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ports"
+        description: "portsbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Ports"
+        x-exportParamName: "Ports"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/ports/{ports_name}/uuid/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read uuid by ID"
+      description: "Read operation of resource: uuid"
+      operationId: "readK8sLbrpPortsUuidByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+            description: "UUID of the port"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/ports/{ports_name}/status/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read status by ID"
+      description: "Read operation of resource: status"
+      operationId: "readK8sLbrpPortsStatusByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Status of the port (UP or DOWN)"
+            enum:
+            - "UP"
+            - "DOWN"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/ports/{ports_name}/peer/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read peer by ID"
+      description: "Read operation of resource: peer"
+      operationId: "readK8sLbrpPortsPeerByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Peer name, such as a network interfaces (e.g., 'veth0')\
+              \ or another cube (e.g., 'br1:port2')"
+            example: "r0:port1"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update peer by ID"
+      description: "Update operation of resource: peer"
+      operationId: "updateK8sLbrpPortsPeerByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "peer"
+        description: "Peer name, such as a network interfaces (e.g., 'veth0') or another\
+          \ cube (e.g., 'br1:port2')"
+        required: true
+        schema:
+          type: "string"
+          description: "Peer name, such as a network interfaces (e.g., 'veth0') or\
+            \ another cube (e.g., 'br1:port2')"
+          example: "r0:port1"
+        x-exportParamName: "Peer"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/ports/{ports_name}/type/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read type by ID"
+      description: "Read operation of resource: type"
+      operationId: "readK8sLbrpPortsTypeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Type of the LB port (e.g. FRONTEND or BACKEND)"
+            enum:
+            - "FRONTEND"
+            - "BACKEND"
+            x-is-required: true
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update type by ID"
+      description: "Update operation of resource: type"
+      operationId: "updateK8sLbrpPortsTypeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "ports_name"
+        in: "path"
+        description: "ID of ports_name"
+        required: true
+        type: "string"
+        x-exportParamName: "PortsName"
+      - in: "body"
+        name: "type"
+        description: "Type of the LB port (e.g. FRONTEND or BACKEND)"
+        required: true
+        schema:
+          type: "string"
+          description: "Type of the LB port (e.g. FRONTEND or BACKEND)"
+          enum:
+          - "FRONTEND"
+          - "BACKEND"
+          x-is-required: true
+        x-is-enum: "true"
+        x-exportParamName: "Type_"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/ports/{ports_name}/ip/:
+    get:
+      tags:
+        - "k8slbrp"
+      summary: "Read ip by ID"
+      description: "Read operation of resource: ip"
+      operationId: "readK8sLbrpPortsIpByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - name: "ports_name"
+          in: "path"
+          description: "ID of ports_name"
+          required: true
+          type: "string"
+          x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "IP address of the client interface (only for FRONTEND port)"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+        - "k8slbrp"
+      summary: "Update ip by ID"
+      description: "Update operation of resource: ip"
+      operationId: "updateK8sLbrpPortsIpByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - name: "ports_name"
+          in: "path"
+          description: "ID of ports_name"
+          required: true
+          type: "string"
+          x-exportParamName: "PortsName"
+        - in: "body"
+          name: "ip"
+          description: "IP address of the client interface (only for FRONTEND port)"
+          required: true
+          type: "string"
+          x-exportParamName: "Ip_"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/shadow/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read shadow by ID"
+      description: "Read operation of resource: shadow"
+      operationId: "readK8sLbrpShadowByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "boolean"
+            description: "Defines if the service is visible in Linux"
+            default: "false"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/span/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read span by ID"
+      description: "Read operation of resource: span"
+      operationId: "readK8sLbrpSpanByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "boolean"
+            description: "Defines if all traffic is sent to Linux"
+            default: "false"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update span by ID"
+      description: "Update operation of resource: span"
+      operationId: "updateK8sLbrpSpanByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "span"
+        description: "Defines if all traffic is sent to Linux"
+        required: true
+        schema:
+          type: "boolean"
+          description: "Defines if all traffic is sent to Linux"
+          default: "false"
+        x-exportParamName: "Span"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
+  /k8slbrp/{name}/src-ip-rewrite/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read src-ip-rewrite by ID"
+      description: "Read operation of resource: src-ip-rewrite"
+      operationId: "readK8sLbrpSrcIpRewriteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/SrcIpRewrite"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create src-ip-rewrite by ID"
+      description: "Create operation of resource: src-ip-rewrite"
+      operationId: "createK8sLbrpSrcIpRewriteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "src-ip-rewrite"
+        description: "src-ip-rewritebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/SrcIpRewrite"
+        x-exportParamName: "SrcIpRewrite"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace src-ip-rewrite by ID"
+      description: "Replace operation of resource: src-ip-rewrite"
+      operationId: "replaceK8sLbrpSrcIpRewriteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "src-ip-rewrite"
+        description: "src-ip-rewritebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/SrcIpRewrite"
+        x-exportParamName: "SrcIpRewrite"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete src-ip-rewrite by ID"
+      description: "Delete operation of resource: src-ip-rewrite"
+      operationId: "deleteK8sLbrpSrcIpRewriteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update src-ip-rewrite by ID"
+      description: "Update operation of resource: src-ip-rewrite"
+      operationId: "updateK8sLbrpSrcIpRewriteByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "src-ip-rewrite"
+        description: "src-ip-rewritebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/SrcIpRewrite"
+        x-exportParamName: "SrcIpRewrite"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/src-ip-rewrite/ip-range/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read ip-range by ID"
+      description: "Read operation of resource: ip-range"
+      operationId: "readK8sLbrpSrcIpRewriteIpRangeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+            description: "Range of IP addresses of the clients that must be replaced"
+            example: "10.2.0.0/24"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update ip-range by ID"
+      description: "Update operation of resource: ip-range"
+      operationId: "updateK8sLbrpSrcIpRewriteIpRangeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "ip-range"
+        description: "Range of IP addresses of the clients that must be replaced"
+        required: true
+        schema:
+          type: "string"
+          format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+          description: "Range of IP addresses of the clients that must be replaced"
+          example: "10.2.0.0/24"
+        x-exportParamName: "IpRange"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/src-ip-rewrite/new_ip_range/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read new_ip_range by ID"
+      description: "Read operation of resource: new_ip_range"
+      operationId: "readK8sLbrpSrcIpRewriteNewIpRangeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+            description: "Range of IP addresses of the that must be used to replace\
+              \ client addresses"
+            example: "10.3.0.0/24"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update new_ip_range by ID"
+      description: "Update operation of resource: new_ip_range"
+      operationId: "updateK8sLbrpSrcIpRewriteNewIpRangeByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "new_ip_range"
+        description: "Range of IP addresses of the that must be used to replace client\
+          \ addresses"
+        required: true
+        schema:
+          type: "string"
+          format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+          description: "Range of IP addresses of the that must be used to replace\
+            \ client addresses"
+          example: "10.3.0.0/24"
+        x-exportParamName: "NewIpRange"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read service by ID"
+      description: "Read operation of resource: service"
+      operationId: "readK8sLbrpServiceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/Service"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create service by ID"
+      description: "Create operation of resource: service"
+      operationId: "createK8sLbrpServiceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "service"
+        description: "servicebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Service"
+        x-exportParamName: "Service"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace service by ID"
+      description: "Replace operation of resource: service"
+      operationId: "replaceK8sLbrpServiceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "service"
+        description: "servicebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Service"
+        x-exportParamName: "Service"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete service by ID"
+      description: "Delete operation of resource: service"
+      operationId: "deleteK8sLbrpServiceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update service by ID"
+      description: "Update operation of resource: service"
+      operationId: "updateK8sLbrpServiceByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "service"
+        description: "servicebody object"
+        required: true
+        schema:
+          $ref: "#/definitions/Service"
+        x-exportParamName: "Service"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read service by ID"
+      description: "Read operation of resource: service"
+      operationId: "readK8sLbrpServiceListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Service"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create service by ID"
+      description: "Create operation of resource: service"
+      operationId: "createK8sLbrpServiceListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "service"
+        description: "servicebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Service"
+        x-exportParamName: "Service"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace service by ID"
+      description: "Replace operation of resource: service"
+      operationId: "replaceK8sLbrpServiceListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "service"
+        description: "servicebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Service"
+        x-exportParamName: "Service"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete service by ID"
+      description: "Delete operation of resource: service"
+      operationId: "deleteK8sLbrpServiceListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update service by ID"
+      description: "Update operation of resource: service"
+      operationId: "updateK8sLbrpServiceListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - in: "body"
+        name: "service"
+        description: "servicebody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/Service"
+        x-exportParamName: "Service"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/name/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read name by ID"
+      description: "Read operation of resource: name"
+      operationId: "readK8sLbrpServiceNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Service name related to the backend server of the pool is\
+              \ connected to"
+            example: "Service-nigx"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update name by ID"
+      description: "Update operation of resource: name"
+      operationId: "updateK8sLbrpServiceNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "name"
+        description: "Service name related to the backend server of the pool is connected\
+          \ to"
+        required: true
+        schema:
+          type: "string"
+          description: "Service name related to the backend server of the pool is\
+            \ connected to"
+          example: "Service-nigx"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read backend by ID"
+      description: "Read operation of resource: backend"
+      operationId: "readK8sLbrpServiceBackendByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/ServiceBackend"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create backend by ID"
+      description: "Create operation of resource: backend"
+      operationId: "createK8sLbrpServiceBackendByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "backend"
+        description: "backendbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/ServiceBackend"
+        x-exportParamName: "Backend"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace backend by ID"
+      description: "Replace operation of resource: backend"
+      operationId: "replaceK8sLbrpServiceBackendByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "backend"
+        description: "backendbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/ServiceBackend"
+        x-exportParamName: "Backend"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete backend by ID"
+      description: "Delete operation of resource: backend"
+      operationId: "deleteK8sLbrpServiceBackendByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update backend by ID"
+      description: "Update operation of resource: backend"
+      operationId: "updateK8sLbrpServiceBackendByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "backend"
+        description: "backendbody object"
+        required: true
+        schema:
+          $ref: "#/definitions/ServiceBackend"
+        x-exportParamName: "Backend"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/backend/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read backend by ID"
+      description: "Read operation of resource: backend"
+      operationId: "readK8sLbrpServiceBackendListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ServiceBackend"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    post:
+      tags:
+      - "k8slbrp"
+      summary: "Create backend by ID"
+      description: "Create operation of resource: backend"
+      operationId: "createK8sLbrpServiceBackendListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "backend"
+        description: "backendbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/ServiceBackend"
+        x-exportParamName: "Backend"
+      responses:
+        "201":
+          description: "Created: Successful operation"
+        "404":
+          description: "Not found: Resource not created"
+        "403":
+          description: "Forbidden: User not authorized"
+        "409":
+          description: "Conflict: Resource not created"
+    put:
+      tags:
+      - "k8slbrp"
+      summary: "Replace backend by ID"
+      description: "Replace operation of resource: backend"
+      operationId: "replaceK8sLbrpServiceBackendListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "backend"
+        description: "backendbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/ServiceBackend"
+        x-exportParamName: "Backend"
+      responses:
+        "201":
+          description: "OK: Resource replaced successfully"
+        "404":
+          description: "Resource not found"
+        "204":
+          description: "No content: Resource modified successfully"
+        "400":
+          description: "Bad request: resource not replaced"
+    delete:
+      tags:
+      - "k8slbrp"
+      summary: "Delete backend by ID"
+      description: "Delete operation of resource: backend"
+      operationId: "deleteK8sLbrpServiceBackendListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      responses:
+        "404":
+          description: "Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Resource deleted"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update backend by ID"
+      description: "Update operation of resource: backend"
+      operationId: "updateK8sLbrpServiceBackendListByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - in: "body"
+        name: "backend"
+        description: "backendbody object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/ServiceBackend"
+        x-exportParamName: "Backend"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/name/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read name by ID"
+      description: "Read operation of resource: name"
+      operationId: "readK8sLbrpServiceBackendNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "name"
+            example: "backend1"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update name by ID"
+      description: "Update operation of resource: name"
+      operationId: "updateK8sLbrpServiceBackendNameByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "name"
+        description: "name"
+        required: true
+        schema:
+          type: "string"
+          description: "name"
+          example: "backend1"
+        x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/port/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read port by ID"
+      description: "Read operation of resource: port"
+      operationId: "readK8sLbrpServiceBackendPortByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "integer"
+            minimum: 0
+            maximum: 65535
+            format: "uint16"
+            description: "Port where the server listen to (this value is ignored in\
+              \ case of ICMP)"
+            example: "80"
+            x-is-required: true
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update port by ID"
+      description: "Update operation of resource: port"
+      operationId: "updateK8sLbrpServiceBackendPortByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "port"
+        description: "Port where the server listen to (this value is ignored in case\
+          \ of ICMP)"
+        required: true
+        schema:
+          type: "integer"
+          minimum: 0
+          maximum: 65535
+          format: "uint16"
+          description: "Port where the server listen to (this value is ignored in\
+            \ case of ICMP)"
+          example: "80"
+          x-is-required: true
+        x-exportParamName: "Port"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /k8slbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/weight/:
+    get:
+      tags:
+      - "k8slbrp"
+      summary: "Read weight by ID"
+      description: "Read operation of resource: weight"
+      operationId: "readK8sLbrpServiceBackendWeightByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "integer"
+            format: "uint16"
+            description: "Weight of the backend in the pool"
+            example: "1"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+      - "k8slbrp"
+      summary: "Update weight by ID"
+      description: "Update operation of resource: weight"
+      operationId: "updateK8sLbrpServiceBackendWeightByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "vip"
+        in: "path"
+        description: "ID of vip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Vip"
+      - name: "vport"
+        in: "path"
+        description: "ID of vport"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "Vport"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-exportParamName: "Proto"
+      - name: "ip"
+        in: "path"
+        description: "ID of ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "Ip"
+      - in: "body"
+        name: "weight"
+        description: "Weight of the backend in the pool"
+        required: true
+        schema:
+          type: "integer"
+          format: "uint16"
+          description: "Weight of the backend in the pool"
+          example: "1"
+        x-exportParamName: "Weight"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+definitions:
+  Ports:
+    properties:
+      name:
+        type: "string"
+        example: "port1"
+        description: "Port Name"
+        x-has-default-impl: true
+        x-is-required: true
+        x-is-key: true
+      uuid:
+        type: "string"
+        format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        description: "UUID of the port"
+        readOnly: true
+        x-is-base-datamodel: true
+      status:
+        type: "string"
+        description: "Status of the port (UP or DOWN)"
+        readOnly: true
+        enum:
+        - "UP"
+        - "DOWN"
+        x-is-base-datamodel: true
+      peer:
+        type: "string"
+        example: "r0:port1"
+        description: "Peer name, such as a network interfaces (e.g., 'veth0') or another\
+          \ cube (e.g., 'br1:port2')"
+        x-is-base-datamodel: true
+      tcubes:
+        type: "array"
+        items:
+          type: "string"
+          description: "List of transparent cubes attached to this port"
+          readOnly: true
+        x-is-base-datamodel: true
+      type:
+        type: "string"
+        description: "Type of the LB port (e.g. FRONTEND or BACKEND)"
+        enum:
+        - "FRONTEND"
+        - "BACKEND"
+        x-is-required: true
+    example:
+      tcubes:
+      - "tcubes"
+      - "tcubes"
+      peer: "r0:port1"
+      name: "port1"
+      type: "FRONTEND"
+      uuid: "uuid"
+      status: "UP"
+    x-inherits-from: "polycube::service::Port"
+    x-is-list: "true"
+    x-parent: "K8sLbrp"
+  SrcIpRewrite:
+    properties:
+      ip-range:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        example: "10.2.0.0/24"
+        description: "Range of IP addresses of the clients that must be replaced"
+      new_ip_range:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/(([0-9])|([1-2][0-9])|(3[0-2]))"
+        example: "10.3.0.0/24"
+        description: "Range of IP addresses of the that must be used to replace client\
+          \ addresses"
+    example:
+      ip-range: "10.2.0.0/24"
+      new_ip_range: "10.3.0.0/24"
+    x-parent: "K8sLbrp"
+  ServiceBackend:
+    properties:
+      name:
+        type: "string"
+        example: "backend1"
+        description: "name"
+      ip:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        example: "10.244.1.23"
+        description: "IP address of the backend server of the pool"
+        x-is-key: true
+      port:
+        type: "integer"
+        format: "uint16"
+        example: 80
+        description: "Port where the server listen to (this value is ignored in case\
+          \ of ICMP)"
+        minimum: 0
+        maximum: 65535
+        x-is-required: true
+      weight:
+        type: "integer"
+        format: "uint16"
+        example: 1
+        description: "Weight of the backend in the pool"
+    example:
+      port: 80
+      ip: "10.244.1.23"
+      name: "backend1"
+      weight: 1
+    x-is-list: "true"
+    x-parent: "Service"
+  Service:
+    properties:
+      name:
+        type: "string"
+        example: "Service-nigx"
+        description: "Service name related to the backend server of the pool is connected\
+          \ to"
+      vip:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        example: "130.192.100.12"
+        description: "Virtual IP (vip) of the service where clients connect to"
+        x-is-key: true
+      vport:
+        type: "integer"
+        format: "uint16"
+        example: 80
+        description: "Port of the virtual server where clients connect to (this value\
+          \ is ignored in case of ICMP)"
+        minimum: 0
+        maximum: 65535
+        x-is-key: true
+      proto:
+        type: "string"
+        description: "Upper-layer protocol associated with a loadbalancing service\
+          \ instance. 'ALL' creates an entry for all the supported protocols"
+        enum:
+        - "ICMP"
+        - "TCP"
+        - "UDP"
+        - "ALL"
+        x-is-required: true
+        x-is-key: true
+      backend:
+        type: "array"
+        description: "Pool of backend servers that actually serve requests"
+        items:
+          $ref: "#/definitions/ServiceBackend"
+        x-key:
+        - "ip"
+        x-key-list:
+        - name: "ip"
+          type: "string"
+    example:
+      vport: 80
+      proto: "ICMP"
+      name: "Service-nigx"
+      backend:
+      - port: 80
+        ip: "10.244.1.23"
+        name: "backend1"
+        weight: 1
+      - port: 80
+        ip: "10.244.1.23"
+        name: "backend1"
+        weight: 1
+      vip: "130.192.100.12"
+    x-is-list: "true"
+    x-parent: "K8sLbrp"
+  K8sLbrp:
+    properties:
+      name:
+        type: "string"
+        example: "k8slbrp1"
+        description: "Name of the k8slbrp service"
+        x-has-default-impl: true
+        x-is-required: true
+        x-is-key: true
+        x-is-cube-name: true
+      uuid:
+        type: "string"
+        format: "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        description: "UUID of the Cube"
+        readOnly: true
+        x-is-base-datamodel: true
+      type:
+        type: "string"
+        example: "TC"
+        description: "Type of the Cube (TC, XDP_SKB, XDP_DRV)"
+        readOnly: true
+        default: "TC"
+        enum:
+        - "TC"
+        - "XDP_SKB"
+        - "XDP_DRV"
+        x-is-base-datamodel: true
+      service-name:
+        type: "string"
+        example: "helloworld"
+        readOnly: true
+        x-is-base-datamodel: true
+      loglevel:
+        type: "string"
+        example: "INFO"
+        description: "Defines the logging level of a service instance, from none (OFF)\
+          \ to the most verbose (TRACE)"
+        default: "INFO"
+        enum:
+        - "TRACE"
+        - "DEBUG"
+        - "INFO"
+        - "WARN"
+        - "ERR"
+        - "CRITICAL"
+        - "OFF"
+        x-is-base-datamodel: true
+      ports:
+        type: "array"
+        description: "Entry of the ports table"
+        items:
+          $ref: "#/definitions/Ports"
+        x-is-port-class: true
+        x-key:
+        - "name"
+        x-key-list:
+        - name: "name"
+          type: "string"
+      shadow:
+        type: "boolean"
+        description: "Defines if the service is visible in Linux"
+        readOnly: true
+        default: false
+        x-is-base-datamodel: true
+      span:
+        type: "boolean"
+        description: "Defines if all traffic is sent to Linux"
+        default: false
+        x-is-base-datamodel: true
+      src-ip-rewrite:
+        description: "If configured, when a client request arrives to the LB, the\
+          \ source IP addrress is replaced with another IP address from the 'new'\
+          \ range"
+        $ref: "#/definitions/SrcIpRewrite"
+      service:
+        type: "array"
+        description: "Services (i.e., virtual ip:protocol:port) exported to the client"
+        items:
+          $ref: "#/definitions/Service"
+        x-key:
+        - "vip"
+        - "vport"
+        - "proto"
+        x-key-list:
+        - name: "vip"
+          type: "string"
+        - name: "vport"
+          type: "integer"
+          format: "uint16"
+        - name: "proto"
+          type: "string"
+          isEnum: "true"
+    example:
+      service-name: "helloworld"
+      shadow: false
+      service:
+      - vport: 80
+        proto: "ICMP"
+        name: "Service-nigx"
+        backend:
+        - port: 80
+          ip: "10.244.1.23"
+          name: "backend1"
+          weight: 1
+        - port: 80
+          ip: "10.244.1.23"
+          name: "backend1"
+          weight: 1
+        vip: "130.192.100.12"
+      - vport: 80
+        proto: "ICMP"
+        name: "Service-nigx"
+        backend:
+        - port: 80
+          ip: "10.244.1.23"
+          name: "backend1"
+          weight: 1
+        - port: 80
+          ip: "10.244.1.23"
+          name: "backend1"
+          weight: 1
+        vip: "130.192.100.12"
+      loglevel: "INFO"
+      name: "k8slbrp1"
+      src-ip-rewrite:
+        ip-range: "10.2.0.0/24"
+        new_ip_range: "10.3.0.0/24"
+      type: "TC"
+      ports:
+      - tcubes:
+        - "tcubes"
+        - "tcubes"
+        peer: "r0:port1"
+        name: "port1"
+        type: "FRONTEND"
+        uuid: "uuid"
+        status: "UP"
+      - tcubes:
+        - "tcubes"
+        - "tcubes"
+        peer: "r0:port1"
+        name: "port1"
+        type: "FRONTEND"
+        uuid: "uuid"
+        status: "UP"
+      uuid: "uuid"
+      span: false
+    x-is-list: "true"
+    x-is-standard: true
+    x-parent: "K8sLbrp"
