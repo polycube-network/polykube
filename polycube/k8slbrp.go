@@ -78,7 +78,9 @@ func EnsureIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod) error {
 
 	var portsToAdd []k8slbrp.Ports
 	for _, pod := range pods {
-		if pod.Name == thisPodName || pod.Spec.HostNetwork == true { // TODO adjust check
+		if pod.Name == thisPodName ||
+			pod.Spec.HostNetwork == true ||
+			pod.ObjectMeta.DeletionTimestamp != nil { // TODO adjust check
 			continue
 		}
 		podIP := net.ParseIP(pod.Status.PodIP)

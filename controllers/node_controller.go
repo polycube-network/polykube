@@ -40,6 +40,10 @@ type NodeReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+var NodeDetailMap map[string]*types.NodeDetail
+
+const controlPlaneLabel = "node-role.kubernetes.io/control-plane"
+
 func buildNodeDetail(n *corev1.Node) (*types.NodeDetail, error) {
 	IP := node.GetIP(n)
 	if IP == nil {
@@ -62,8 +66,6 @@ func buildNodeDetail(n *corev1.Node) (*types.NodeDetail, error) {
 		VtepIPNet: vtepIPNet,
 	}, nil
 }
-
-var NodeDetailMap map[string]*types.NodeDetail
 
 //+kubebuilder:rbac:groups=core,resources=nodes,verbs=get;list;watch
 //+kubebuilder:rbac:groups=core,resources=nodes/status,verbs=get;list
@@ -93,6 +95,7 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		if !found {
 			return ctrl.Result{}, nil
 		}
+		// the node object was deleted, so it has to be removed from the infrastructure
 		if err := polycube.DeleteRouterRoute(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
 			log.Error(err, "something wrong during route deletion")
 			return ctrl.Result{}, err
@@ -108,19 +111,27 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 
 	log.Info("retrieved node object")
 
-	if !node.IsReady(n) {
-		// stop reconciliation since a new event will be fired when the node will be ready
-		log.Info("node not ready")
-		return ctrl.Result{}, nil
-	}
-
 	nodeDetail, err := buildNodeDetail(n)
 	if err != nil {
 		log.Error(err, "failed to build node detail")
 		return ctrl.Result{}, err
 	}
 
-	// the following will create or update the entry related to the node inside the map
+	if _, isControlPlaneNode := n.Labels[controlPlaneLabel]; isControlPlaneNode || !node.IsReady(n) {
+		if err := polycube.DeleteRouterRoute(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
+			log.Error(err, "something wrong during route deletion")
+			return ctrl.Result{}, err
+		}
+		if err := node.DeleteFdbEntry(nodeDetail.IP); err != nil {
+			log.Error(err, "something wrong during node bridge fdb entry deletion")
+			return ctrl.Result{}, err
+		}
+		log.Info("reconciled cluster status for the node object")
+		return ctrl.Result{}, nil
+	}
+
+	// the following will create or update the entry related to the node inside the map: this
+	// is needed in order to handle a possible future node deletion
 	NodeDetailMap[nId] = nodeDetail
 
 	routeExist, err := polycube.CheckRouterRouteExistence(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP)
@@ -129,7 +140,7 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		return ctrl.Result{}, err
 	}
 	if !routeExist {
-		log.Info("route doesn't exist: creating it...")
+		log.V(1).Info("route doesn't exist: creating it...")
 		if err := polycube.CreateRouterRoute(nodeDetail.PodCIDR, nodeDetail.VtepIPNet.IP); err != nil {
 			log.Error(err, "something wrong during route creation")
 			return ctrl.Result{}, err
@@ -142,6 +153,7 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		return ctrl.Result{}, err
 	}
 	if !entryExist {
+		log.V(1).Info("bridge fdb entry doesn't exist: creating it...")
 		if err := node.CreateFdbEntry(nodeDetail.IP); err != nil {
 			log.Error(err, "something wrong during node bridge fdb entry creation")
 			return ctrl.Result{}, err
@@ -156,35 +168,69 @@ func (r *NodeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 func nodeControllerPredicate() predicate.Predicate {
 	return predicate.Funcs{
 		CreateFunc: func(e event.CreateEvent) bool {
-			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
-		},
-		UpdateFunc: func(e event.UpdateEvent) bool {
-			oldNode, okOld := e.ObjectOld.(*corev1.Node)
-			newNode, okNew := e.ObjectNew.(*corev1.Node)
-			if !okOld || !okNew {
+			if e.Object.GetName() == node.Conf.Node.Name {
 				return false
 			}
-			oldReady := false
-			newReady := false
+			n, ok := e.Object.(*corev1.Node)
+			if !ok {
+				return false
+			}
+			_, isControlPlaneNode := n.Labels[controlPlaneLabel]
+			return !isControlPlaneNode
+		},
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			if e.ObjectOld.GetName() == node.Conf.Node.Name {
+				return false
+			}
+			oldNode, isOldNode := e.ObjectOld.(*corev1.Node)
+			newNode, isNewNode := e.ObjectNew.(*corev1.Node)
+			if !isOldNode || !isNewNode {
+				return false
+			}
+
+			_, isControlPlaneOldNode := oldNode.Labels[controlPlaneLabel]
+			_, isControlPlaneNewNode := newNode.Labels[controlPlaneLabel]
+			if isControlPlaneOldNode != isControlPlaneNewNode {
+				return true
+			}
+
+			if oldNode.Spec.PodCIDR != newNode.Spec.PodCIDR {
+				return true
+			}
+
+			if fmt.Sprintf("%+v", oldNode.Status.Addresses) != fmt.Sprintf("%+v", newNode.Status.Addresses) {
+				return true
+			}
+
+			isOldNodeReady := false
+			isNewNodeReady := false
 			for _, c := range oldNode.Status.Conditions {
 				if c.Type == corev1.NodeReady && c.Status == corev1.ConditionTrue {
-					oldReady = true
+					isOldNodeReady = true
 					break
 				}
 			}
 			for _, c := range newNode.Status.Conditions {
 				if c.Type == corev1.NodeReady && c.Status == corev1.ConditionTrue {
-					newReady = true
+					isNewNodeReady = true
 					break
 				}
 			}
-			return e.ObjectOld.GetName() != node.Conf.Node.Name && e.ObjectOld.GetName() != "master" &&
-				(oldNode.Spec.PodCIDR != newNode.Spec.PodCIDR ||
-					fmt.Sprintf("%+v", oldNode.Status.Addresses) != fmt.Sprintf("%+v", newNode.Status.Addresses) ||
-					oldReady != newReady)
+			if isOldNodeReady != isNewNodeReady {
+				return true
+			}
+			return false
 		},
 		DeleteFunc: func(e event.DeleteEvent) bool {
-			return e.Object.GetName() != node.Conf.Node.Name && e.Object.GetName() != "master"
+			if e.Object.GetName() == node.Conf.Node.Name {
+				return false
+			}
+			n, ok := e.Object.(*corev1.Node)
+			if !ok {
+				return false
+			}
+			_, isControlPlaneNode := n.Labels[controlPlaneLabel]
+			return !isControlPlaneNode
 		},
 	}
 }

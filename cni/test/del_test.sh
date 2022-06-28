@@ -2,14 +2,17 @@
 
 ROOT_DIR="../"
 CONF_DIR="$ROOT_DIR/conf"
-BIN_DIR="$ROOT_DIR/bin"
+BIN_DIR="$ROOT_DIR/plugins"
+
+NETNS=cni-993652f5-c394-f657-b28f-5674de9515c7
+CONTAINERID=61adb5d0d4
 
 set -x
 set -e
 
 sudo CNI_COMMAND=DEL \
-CNI_CONTAINERID=containerid \
-CNI_NETNS=/run/netns/ns1 \
-CNI_IFNAME=veth1 \
+CNI_CONTAINERID=$CONTAINERID \
+CNI_NETNS=/run/netns/$NETNS \
+CNI_IFNAME=eth0 \
 CNI_PATH=$BIN_DIR \
-$BIN_DIR/polykube-cni-plugin < $CONF_DIR/00-polykube.json
+$BIN_DIR/polykube-cni-plugin < $CONF_DIR/sample.json

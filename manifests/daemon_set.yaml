@@ -31,15 +31,15 @@ spec:
       hostNetwork: true
       containers:
         - name: polycubed
-          image: ekoops/polycube:latest  # TODO verify that this is the right way to proceed
+          image: ekoops/polycube:latest
           imagePullPolicy: Always
-          terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve the log from
+          terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve log from container stderr
           securityContext:
             privileged: true
           command: ["polycubed",
                     "--loglevel=TRACE",
-                    "--addr=0.0.0.0", # TODO check if this can be set to localhost
-                    "--logfile=/host/var/log/polycubed.polykube.log"] # TODO determines the log file
+                    "--addr=0.0.0.0",
+                    "--logfile=/host/var/log/polycubed.polykube.log"]
 #          livenessProbe: # TODO maybe the livenessProbe might be removed
 #            httpGet:
 #              host: 127.0.0.1
@@ -56,9 +56,9 @@ spec:
             - name: var-log
               mountPath: /host/var/log
         - name: polykube-operator
-          image: ekoops/polykube-operator:latest  # TODO verify that this is the right way to proceed
+          image: ekoops/polykube-operator:latest
           imagePullPolicy: Always
-          terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve the log from
+          terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve log from container stderr
           securityContext:
             privileged: true
           command: ["/polykube"]
@@ -154,7 +154,7 @@ spec:
         - name: etc-cni-netd # installing polykube-00.conf into the right host folder: used by operator
           hostPath:
             path: /etc/cni/net.d
-        - name: var-log   # destination the polycube log into the right host folder: used by polycube # TODO and the operator log?
+        - name: var-log   # destination the polycube log into the right host folder: used by polycube
           hostPath:
             path: /var/log
         - name: lib-modules   # kernel headers and other kernel stuff # TODO required?
@@ -163,17 +163,12 @@ spec:
         - name: usr-src     # kernel headers and other kernel stuff # TODO required?
           hostPath:
             path: /usr/src
-#        - name: netns # TODO required?
-#          hostPath:
-#            path: /var/run/netns
-#        - name: proc # TODO required?
-#          hostPath:
-#            path: /proc/
-      tolerations: # TODO verify tolerations
+      tolerations:
         - effect: NoSchedule
           key: node.kubernetes.io/not-ready
+#  Uncomment the following lines in order to allow deployment on master node
 #        - effect: NoSchedule
-#          key: node-role.kubernetes.io/master # TODO I don't want that is scheduled on master: remove it?
+#          key: node-role.kubernetes.io/master
         - effect: NoSchedule
           key: node.cloudprovider.kubernetes.io/uninitialized
           value: "true"

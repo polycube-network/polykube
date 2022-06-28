@@ -67,7 +67,6 @@ func createVxlanIface() (netlink.Link, error) {
 	}
 
 	// retrieving the vxlan interface
-	// TODO is it really necessary?
 	vxlan, err := netlink.LinkByName(name)
 	if err != nil {
 		log.Error(err, "failed to retrieve the cluster node vxlan interface after its creation")
@@ -228,12 +227,13 @@ func DeleteFdbEntry(nodeIP net.IP) error {
 		fmt.Sprintf("bridge fdb delete to 00:00:00:00:00:00 dst %s dev %s", nodeIP, vxlanIfName),
 	)
 
-	_, err := cmd.Output()
-	if err != nil {
-		errMsg := "failed to delete the node bridge fdb entry related to the vxlan interface for the provided cluster node IP"
-		log.Error(err, errMsg)
-		return errors.New(errMsg)
-	}
+	cmd.Output()
+	//_, err := cmd.Output()
+	//if err != nil {
+	//	errMsg := "failed to delete the node bridge fdb entry related to the vxlan interface for the provided cluster node IP"
+	//	log.Error(err, errMsg)
+	//	return errors.New(errMsg)
+	//}
 	log.V(1).Info("deleted the node bridge fdb entry related to the vxlan interface for the provided cluster node IP")
 	return nil
 }

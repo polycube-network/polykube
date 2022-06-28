@@ -40,7 +40,7 @@ func allocIP(ipamType string, stdin []byte) (*net.IPNet, error) {
 			return &address, nil
 		}
 	}
-	// this assignment is done in order to allow the deferred function to work
+	// this assignment is done in order to allow the deferred function to properly work
 	err = errors.New("no IPv4 address found")
 	return nil, err
 }
