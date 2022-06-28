@@ -1,41 +1,77 @@
 package node
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/containernetworking/plugins/pkg/ip"
 	"github.com/ekoops/polykube-operator/types"
 	"github.com/vishvananda/netlink"
-	v1 "k8s.io/api/core/v1"
+	"math"
 	"net"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
-// CalcVtepIPNet calculates the ip and the prefix length of the Vxlan Tunnel Endpoint for the provided node.
-// The address is extracted from the vtepCIDR range. It is calculated using a convention based on the node name (this
-// is a temporary solution)
-func CalcVtepIPNet(n *v1.Node) (*net.IPNet, error) {
-	l := log.WithValues("node", n.Name)
-	// extracting the worker number (this is possible since its worker node is called worker${k})
-	// TODO this is a temporary solution
-	k, err := strconv.Atoi(strings.TrimPrefix(n.Name, "worker"))
-	if err != nil {
-		l.Error(err, "failed to extract cluster node number for Vtep evaluation")
-		return nil, errors.New("failed to extract cluster node number for Vtep evaluation")
+//// CalcVtepIPNet calculates the ip and the prefix length of the Vxlan Tunnel Endpoint for the provided node.
+//// The address is extracted from the vtepCIDR range. It is calculated using a convention based on the node name (this
+//// is a temporary solution)
+//func CalcVtepIPNet(n *v1.Node) (*net.IPNet, error) {
+//	clusterCIDR := Env.ClusterCIDR
+//
+//	// the vtep prefix length is the same as that of the clusterCIDR
+//	nodeVtepIPNet := &net.IPNet{Mask: clusterCIDR.Mask}
+//
+//	l := log.WithValues("node", n.Name)
+//	// extracting the worker number (this is possible since its worker node is called worker${k})
+//	// TODO this is a temporary solution
+//	k, err := strconv.Atoi(strings.TrimPrefix(n.Name, "worker"))
+//	if err != nil {
+//		l.Error(err, "failed to extract cluster node number for Vtep evaluation")
+//		return nil, errors.New("failed to extract cluster node number for Vtep evaluation")
+//	}
+//	nodeVtepIP := Env.VtepCIDR.IP
+//	for i := 0; i < k; i++ {
+//		nodeVtepIP = ip.NextIP(nodeVtepIP)
+//	}
+//	nodeVtepIPNet := &net.IPNet{
+//		IP:   nodeVtepIP,
+//		Mask: Env.VtepCIDR.Mask,
+//	}
+//	l.V(1).Info(
+//		"calculated Vtep for cluster node",
+//		"vtep", fmt.Sprintf("%+v", nodeVtepIPNet),
+//	)
+//	return nodeVtepIPNet, nil
+//}
+
+// CalcVtepIPNet TODO
+func CalcVtepIPNet(podCIDR *net.IPNet) (*net.IPNet, error) {
+	l := log.WithValues("podCIDR", podCIDR)
+
+	podCIDROnes, _ := podCIDR.Mask.Size()             // 24
+	clusterCIDROnes, _ := Env.ClusterCIDR.Mask.Size() // 16
+	vtepCIDROnes, _ := Env.VtepCIDR.Mask.Size()
+	lenDiff := podCIDROnes - clusterCIDROnes
+	if lenDiff > 32-vtepCIDROnes {
+		l.Error(
+			errors.New("the VtepCIDR capacity is not enough"),
+			"failed to evaluate the Vtep for the cluster node",
+			"minCapacity", math.Pow(2, float64(lenDiff)),
+		)
+		return nil, errors.New("failed to evaluate the Vtep for the cluster node")
 	}
-	nodeVtepIP := Env.VtepCIDR.IP
-	for i := 0; i < k; i++ {
-		nodeVtepIP = ip.NextIP(nodeVtepIP)
-	}
+	n := binary.BigEndian.Uint32(podCIDR.IP)
+	n >>= 32 - podCIDROnes // 32 - 24
+	n &= (1 << lenDiff) - 1
+	addr := make(net.IP, 4)
+	binary.BigEndian.PutUint32(addr, binary.BigEndian.Uint32(Env.VtepCIDR.IP)|n)
+
 	nodeVtepIPNet := &net.IPNet{
-		IP:   nodeVtepIP,
+		IP:   addr,
 		Mask: Env.VtepCIDR.Mask,
 	}
 	l.V(1).Info(
-		"calculated Vtep for cluster node",
-		"vtep", fmt.Sprintf("%+v", nodeVtepIPNet),
+		"calculated Vtep for cluster node", "vtep", fmt.Sprintf("%+v", nodeVtepIPNet),
 	)
 	return nodeVtepIPNet, nil
 }

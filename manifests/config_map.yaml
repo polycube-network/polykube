@@ -8,6 +8,7 @@ metadata:
 data:
   vxlanIfaceName: "vxlan0"
   vtepCidr: "10.18.0.0/16"
+  clusterCidr: "192.178.0.0/16"
   nodePortRange: "30000-32767"
   cniConfFilePath: "/host/etc/cni/net.d/00-polykube.json"
   mtu: "1450"

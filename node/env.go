@@ -74,14 +74,26 @@ func LoadEnvironment() error {
 	_, vtepCIDR, err := net.ParseCIDR(vtepCIDRStr)
 	if err != nil {
 		log.Error(
-			err,
-			"failed to parse env variable",
+			err, "failed to parse env variable",
 			"envVar", "VTEP_CIDR",
 			"value", vtepCIDRStr,
 		)
 		return errors.New("failed to parse VTEP_CIDR")
 	}
 	env.VtepCIDR = vtepCIDR
+
+	// ClusterCIDR
+	clusterCIDRStr := os.Getenv("CLUSTER_CIDR")
+	_, clusterCIDR, err := net.ParseCIDR(clusterCIDRStr)
+	if err != nil {
+		log.Error(
+			err, "failed to parse env variable",
+			"envVar", "CLUSTER_CIDR",
+			"value", clusterCIDRStr,
+		)
+		return errors.New("failed to parse CLUSTER_CIDR")
+	}
+	env.ClusterCIDR = clusterCIDR
 
 	// NodePortRange
 	env.NodePortRange = getEnvVar("NODEPORT_RANGE", "30000-32767")
