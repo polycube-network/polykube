@@ -82,6 +82,26 @@ func ensureDeployment() error {
 	if err := polycube.EnsureCubesConnections(); err != nil {
 		return err
 	}
+
+	// the first time ensureDeployment is called, the Pod default gateway MAC must be retrieved from the infrastructure
+	// and its value complete the information required for writing the CNI configuration file. If ensureDeployment
+	// is called after a polycubed disconnection, simply the old MAC is set to the new polycube router port.
+	podGwMAC := node.Conf.PodGwInfo.MAC
+	if podGwMAC == nil {
+		podGwMAC, err := polycube.GetRouterToIntK8sLbrpPortMAC()
+		if err != nil {
+			return err
+		}
+		node.Conf.PodGwInfo.MAC = podGwMAC
+
+		if err := node.EnsureCNIConf(); err != nil {
+			return err
+		}
+	} else {
+		if err := polycube.SetRouterToIntK8sLbrpPortMAC(podGwMAC); err != nil {
+			return err
+		}
+	}
 	pods, err := node.GetPods(node.Conf.Node.Name)
 	if err != nil {
 		return err
@@ -104,7 +124,7 @@ func startPolycubedPolling() {
 				setupLog.Info("lost polycubed connection, waiting for it...")
 				if err := ensureDeployment(); err != nil {
 					setupLog.Error(err, "failed to network infrastructure deployment")
-					exit(14)
+					exit(12)
 				}
 				setupLog.Info("re-established network infrastructure deployment after connection loss")
 			}
@@ -154,20 +174,6 @@ func main() {
 		exit(5)
 	}
 
-	podGwMAC, err := polycube.GetRouterToIntK8sLbrpPortMAC()
-	if err != nil {
-		setupLog.Error(err, "failed to load cluster node pods default gateway MAC")
-		exit(6)
-	}
-	node.Conf.PodGwInfo.MAC = podGwMAC
-
-	if err := node.EnsureCNIConf(); err != nil {
-		setupLog.Error(err, "failed to ensure CNI configuration")
-		exit(7)
-	}
-
-	//time.Sleep(24 * 60 * 60 * time.Second)
-
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
 		MetricsBindAddress:     metricsAddr,
@@ -177,7 +183,7 @@ func main() {
 	})
 	if err != nil {
 		setupLog.Error(err, "failed to create manager")
-		exit(8)
+		exit(6)
 	}
 
 	if err = (&controllers.NodeReconciler{
@@ -185,32 +191,32 @@ func main() {
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "failed to create controller", "controller", "node-controller")
-		exit(9)
+		exit(7)
 	}
 	if err = (&controllers.ServiceReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "failed to create controller", "controller", "service-controller")
-		exit(10)
+		exit(8)
 	}
 	if err = (&controllers.EndpointsReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "failed to create controller", "controller", "endpoints-controller")
-		exit(11)
+		exit(9)
 	}
 
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "failed to set up health check")
-		exit(12)
+		exit(10)
 	}
 	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
 		setupLog.Error(err, "failed to set up ready check")
-		exit(13)
+		exit(11)
 	}
 
 	// the following is used in order to react to a possible polycubed crash
@@ -219,7 +225,7 @@ func main() {
 	setupLog.Info("starting manager...")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "failed to start manager")
-		exit(15)
+		exit(13)
 	}
 	// the following is used in order to stop the main goroutine waiting for the second main one to invoke os.Exit
 	<-make(chan struct{})

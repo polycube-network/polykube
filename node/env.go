@@ -176,8 +176,8 @@ func EnsureCNIConf() error {
 	fPath := Env.CNIConfFilePath
 	f, err := os.Create(fPath)
 	if err != nil {
-		log.Error(err, "failed to create file", "path", fPath)
-		return errors.New("failed to create file")
+		log.Error(err, "failed to create CNI configuration file", "path", fPath)
+		return errors.New("failed to create CNI configuration file")
 	}
 	defer f.Close()
 
@@ -195,8 +195,8 @@ func EnsureCNIConf() error {
 		ip.PrevIP(podGwIP).String(),           // .253
 		podGwIP.String(),
 	); err != nil {
-		log.Error(err, "failed to write to file", "path", fPath)
-		return errors.New("failed to write to file")
+		log.Error(err, "failed to write to CNI configuration file", "path", fPath)
+		return errors.New("failed to write to CNI configuration file")
 	}
 	log.Info("ensured CNI configuration file")
 	return nil

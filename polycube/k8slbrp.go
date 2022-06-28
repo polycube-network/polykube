@@ -68,6 +68,8 @@ func getIntK8sLbrpFrontendPortsMap() (map[string]*k8slbrp.Ports, error) {
 	return m, nil
 }
 
+// EnsureIntK8sLbrpMissingFrontendPorts ensures that all the pods deployed on the node are connected to the internal
+// k8s lbrp.
 func EnsureIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod) error {
 	portsMap, err := getIntK8sLbrpFrontendPortsMap()
 	if err != nil {
@@ -93,8 +95,7 @@ func EnsureIntK8sLbrpMissingFrontendPorts(pods []corev1.Pod) error {
 		}
 		portId := hex.EncodeToString(podIP)
 
-		_, ok := portsMap[portId]
-		if !ok {
+		if _, ok := portsMap[portId]; !ok {
 			portsToAdd = append(portsToAdd, k8slbrp.Ports{
 				Name:  portId,
 				Type_: "frontend",
