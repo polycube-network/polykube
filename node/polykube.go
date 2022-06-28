@@ -105,61 +105,52 @@ func ensurePolykubeVethPairEnds() (netlink.Link, netlink.Link, error) {
 // ensurePolykubeVethPairIPv4Configuration ensures that the polykube veth pair ends have a proper IPv4 configuration and
 // returns a types.PolykubeVeth struct containing the proper information associated to each end
 func ensurePolykubeVethPairIPv4Configuration(hostEnd, netEnd netlink.Link) (*types.PolykubeVeth, error) {
-	polykubeVeth := &types.PolykubeVeth{}
-
-	// checking IPv4 addresses configuration on polykube veth pair ends
-	for i, end := range []netlink.Link{hostEnd, netEnd} {
-		log := log.WithValues("interface", end.Attrs().Name)
-		addrs, err := netlink.AddrList(end, netlink.FAMILY_V4)
-		if err != nil {
-			log.Error(err, "failed to retrieve the cluster node polykube veth pair end IPv4 addresses list")
-			return nil, errors.New("failed to retrieve the cluster node polykube veth pair end IPv4 addresses list")
-		}
-
-		var endIPNet *net.IPNet
-		// the following is used to associate a created iface struct to the right types.PolykubeVeth field
-		var endPolykubeVethPtr **types.Iface
-		if i == 0 {
-			endIPNet = Conf.polykubeVethHostIPNet
-			endPolykubeVethPtr = &polykubeVeth.Host
-		} else {
-			endIPNet = Conf.polykubeVethNetIPNet
-			endPolykubeVethPtr = &polykubeVeth.Net
-		}
-
-		// checking if the IPv4 address is already configured on the polykube veth pair end
-		endIPNetStr := endIPNet.String()
-		addrFound := false
-		for _, addr := range addrs {
-			if addr.IPNet.String() == endIPNetStr {
-				addrFound = true
-				break
-			}
-		}
-
-		// assigning the IPv4 address if it has not been found
-		if !addrFound {
-			log.V(1).Info("IPv4 address not set on cluster node polykube veth pair end: setting it...")
-			addr := &netlink.Addr{
-				IPNet: endIPNet,
-				Label: "",
-			}
-
-			log := log.WithValues("address", endIPNetStr)
-
-			if err := netlink.AddrAdd(end, addr); err != nil {
-				log.Error(err, "failed to set the IPv4 address on the cluster node polykube veth pair end")
-				return nil, errors.New("failed to set the IPv4 address on the cluster node polykube veth pair end")
-			}
-			log.V(1).Info("set IPv4 address on the cluster node polykube veth pair end")
-		}
-
-		// assigning the iface struct representing the polykube veth pair end
-		// to the right field of the types.PolykubeVeth struct
-		*endPolykubeVethPtr = &types.Iface{IPNet: endIPNet, Link: end}
+	addrs, err := netlink.AddrList(hostEnd, netlink.FAMILY_V4)
+	if err != nil {
+		log.Error(err, "failed to retrieve the cluster node polykube veth pair host end IPv4 addresses list")
+		return nil, errors.New("failed to retrieve the cluster node polykube veth pair host end IPv4 addresses list")
 	}
 
-	return polykubeVeth, nil
+	hostEndIPNet := Conf.polykubeVethHostIPNet
+	netEndIPNet := Conf.polykubeVethNetIPNet
+	hostIPNetStr := hostEndIPNet.String()
+	netEndIPNetStr := netEndIPNet.String()
+	addrFound := false
+	for _, addr := range addrs {
+		if addr.IPNet.String() == hostIPNetStr && addr.Peer.String() == netEndIPNetStr {
+			addrFound = true
+			break
+		}
+	}
+
+	// assigning the IPv4 address if it has not been found
+	if !addrFound {
+		log.V(1).Info("IPv4 address not set on cluster node polykube veth pair host end: setting it...")
+		addr := &netlink.Addr{
+			IPNet: hostEndIPNet,
+			Label: "",
+			Peer:  netEndIPNet,
+		}
+
+		log := log.WithValues("address", hostIPNetStr, "peer", netEndIPNetStr)
+
+		if err := netlink.AddrAdd(hostEnd, addr); err != nil {
+			log.Error(err, "failed to set the IPv4 address on the cluster node polykube veth pair end")
+			return nil, errors.New("failed to set the IPv4 address on the cluster node polykube veth pair end")
+		}
+		log.V(1).Info("set IPv4 address on the cluster node polykube veth pair end")
+	}
+
+	return &types.PolykubeVeth{
+		Host: &types.Iface{
+			IPNet: hostEndIPNet,
+			Link:  hostEnd,
+		},
+		Net: &types.Iface{
+			IPNet: netEndIPNet,
+			Link:  netEnd,
+		},
+	}, nil
 }
 
 // ensureAgentsToPodRoute ensures the presence of the route towards the Pod CIDR through the polykube veth pair
