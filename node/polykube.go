@@ -153,9 +153,9 @@ func ensurePolykubeVethPairIPv4Configuration(hostEnd, netEnd netlink.Link) (*typ
 	}, nil
 }
 
-// ensureAgentsToPodRoute ensures the presence of the route towards the Pod CIDR through the polykube veth pair
-// in order to allow the communication between agents and pods on the same node
-func ensureAgentsToPodRoute() error {
+// ensureHostToPodsRoute ensures the presence of the route towards the Cluster CIDR through the polykube veth pair
+// in order to allow the communication between the host and pods on the cluster nodes
+func ensureHostToPodsRoute() error {
 	hostEndLink := Conf.PolykubeVeth.Host.Link
 	log := log.WithValues("interface", hostEndLink.Attrs().Name)
 
@@ -167,15 +167,15 @@ func ensureAgentsToPodRoute() error {
 	}
 
 	// preparing some variables for a later reuse
-	podCIDRStr := Conf.PodCIDR.String()
+	clusterCIDRStr := Env.ClusterCIDR.String()
 	netEndIP := Conf.PolykubeVeth.Net.IPNet.IP
 	hostEndLinkIndex := hostEndLink.Attrs().Index
 
 	routeFound := false
 
-	// checking the presence of a route towards the Pod CIDR through the polykube host end
+	// checking the presence of a route towards the Cluster CIDR through the polykube host end
 	for _, route := range routes {
-		if route.Dst.String() == podCIDRStr && route.Gw.Equal(netEndIP) && route.LinkIndex == hostEndLinkIndex {
+		if route.Dst.String() == clusterCIDRStr && route.Gw.Equal(netEndIP) && route.LinkIndex == hostEndLinkIndex {
 			routeFound = true
 			break
 		}
@@ -183,17 +183,17 @@ func ensureAgentsToPodRoute() error {
 
 	// creating the route if it has not been found
 	if !routeFound {
-		log := log.WithValues("network", podCIDRStr, "nexthop", netEndIP)
+		log := log.WithValues("network", clusterCIDRStr, "nexthop", netEndIP)
 		route := &netlink.Route{
 			LinkIndex: hostEndLinkIndex,
-			Dst:       Conf.PodCIDR,
+			Dst:       Env.ClusterCIDR,
 			Gw:        netEndIP,
 		}
 		if err := netlink.RouteAdd(route); err != nil {
-			log.Error(err, "failed to create the host route towards the Pod CIDR through the polykube veth pair")
-			return errors.New("failed to create the host route towards the Pod CIDR through the polykube veth pair")
+			log.Error(err, "failed to create the host route towards the Cluster CIDR through the polykube veth pair")
+			return errors.New("failed to create the host route towards the Cluster CIDR through the polykube veth pair")
 		}
-		log.V(1).Info("created the host route towards the Pod CIDR through the polykube veth pair")
+		log.V(1).Info("created the host route towards the Cluster CIDR through the polykube veth pair")
 	}
 	return nil
 }
@@ -238,8 +238,8 @@ func EnsurePolykubeVethPair() error {
 	// setting the needed internal package information
 	Conf.PolykubeVeth = polykubeVeth
 
-	// checking the presence of the route towards the Pod CIDR
-	if err := ensureAgentsToPodRoute(); err != nil {
+	// checking the presence of the route towards the Cluster CIDR
+	if err := ensureHostToPodsRoute(); err != nil {
 		return err
 	}
 
@@ -250,7 +250,7 @@ func EnsurePolykubeVethPair() error {
 // DeletePolykubeVethPair deletes the node polykube veth pair
 func DeletePolykubeVethPair() error {
 	hostEndName := Conf.PolykubeVeth.Host.Link.Attrs().Name
-	log := log.WithValues("hostEnd", hostEndName)
+	log := log.WithValues("hostInterface", hostEndName)
 
 	link, err := netlink.LinkByName(hostEndName)
 	if err != nil {
@@ -258,8 +258,8 @@ func DeletePolykubeVethPair() error {
 		return errors.New("failed to retrieve the cluster node polykube veth pair")
 	}
 
-	// no need to delete the host route toward the Pod CIDR as the veth pair deletion will cause also the related
-	// routes deletion
+	// no need to delete the host route toward the Cluster CIDR as the veth pair deletion will cause also the deletion
+	// of the related routes
 
 	if err := netlink.LinkDel(link); err != nil {
 		log.Error(err, "failed to delete the cluster node polykube veth pair")

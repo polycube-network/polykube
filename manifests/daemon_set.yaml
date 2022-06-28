@@ -117,11 +117,6 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: vtepCidr
-            - name: POLYKUBE_VETH_PAIR_CIDR
-              valueFrom:
-                configMapKeyRef:
-                  name: polykube-cfg
-                  key: polykubeVethPairCidr
             - name: CLUSTER_CIDR
               valueFrom:
                 configMapKeyRef:

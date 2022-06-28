@@ -16,7 +16,6 @@ type Environment struct {
 	VxlanIfaceName             string
 	PolykubeVethPairNamePrefix string
 	VtepCIDR                   *net.IPNet
-	PolykubeVethPairCIDR       *net.IPNet
 	ClusterCIDR                *net.IPNet
 	NodePortRange              string
 	CNIConfFilePath            string

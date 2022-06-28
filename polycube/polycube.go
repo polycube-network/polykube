@@ -101,13 +101,14 @@ func createRouter() error {
 	vethNetEndIface := node.Conf.PolykubeVeth.Net
 	vethNetEndIfaceIPNet := &net.IPNet{
 		IP:   vethNetEndIface.IPNet.IP,
-		Mask: node.Env.PolykubeVethPairCIDR.Mask, // this CIDR is used in order to allow to reach the host veth pair end
+		Mask: net.IPMask{255, 255, 255, 252}, // /30 for allowing host veth pair end reachability
 	}
 	rToHostPort := router.Ports{
 		Name: conf.rToHostPortName,
 		Ip:   vethNetEndIfaceIPNet.String(),
 		Mac:  vethNetEndIface.Link.Attrs().HardwareAddr.String(),
-		// TODO: it is not possibile to set the peer here since in this way polycube will set the IP on the net end
+		// TODO: assigning the peer in port creation
+		// Notice that it is not possible to set the peer here, since in this way polycube will set the IP on the net end
 		//Peer: vethNetEndIface.Link.Attrs().Name,
 	}
 
@@ -302,7 +303,7 @@ func EnsureCubesConnections() error {
 	rToHostPortPeer := vethNetEndIface.Link.Attrs().Name
 	vethNetEndIfaceIPNet := &net.IPNet{
 		IP:   vethNetEndIface.IPNet.IP,
-		Mask: node.Env.PolykubeVethPairCIDR.Mask, // this CIDR is used in order to allow to reach the host veth pair end
+		Mask: net.IPMask{255, 255, 255, 252}, // /30 for allowing host veth pair end reachability
 	}
 	l = log.WithValues("name", rName, "port", rToHostPortName, "peer", rToHostPortPeer)
 	rToHostPort := router.Ports{

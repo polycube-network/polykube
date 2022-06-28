@@ -237,11 +237,31 @@ func LoadConfig() error {
 		IPNet: podGwIPNet,
 	}
 
+	// The first /30 subnet of the Pod CIDR is used in order to extract 3 IPv4 address: the vPod IP, the polykube
+	// veth pair host end IP and the polykube veth pair net end IP.
+
+	allOnesMask := net.IPv4Mask(255, 255, 255, 255)
+
 	// calculating the IP address and prefix length that will be used for NATting external traffic directed to
 	// NodePort services with externalTrafficPolicy=Cluster
-	vPodIPNet, err := CalcVPodIPNet(podCIDR)
-	if err != nil {
-		return err
+	vPodIPNet := &net.IPNet{
+		IP:   ip.NextIP(podCIDR.IP), // .1
+		Mask: allOnesMask,           // /32
+	}
+	// calculating the IPv4 addresses and prefix length that will be setup on the node polykube veth pair.
+	// The chosen convention is to use the first available IPv4 address after the vPod address for the host interface
+	// and the second available one for the network interface (the one that will be connected to the polycube router).
+	// A /32 IPv4 address will be configured on the host interface.
+	// The evaluated net interface address will be used, with a /32 prefix, in order to define the host interface peer.
+	// The net interface address will be also configured on the polycube router port to which the net interface
+	// will be attached: in this context however, the address will have a /30 prefix length
+	polykubeVethHostIPNet := &net.IPNet{
+		IP:   ip.NextIP(vPodIPNet.IP), // .2
+		Mask: allOnesMask,             // /32
+	}
+	polykubeVethNetIPNet := &net.IPNet{
+		IP:   ip.NextIP(polykubeVethHostIPNet.IP), // .3
+		Mask: allOnesMask,                         // /32
 	}
 
 	// calculating the IP address and prefix length that will be setup on the node vxlan interface
@@ -254,24 +274,6 @@ func LoadConfig() error {
 	extIface, err := GetExtIface(node)
 	if err != nil {
 		return err
-	}
-
-	// calculating the IPv4 addresses and prefix length that will be setup on the node polykube veth pair.
-	// The chosen convention is to use the first available IPv4 address for the host interface and the second available one
-	// for the network interface (the one that will be connected to the polycube router).
-	// A /32 IPv4 address will be configured on the host interface regardless of the provided CIDR. The evaluated
-	// net interface address will be used, with a /32 prefix, in order to define the host interface peer.
-	// The net interface address will be also configured on the polycube router port to which the net interface
-	// will be attached: in this context however, the address will have a prefix length extracted to the environment
-	// provided CIDR.
-	allOnesMask := net.IPv4Mask(255, 255, 255, 255)
-	polykubeVethHostIPNet := &net.IPNet{
-		IP:   ip.NextIP(Env.PolykubeVethPairCIDR.IP), // .1
-		Mask: allOnesMask,                            // /32
-	}
-	polykubeVethNetIPNet := &net.IPNet{
-		IP:   ip.NextIP(polykubeVethHostIPNet.IP), // .2
-		Mask: allOnesMask,                         // /32
 	}
 
 	// retrieving info about the default gateway for the node external interface
