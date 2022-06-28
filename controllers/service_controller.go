@@ -116,11 +116,11 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			log.Error(err, "something went wrong during related k8s dispatcher NodePort rules cleanup")
 			return ctrl.Result{}, err
 		}
-		log.Info("cluster status reconciled after service object deletion event")
+		log.Info("reconciled cluster status after service object deletion event")
 		return ctrl.Result{}, nil
 	}
 
-	log.Info("service object retrieved")
+	log.Info("retrieved service object")
 
 	st := s.Spec.Type
 	// not able to handle services other than ClusterIP and NodePort ones
@@ -144,8 +144,7 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, err
 	}
 
-	log.Info("cluster status reconciled for the service object")
-
+	log.Info("reconciled cluster status for the service object")
 	return ctrl.Result{}, nil
 }
 

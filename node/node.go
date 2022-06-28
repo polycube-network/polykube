@@ -74,9 +74,7 @@ func GetExtIface(n *v1.Node) (*types.Iface, error) {
 					IPNet: addr.IPNet,
 					Link:  link,
 				}
-				log.V(1).Info(
-					"obtained cluster node external interface info", "info", fmt.Sprintf("%+v", extIface),
-				)
+				log.V(1).Info("obtained cluster node external interface info", "IP", extIface.IPNet)
 				return extIface, nil
 			}
 		}
@@ -278,6 +276,6 @@ func LoadConfig() error {
 		NodeGwInfo: nodeGwInfo,
 	}
 
-	log.V(1).Info("loaded node configuration", "node", name)
+	log.Info("loaded node configuration", "node", name)
 	return nil
 }

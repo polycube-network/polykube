@@ -209,9 +209,11 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 	}
 
 	for _, kl := range kls {
-		log := log.WithValues("k8slbrp", kl.Name)
+		klName := kl.Name
+		klSvcs := kl.Service
+		log := log.WithValues("k8slbrp", klName)
 		var frontendsSet types.FrontendsSet
-		if kl.Name == conf.intK8sLbrpName {
+		if klName == conf.intK8sLbrpName {
 			frontendsSet = svcDetail.ClusterIPFrontendsSet
 		} else {
 			frontendsSet = svcDetail.NodePortFrontendsSet
@@ -222,7 +224,7 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 		log.V(1).Info("retrieved actual k8s lbrp services",
 			"services", fmt.Sprintf("%+v", kl.Service),
 		)
-		klSvcsToAdd, klSvcsToDel := extractK8sLbrpServicesToAddAndDel(svcId, kl.Service, frontendsSet)
+		klSvcsToAdd, klSvcsToDel := extractK8sLbrpServicesToAddAndDel(svcId, klSvcs, frontendsSet)
 		log.V(1).Info("evaluated k8s lbrp services to add and delete",
 			"toAdd", fmt.Sprintf("%+v", klSvcsToAdd),
 			"toDel", fmt.Sprintf("%+v", klSvcsToDel),
@@ -236,14 +238,14 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 		}
 
 		if lenToAdd > 0 {
-			if err := createK8sLbrpServices(kl.Name, klSvcsToAdd); err != nil {
+			if err := createK8sLbrpServices(klName, klSvcsToAdd); err != nil {
 				log.Error(err, "error during k8s lbrp services addition")
 				return errors.New("error during k8s lbrp services addition")
 			}
 		}
 
 		for _, klSvc := range klSvcsToDel {
-			if err := deleteK8sLbrpService(kl.Name, &klSvc); err != nil {
+			if err := deleteK8sLbrpService(klName, &klSvc); err != nil {
 				log.Error(err, "error during k8s lbrp service deletion")
 				return errors.New("error during k8s lbrp service deletion")
 			}

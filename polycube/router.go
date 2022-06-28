@@ -51,7 +51,7 @@ func CheckRouterRouteExistence(nodePodCIDR *net.IPNet, nodeVtepIP net.IP) (bool,
 			return true, nil
 		}
 	}
-	log.V(1).Info("no router route")
+	log.V(1).Info("router route not found")
 	return false, nil
 }
 
