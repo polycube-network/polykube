@@ -17,7 +17,12 @@ data:
   routerName: "r0"
   extK8sLbrpName: "ekl0"
   k8sDispName: "k0"
+  # The cubes log level can assume one of the following values:
+  # "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "OFF"
   cubesLogLevel: "INFO"
+  # The CNI log level can assume one of the following values:
+  # "TRACE", "DEBUG", "INFO", "WARN", "WARNING", "FATAL", "PANIC", "OFF"
+  cniLogLevel: "INFO"
   # if the following is set to true, the following toleration has to be
   # added to the daemonset tolerations:
   # - effect: NoSchedule

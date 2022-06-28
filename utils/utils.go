@@ -1,6 +1,7 @@
 package utils
 
 var cubeLogLevels = [...]string{"TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "OFF"}
+var CNILogLevels = [...]string{"trace", "debug", "info", "warn", "warning", "fatal", "panic", "off"}
 
 func CreatePeer(serviceName, servicePort string) string {
 	return serviceName + ":" + servicePort
@@ -31,6 +32,15 @@ func GetHostIfaceName(contIface string, ipHexStr string) string {
 
 func IsValidCubeLogLevel(logLevel string) bool {
 	for _, l := range cubeLogLevels {
+		if logLevel == l {
+			return true
+		}
+	}
+	return false
+}
+
+func IsValidCNILogLevel(logLevel string) bool {
+	for _, l := range CNILogLevels {
 		if logLevel == l {
 			return true
 		}

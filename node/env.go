@@ -19,6 +19,7 @@ const (
 	"type": "polykube-cni-plugin",
 	"mtu": %d,
 	"intK8sLbrp": "%s",
+	"logLevel": "%s",
 	"gateway": {
 		"ip": "%s",
 		"mac": "%s"
@@ -168,6 +169,17 @@ func LoadEnvironment() error {
 	}
 	env.CubesLogLevel = cubesLogLevel
 
+	// CNILogLevel
+	defaultCNILogLevel := "info"
+	CNILogLevel := strings.ToLower(getEnvVar("CNI_LOG_LEVEL", defaultCNILogLevel))
+	if !utils.IsValidCNILogLevel(CNILogLevel) {
+		log.Info("invalid CNI log level. Default value applied",
+			"CNI_LOG_LEVEL", CNILogLevel, "default", defaultCNILogLevel,
+		)
+		CNILogLevel = defaultCNILogLevel
+	}
+	env.CNILogLevel = CNILogLevel
+
 	// IsCPNodesDeployAllowed
 	isCPNodesDeployAllowedStr := getEnvVar("IS_CP_NODES_DEPLOY_ALLOWED", "false")
 	isCPNodesDeployAllowed, err := strconv.ParseBool(isCPNodesDeployAllowedStr)
@@ -204,6 +216,7 @@ func EnsureCNIConf() error {
 		CNIConfTemplate,
 		Env.MTU,
 		Env.IntK8sLbrpName,
+		Env.CNILogLevel,
 		podGwIP.String(),
 		podGwMAC.String(),
 		Conf.PodCIDR.String(),
