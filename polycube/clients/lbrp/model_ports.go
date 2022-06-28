@@ -21,4 +21,6 @@ type Ports struct {
 	Tcubes []string `json:"tcubes,omitempty"`
 	// Type of the LB port (e.g. FRONTEND or BACKEND)
 	Type_ string `json:"type,omitempty"`
+	// IP address of the client interface (only for FRONTEND port)
+	Ip_ string `json:"ip,omitempty"`
 }

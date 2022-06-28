@@ -18,7 +18,7 @@ const (
 	"name": "mynet",
 	"type": "polykube-cni-plugin",
 	"mtu": %d,
-	"intK8sLbrp": "%s",
+	"intLbrp": "%s",
 	"logLevel": "%s",
 	"gateway": {
 		"ip": "%s",
@@ -161,14 +161,14 @@ func LoadEnvironment() error {
 	}
 	env.MTU = MTU
 
-	// IntK8sLbrpName
-	env.IntK8sLbrpName = getEnvVar("POLYCUBE_INT_K8S_LBRP_NAME", "ikl0")
+	// IntLbrpName
+	env.IntLbrpName = getEnvVar("POLYCUBE_INT_LBRP_NAME", "ilb0")
 
 	// RouterName
 	env.RouterName = getEnvVar("POLYCUBE_ROUTER_NAME", "r0")
 
 	// elbName
-	env.ExtK8sLbrpName = getEnvVar("POLYCUBE_EXT_K8S_LBRP_NAME", "ekl0")
+	env.ExtLbrpName = getEnvVar("POLYCUBE_EXT_LBRP_NAME", "elb0")
 
 	// K8sDispName
 	env.K8sDispName = getEnvVar("POLYCUBE_K8SDISP_NAME", "k0")
@@ -230,7 +230,7 @@ func EnsureCNIConf() error {
 	if _, err := fmt.Fprintf(f,
 		CNIConfTemplate,
 		Env.MTU,
-		Env.IntK8sLbrpName,
+		Env.IntLbrpName,
 		Env.CNILogLevel,
 		podGwIP.String(),
 		podGwMAC.String(),

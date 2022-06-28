@@ -3,7 +3,7 @@
 	"name": "mynet",
 	"type": "polykube-cni-plugin",
 	"mtu": 1450,
-	"intK8sLbrp": "ikl0",
+	"intLbrp": "ilb0",
 	"gateway": {
 		"ip": "192.178.1.254",
 		"mac": "1e:38:22:1e:71:e0"

@@ -137,21 +137,21 @@ spec:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: mtu
-            - name: POLYCUBE_INT_K8S_LBRP_NAME
+            - name: POLYCUBE_INT_LBRP_NAME
               valueFrom:
                 configMapKeyRef:
                   name: polykube-cfg
-                  key: intK8sLbrpName
+                  key: intLbrpName
             - name: POLYCUBE_ROUTER_NAME
               valueFrom:
                 configMapKeyRef:
                   name: polykube-cfg
                   key: routerName
-            - name: POLYCUBE_EXT_K8S_LBRP_NAME
+            - name: POLYCUBE_EXT_LBRP_NAME
               valueFrom:
                 configMapKeyRef:
                   name: polykube-cfg
-                  key: extK8sLbrpName
+                  key: extLbrpName
             - name: POLYCUBE_K8SDISP_NAME
               valueFrom:
                 configMapKeyRef:

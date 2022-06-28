@@ -2,17 +2,17 @@ package polycube
 
 type configuration struct {
 	cubesLogLevel    string
-	intK8sLbrpName   string
+	intLbrpName      string
 	rName            string
-	extK8sLbrpName   string
+	extLbrpName      string
 	k8sDispName      string
-	iklToRPortName   string
-	rToIklPortName   string
+	ilbToRPortName   string
+	rToIlbPortName   string
 	rToVxlanPortName string
 	rToHostPortName  string
-	rToEklPortName   string
-	eklToRPortName   string
-	eklToKPortName   string
-	kToEklPortName   string
+	rToElbPortName   string
+	elbToRPortName   string
+	elbToKPortName   string
+	kToElbPortName   string
 	kToIntPortName   string
 }

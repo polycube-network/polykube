@@ -202,9 +202,9 @@ func (r *EndpointsReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	log.V(1).WithValues(
 		"detail", fmt.Sprintf("%+v", endpointsDetail),
 	).Info("built endpoints detail")
-	needResync, err := polycube.SyncK8sLbrpsServicesBackends(endpointsDetail)
+	needResync, err := polycube.SyncLbrpsServicesBackends(endpointsDetail)
 	if err != nil {
-		log.Error(err, "something went wrong during k8s lbrps services backends sync")
+		log.Error(err, "something went wrong during lbrps services backends sync")
 		return ctrl.Result{}, err
 	}
 	if needResync {

@@ -89,7 +89,7 @@ func ensureDeployment() error {
 	// is called after a polycubed disconnection, simply the old MAC is set to the new polycube router port.
 	podGwMAC := node.Conf.PodGwInfo.MAC
 	if podGwMAC == nil {
-		podGwMAC, err := polycube.GetRouterToIntK8sLbrpPortMAC()
+		podGwMAC, err := polycube.GetRouterToIntLbrpPortMAC()
 		if err != nil {
 			return err
 		}
@@ -99,7 +99,7 @@ func ensureDeployment() error {
 			return err
 		}
 	} else {
-		if err := polycube.SetRouterToIntK8sLbrpPortMAC(podGwMAC); err != nil {
+		if err := polycube.SetRouterToIntLbrpPortMAC(podGwMAC); err != nil {
 			return err
 		}
 	}
@@ -107,7 +107,7 @@ func ensureDeployment() error {
 	if err != nil {
 		return err
 	}
-	if err := polycube.EnsureIntK8sLbrpMissingFrontendPorts(pods.Items); err != nil {
+	if err := polycube.EnsureIntLbrpMissingFrontendPorts(pods.Items); err != nil {
 		return err
 	}
 	setupLog.Info("ensured network infrastructure deployment")

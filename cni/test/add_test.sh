@@ -9,12 +9,12 @@ CONTAINERID=61adb5d0d4
 
 set -x
 sudo ip netns del $NETNS
-polycubectl ikl0 del
+polycubectl ilb0 del
 sudo rm -r /var/lib/cni/networks/mynet
 
 set -e
 sudo ip netns add $NETNS
-polycubectl k8slbrp add ikl0 loglevel=TRACE
+polycubectl lbrp add ilb0 loglevel=TRACE
 
 RESULT=$(sudo CNI_COMMAND=ADD \
 CNI_CONTAINERID=$CONTAINERID \

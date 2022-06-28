@@ -2,77 +2,79 @@
 
 All URIs are relative to *http://localhost:8080*
 
-Method | HTTP request | Description
-------------- | ------------- | -------------
-[**CreateLbrpByID**](LbrpApi.md#CreateLbrpByID) | **Post** /lbrp/{name}/ | Create lbrp by ID
-[**CreateLbrpPortsByID**](LbrpApi.md#CreateLbrpPortsByID) | **Post** /lbrp/{name}/ports/{ports_name}/ | Create ports by ID
-[**CreateLbrpPortsListByID**](LbrpApi.md#CreateLbrpPortsListByID) | **Post** /lbrp/{name}/ports/ | Create ports by ID
-[**CreateLbrpServiceBackendByID**](LbrpApi.md#CreateLbrpServiceBackendByID) | **Post** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/ | Create backend by ID
-[**CreateLbrpServiceBackendListByID**](LbrpApi.md#CreateLbrpServiceBackendListByID) | **Post** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/ | Create backend by ID
-[**CreateLbrpServiceByID**](LbrpApi.md#CreateLbrpServiceByID) | **Post** /lbrp/{name}/service/{vip}/{vport}/{proto}/ | Create service by ID
-[**CreateLbrpServiceListByID**](LbrpApi.md#CreateLbrpServiceListByID) | **Post** /lbrp/{name}/service/ | Create service by ID
-[**CreateLbrpSrcIpRewriteByID**](LbrpApi.md#CreateLbrpSrcIpRewriteByID) | **Post** /lbrp/{name}/src-ip-rewrite/ | Create src-ip-rewrite by ID
-[**DeleteLbrpByID**](LbrpApi.md#DeleteLbrpByID) | **Delete** /lbrp/{name}/ | Delete lbrp by ID
-[**DeleteLbrpPortsByID**](LbrpApi.md#DeleteLbrpPortsByID) | **Delete** /lbrp/{name}/ports/{ports_name}/ | Delete ports by ID
-[**DeleteLbrpPortsListByID**](LbrpApi.md#DeleteLbrpPortsListByID) | **Delete** /lbrp/{name}/ports/ | Delete ports by ID
-[**DeleteLbrpServiceBackendByID**](LbrpApi.md#DeleteLbrpServiceBackendByID) | **Delete** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/ | Delete backend by ID
-[**DeleteLbrpServiceBackendListByID**](LbrpApi.md#DeleteLbrpServiceBackendListByID) | **Delete** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/ | Delete backend by ID
-[**DeleteLbrpServiceByID**](LbrpApi.md#DeleteLbrpServiceByID) | **Delete** /lbrp/{name}/service/{vip}/{vport}/{proto}/ | Delete service by ID
-[**DeleteLbrpServiceListByID**](LbrpApi.md#DeleteLbrpServiceListByID) | **Delete** /lbrp/{name}/service/ | Delete service by ID
-[**DeleteLbrpSrcIpRewriteByID**](LbrpApi.md#DeleteLbrpSrcIpRewriteByID) | **Delete** /lbrp/{name}/src-ip-rewrite/ | Delete src-ip-rewrite by ID
-[**ReadLbrpByID**](LbrpApi.md#ReadLbrpByID) | **Get** /lbrp/{name}/ | Read lbrp by ID
-[**ReadLbrpListByID**](LbrpApi.md#ReadLbrpListByID) | **Get** /lbrp/ | Read lbrp by ID
-[**ReadLbrpLoglevelByID**](LbrpApi.md#ReadLbrpLoglevelByID) | **Get** /lbrp/{name}/loglevel/ | Read loglevel by ID
-[**ReadLbrpPortsByID**](LbrpApi.md#ReadLbrpPortsByID) | **Get** /lbrp/{name}/ports/{ports_name}/ | Read ports by ID
-[**ReadLbrpPortsListByID**](LbrpApi.md#ReadLbrpPortsListByID) | **Get** /lbrp/{name}/ports/ | Read ports by ID
-[**ReadLbrpPortsPeerByID**](LbrpApi.md#ReadLbrpPortsPeerByID) | **Get** /lbrp/{name}/ports/{ports_name}/peer/ | Read peer by ID
-[**ReadLbrpPortsStatusByID**](LbrpApi.md#ReadLbrpPortsStatusByID) | **Get** /lbrp/{name}/ports/{ports_name}/status/ | Read status by ID
-[**ReadLbrpPortsTypeByID**](LbrpApi.md#ReadLbrpPortsTypeByID) | **Get** /lbrp/{name}/ports/{ports_name}/type/ | Read type by ID
-[**ReadLbrpPortsUuidByID**](LbrpApi.md#ReadLbrpPortsUuidByID) | **Get** /lbrp/{name}/ports/{ports_name}/uuid/ | Read uuid by ID
-[**ReadLbrpServiceBackendByID**](LbrpApi.md#ReadLbrpServiceBackendByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/ | Read backend by ID
-[**ReadLbrpServiceBackendListByID**](LbrpApi.md#ReadLbrpServiceBackendListByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/ | Read backend by ID
-[**ReadLbrpServiceBackendNameByID**](LbrpApi.md#ReadLbrpServiceBackendNameByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/name/ | Read name by ID
-[**ReadLbrpServiceBackendPortByID**](LbrpApi.md#ReadLbrpServiceBackendPortByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/port/ | Read port by ID
-[**ReadLbrpServiceBackendWeightByID**](LbrpApi.md#ReadLbrpServiceBackendWeightByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/weight/ | Read weight by ID
-[**ReadLbrpServiceByID**](LbrpApi.md#ReadLbrpServiceByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/ | Read service by ID
-[**ReadLbrpServiceListByID**](LbrpApi.md#ReadLbrpServiceListByID) | **Get** /lbrp/{name}/service/ | Read service by ID
-[**ReadLbrpServiceNameByID**](LbrpApi.md#ReadLbrpServiceNameByID) | **Get** /lbrp/{name}/service-name/ | Read service-name by ID
-[**ReadLbrpServiceNameByID_0**](LbrpApi.md#ReadLbrpServiceNameByID_0) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/name/ | Read name by ID
-[**ReadLbrpShadowByID**](LbrpApi.md#ReadLbrpShadowByID) | **Get** /lbrp/{name}/shadow/ | Read shadow by ID
-[**ReadLbrpSpanByID**](LbrpApi.md#ReadLbrpSpanByID) | **Get** /lbrp/{name}/span/ | Read span by ID
-[**ReadLbrpSrcIpRewriteByID**](LbrpApi.md#ReadLbrpSrcIpRewriteByID) | **Get** /lbrp/{name}/src-ip-rewrite/ | Read src-ip-rewrite by ID
-[**ReadLbrpSrcIpRewriteIpRangeByID**](LbrpApi.md#ReadLbrpSrcIpRewriteIpRangeByID) | **Get** /lbrp/{name}/src-ip-rewrite/ip-range/ | Read ip-range by ID
-[**ReadLbrpSrcIpRewriteNewIpRangeByID**](LbrpApi.md#ReadLbrpSrcIpRewriteNewIpRangeByID) | **Get** /lbrp/{name}/src-ip-rewrite/new_ip_range/ | Read new_ip_range by ID
-[**ReadLbrpTypeByID**](LbrpApi.md#ReadLbrpTypeByID) | **Get** /lbrp/{name}/type/ | Read type by ID
-[**ReadLbrpUuidByID**](LbrpApi.md#ReadLbrpUuidByID) | **Get** /lbrp/{name}/uuid/ | Read uuid by ID
-[**ReplaceLbrpByID**](LbrpApi.md#ReplaceLbrpByID) | **Put** /lbrp/{name}/ | Replace lbrp by ID
-[**ReplaceLbrpPortsByID**](LbrpApi.md#ReplaceLbrpPortsByID) | **Put** /lbrp/{name}/ports/{ports_name}/ | Replace ports by ID
-[**ReplaceLbrpPortsListByID**](LbrpApi.md#ReplaceLbrpPortsListByID) | **Put** /lbrp/{name}/ports/ | Replace ports by ID
-[**ReplaceLbrpServiceBackendByID**](LbrpApi.md#ReplaceLbrpServiceBackendByID) | **Put** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/ | Replace backend by ID
-[**ReplaceLbrpServiceBackendListByID**](LbrpApi.md#ReplaceLbrpServiceBackendListByID) | **Put** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/ | Replace backend by ID
-[**ReplaceLbrpServiceByID**](LbrpApi.md#ReplaceLbrpServiceByID) | **Put** /lbrp/{name}/service/{vip}/{vport}/{proto}/ | Replace service by ID
-[**ReplaceLbrpServiceListByID**](LbrpApi.md#ReplaceLbrpServiceListByID) | **Put** /lbrp/{name}/service/ | Replace service by ID
-[**ReplaceLbrpSrcIpRewriteByID**](LbrpApi.md#ReplaceLbrpSrcIpRewriteByID) | **Put** /lbrp/{name}/src-ip-rewrite/ | Replace src-ip-rewrite by ID
-[**UpdateLbrpByID**](LbrpApi.md#UpdateLbrpByID) | **Patch** /lbrp/{name}/ | Update lbrp by ID
-[**UpdateLbrpListByID**](LbrpApi.md#UpdateLbrpListByID) | **Patch** /lbrp/ | Update lbrp by ID
-[**UpdateLbrpLoglevelByID**](LbrpApi.md#UpdateLbrpLoglevelByID) | **Patch** /lbrp/{name}/loglevel/ | Update loglevel by ID
-[**UpdateLbrpPortsByID**](LbrpApi.md#UpdateLbrpPortsByID) | **Patch** /lbrp/{name}/ports/{ports_name}/ | Update ports by ID
-[**UpdateLbrpPortsListByID**](LbrpApi.md#UpdateLbrpPortsListByID) | **Patch** /lbrp/{name}/ports/ | Update ports by ID
-[**UpdateLbrpPortsPeerByID**](LbrpApi.md#UpdateLbrpPortsPeerByID) | **Patch** /lbrp/{name}/ports/{ports_name}/peer/ | Update peer by ID
-[**UpdateLbrpPortsTypeByID**](LbrpApi.md#UpdateLbrpPortsTypeByID) | **Patch** /lbrp/{name}/ports/{ports_name}/type/ | Update type by ID
-[**UpdateLbrpServiceBackendByID**](LbrpApi.md#UpdateLbrpServiceBackendByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/ | Update backend by ID
-[**UpdateLbrpServiceBackendListByID**](LbrpApi.md#UpdateLbrpServiceBackendListByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/ | Update backend by ID
-[**UpdateLbrpServiceBackendNameByID**](LbrpApi.md#UpdateLbrpServiceBackendNameByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/name/ | Update name by ID
-[**UpdateLbrpServiceBackendPortByID**](LbrpApi.md#UpdateLbrpServiceBackendPortByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/port/ | Update port by ID
+Method | HTTP request                                                                 | Description
+------------- |------------------------------------------------------------------------------| -------------
+[**CreateLbrpByID**](LbrpApi.md#CreateLbrpByID) | **Post** /lbrp/{name}/                                                    | Create lbrp by ID
+[**CreateLbrpPortsByID**](LbrpApi.md#CreateLbrpPortsByID) | **Post** /lbrp/{name}/ports/{ports_name}/                                 | Create ports by ID
+[**CreateLbrpPortsListByID**](LbrpApi.md#CreateLbrpPortsListByID) | **Post** /lbrp/{name}/ports/                                              | Create ports by ID
+[**CreateLbrpServiceBackendByID**](LbrpApi.md#CreateLbrpServiceBackendByID) | **Post** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/         | Create backend by ID
+[**CreateLbrpServiceBackendListByID**](LbrpApi.md#CreateLbrpServiceBackendListByID) | **Post** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/              | Create backend by ID
+[**CreateLbrpServiceByID**](LbrpApi.md#CreateLbrpServiceByID) | **Post** /lbrp/{name}/service/{vip}/{vport}/{proto}/                      | Create service by ID
+[**CreateLbrpServiceListByID**](LbrpApi.md#CreateLbrpServiceListByID) | **Post** /lbrp/{name}/service/                                            | Create service by ID
+[**CreateLbrpSrcIpRewriteByID**](LbrpApi.md#CreateLbrpSrcIpRewriteByID) | **Post** /lbrp/{name}/src-ip-rewrite/                                     | Create src-ip-rewrite by ID
+[**DeleteLbrpByID**](LbrpApi.md#DeleteLbrpByID) | **Delete** /lbrp/{name}/                                                  | Delete lbrp by ID
+[**DeleteLbrpPortsByID**](LbrpApi.md#DeleteLbrpPortsByID) | **Delete** /lbrp/{name}/ports/{ports_name}/                               | Delete ports by ID
+[**DeleteLbrpPortsListByID**](LbrpApi.md#DeleteLbrpPortsListByID) | **Delete** /lbrp/{name}/ports/                                            | Delete ports by ID
+[**DeleteLbrpServiceBackendByID**](LbrpApi.md#DeleteLbrpServiceBackendByID) | **Delete** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/       | Delete backend by ID
+[**DeleteLbrpServiceBackendListByID**](LbrpApi.md#DeleteLbrpServiceBackendListByID) | **Delete** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/            | Delete backend by ID
+[**DeleteLbrpServiceByID**](LbrpApi.md#DeleteLbrpServiceByID) | **Delete** /lbrp/{name}/service/{vip}/{vport}/{proto}/                    | Delete service by ID
+[**DeleteLbrpServiceListByID**](LbrpApi.md#DeleteLbrpServiceListByID) | **Delete** /lbrp/{name}/service/                                          | Delete service by ID
+[**DeleteLbrpSrcIpRewriteByID**](LbrpApi.md#DeleteLbrpSrcIpRewriteByID) | **Delete** /lbrp/{name}/src-ip-rewrite/                                   | Delete src-ip-rewrite by ID
+[**ReadLbrpByID**](LbrpApi.md#ReadLbrpByID) | **Get** /lbrp/{name}/                                                     | Read lbrp by ID
+[**ReadLbrpListByID**](LbrpApi.md#ReadLbrpListByID) | **Get** /lbrp/                                                            | Read lbrp by ID
+[**ReadLbrpLoglevelByID**](LbrpApi.md#ReadLbrpLoglevelByID) | **Get** /lbrp/{name}/loglevel/                                            | Read loglevel by ID
+[**ReadLbrpPortsByID**](LbrpApi.md#ReadLbrpPortsByID) | **Get** /lbrp/{name}/ports/{ports_name}/                                  | Read ports by ID
+[**ReadLbrpPortsListByID**](LbrpApi.md#ReadLbrpPortsListByID) | **Get** /lbrp/{name}/ports/                                               | Read ports by ID
+[**ReadLbrpPortsPeerByID**](LbrpApi.md#ReadLbrpPortsPeerByID) | **Get** /lbrp/{name}/ports/{ports_name}/peer/                             | Read peer by ID
+[**ReadLbrpPortsStatusByID**](LbrpApi.md#ReadLbrpPortsStatusByID) | **Get** /lbrp/{name}/ports/{ports_name}/status/                           | Read status by ID
+[**ReadLbrpPortsTypeByID**](LbrpApi.md#ReadLbrpPortsTypeByID) | **Get** /lbrp/{name}/ports/{ports_name}/type/                             | Read type by ID
+[**ReadLbrpPortsIpByID**](LbrpApi.md#ReadLbrpPortsIpByID) | **Get** /lbrp/{name}/ports/{ports_name}/ip/                               | Read ip by ID
+[**ReadLbrpPortsUuidByID**](LbrpApi.md#ReadLbrpPortsUuidByID) | **Get** /lbrp/{name}/ports/{ports_name}/uuid/                             | Read uuid by ID
+[**ReadLbrpServiceBackendByID**](LbrpApi.md#ReadLbrpServiceBackendByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/          | Read backend by ID
+[**ReadLbrpServiceBackendListByID**](LbrpApi.md#ReadLbrpServiceBackendListByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/               | Read backend by ID
+[**ReadLbrpServiceBackendNameByID**](LbrpApi.md#ReadLbrpServiceBackendNameByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/name/     | Read name by ID
+[**ReadLbrpServiceBackendPortByID**](LbrpApi.md#ReadLbrpServiceBackendPortByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/port/     | Read port by ID
+[**ReadLbrpServiceBackendWeightByID**](LbrpApi.md#ReadLbrpServiceBackendWeightByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/weight/   | Read weight by ID
+[**ReadLbrpServiceByID**](LbrpApi.md#ReadLbrpServiceByID) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/                       | Read service by ID
+[**ReadLbrpServiceListByID**](LbrpApi.md#ReadLbrpServiceListByID) | **Get** /lbrp/{name}/service/                                             | Read service by ID
+[**ReadLbrpServiceNameByID**](LbrpApi.md#ReadLbrpServiceNameByID) | **Get** /lbrp/{name}/service-name/                                        | Read service-name by ID
+[**ReadLbrpServiceNameByID_0**](LbrpApi.md#ReadLbrpServiceNameByID_0) | **Get** /lbrp/{name}/service/{vip}/{vport}/{proto}/name/                  | Read name by ID
+[**ReadLbrpShadowByID**](LbrpApi.md#ReadLbrpShadowByID) | **Get** /lbrp/{name}/shadow/                                              | Read shadow by ID
+[**ReadLbrpSpanByID**](LbrpApi.md#ReadLbrpSpanByID) | **Get** /lbrp/{name}/span/                                                | Read span by ID
+[**ReadLbrpSrcIpRewriteByID**](LbrpApi.md#ReadLbrpSrcIpRewriteByID) | **Get** /lbrp/{name}/src-ip-rewrite/                                      | Read src-ip-rewrite by ID
+[**ReadLbrpSrcIpRewriteIpRangeByID**](LbrpApi.md#ReadLbrpSrcIpRewriteIpRangeByID) | **Get** /lbrp/{name}/src-ip-rewrite/ip-range/                             | Read ip-range by ID
+[**ReadLbrpSrcIpRewriteNewIpRangeByID**](LbrpApi.md#ReadLbrpSrcIpRewriteNewIpRangeByID) | **Get** /lbrp/{name}/src-ip-rewrite/new_ip_range/                         | Read new_ip_range by ID
+[**ReadLbrpTypeByID**](LbrpApi.md#ReadLbrpTypeByID) | **Get** /lbrp/{name}/type/                                                | Read type by ID
+[**ReadLbrpUuidByID**](LbrpApi.md#ReadLbrpUuidByID) | **Get** /lbrp/{name}/uuid/                                                | Read uuid by ID
+[**ReadLbrpPortModeByID**](LbrpApi.md#ReadLbrpPortModeByID) | **Get** /lbrp/{name}/port_mode/                                           | Read port mode by ID
+[**ReplaceLbrpByID**](LbrpApi.md#ReplaceLbrpByID) | **Put** /lbrp/{name}/                                                     | Replace lbrp by ID
+[**ReplaceLbrpPortsByID**](LbrpApi.md#ReplaceLbrpPortsByID) | **Put** /lbrp/{name}/ports/{ports_name}/                                  | Replace ports by ID
+[**ReplaceLbrpPortsListByID**](LbrpApi.md#ReplaceLbrpPortsListByID) | **Put** /lbrp/{name}/ports/                                               | Replace ports by ID
+[**ReplaceLbrpServiceBackendByID**](LbrpApi.md#ReplaceLbrpServiceBackendByID) | **Put** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/          | Replace backend by ID
+[**ReplaceLbrpServiceBackendListByID**](LbrpApi.md#ReplaceLbrpServiceBackendListByID) | **Put** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/               | Replace backend by ID
+[**ReplaceLbrpServiceByID**](LbrpApi.md#ReplaceLbrpServiceByID) | **Put** /lbrp/{name}/service/{vip}/{vport}/{proto}/                       | Replace service by ID
+[**ReplaceLbrpServiceListByID**](LbrpApi.md#ReplaceLbrpServiceListByID) | **Put** /lbrp/{name}/service/                                             | Replace service by ID
+[**ReplaceLbrpSrcIpRewriteByID**](LbrpApi.md#ReplaceLbrpSrcIpRewriteByID) | **Put** /lbrp/{name}/src-ip-rewrite/                                      | Replace src-ip-rewrite by ID
+[**UpdateLbrpByID**](LbrpApi.md#UpdateLbrpByID) | **Patch** /lbrp/{name}/                                                   | Update lbrp by ID
+[**UpdateLbrpListByID**](LbrpApi.md#UpdateLbrpListByID) | **Patch** /lbrp/                                                          | Update lbrp by ID
+[**UpdateLbrpLoglevelByID**](LbrpApi.md#UpdateLbrpLoglevelByID) | **Patch** /lbrp/{name}/loglevel/                                          | Update loglevel by ID
+[**UpdateLbrpPortsByID**](LbrpApi.md#UpdateLbrpPortsByID) | **Patch** /lbrp/{name}/ports/{ports_name}/                                | Update ports by ID
+[**UpdateLbrpPortsListByID**](LbrpApi.md#UpdateLbrpPortsListByID) | **Patch** /lbrp/{name}/ports/                                             | Update ports by ID
+[**UpdateLbrpPortsPeerByID**](LbrpApi.md#UpdateLbrpPortsPeerByID) | **Patch** /lbrp/{name}/ports/{ports_name}/peer/                           | Update peer by ID
+[**UpdateLbrpPortsTypeByID**](LbrpApi.md#UpdateLbrpPortsTypeByID) | **Patch** /lbrp/{name}/ports/{ports_name}/type/                           | Update type by ID
+[**UpdateLbrpServiceBackendByID**](LbrpApi.md#UpdateLbrpServiceBackendByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/        | Update backend by ID
+[**UpdateLbrpServiceBackendListByID**](LbrpApi.md#UpdateLbrpServiceBackendListByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/             | Update backend by ID
+[**UpdateLbrpServiceBackendNameByID**](LbrpApi.md#UpdateLbrpServiceBackendNameByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/name/   | Update name by ID
+[**UpdateLbrpServiceBackendPortByID**](LbrpApi.md#UpdateLbrpServiceBackendPortByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/port/   | Update port by ID
 [**UpdateLbrpServiceBackendWeightByID**](LbrpApi.md#UpdateLbrpServiceBackendWeightByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/backend/{ip}/weight/ | Update weight by ID
-[**UpdateLbrpServiceByID**](LbrpApi.md#UpdateLbrpServiceByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/ | Update service by ID
-[**UpdateLbrpServiceListByID**](LbrpApi.md#UpdateLbrpServiceListByID) | **Patch** /lbrp/{name}/service/ | Update service by ID
-[**UpdateLbrpServiceNameByID**](LbrpApi.md#UpdateLbrpServiceNameByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/name/ | Update name by ID
-[**UpdateLbrpSpanByID**](LbrpApi.md#UpdateLbrpSpanByID) | **Patch** /lbrp/{name}/span/ | Update span by ID
-[**UpdateLbrpSrcIpRewriteByID**](LbrpApi.md#UpdateLbrpSrcIpRewriteByID) | **Patch** /lbrp/{name}/src-ip-rewrite/ | Update src-ip-rewrite by ID
-[**UpdateLbrpSrcIpRewriteIpRangeByID**](LbrpApi.md#UpdateLbrpSrcIpRewriteIpRangeByID) | **Patch** /lbrp/{name}/src-ip-rewrite/ip-range/ | Update ip-range by ID
-[**UpdateLbrpSrcIpRewriteNewIpRangeByID**](LbrpApi.md#UpdateLbrpSrcIpRewriteNewIpRangeByID) | **Patch** /lbrp/{name}/src-ip-rewrite/new_ip_range/ | Update new_ip_range by ID
-
+[**UpdateLbrpServiceByID**](LbrpApi.md#UpdateLbrpServiceByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/                     | Update service by ID
+[**UpdateLbrpServiceListByID**](LbrpApi.md#UpdateLbrpServiceListByID) | **Patch** /lbrp/{name}/service/                                           | Update service by ID
+[**UpdateLbrpServiceNameByID**](LbrpApi.md#UpdateLbrpServiceNameByID) | **Patch** /lbrp/{name}/service/{vip}/{vport}/{proto}/name/                | Update name by ID
+[**UpdateLbrpSpanByID**](LbrpApi.md#UpdateLbrpSpanByID) | **Patch** /lbrp/{name}/span/                                              | Update span by ID
+[**UpdateLbrpSrcIpRewriteByID**](LbrpApi.md#UpdateLbrpSrcIpRewriteByID) | **Patch** /lbrp/{name}/src-ip-rewrite/                                    | Update src-ip-rewrite by ID
+[**UpdateLbrpSrcIpRewriteIpRangeByID**](LbrpApi.md#UpdateLbrpSrcIpRewriteIpRangeByID) | **Patch** /lbrp/{name}/src-ip-rewrite/ip-range/                           | Update ip-range by ID
+[**UpdateLbrpSrcIpRewriteNewIpRangeByID**](LbrpApi.md#UpdateLbrpSrcIpRewriteNewIpRangeByID) | **Patch** /lbrp/{name}/src-ip-rewrite/new_ip_range/                       | Update new_ip_range by ID
+[**UpdateLbrpPortModeByID**](LbrpApi.md#UpdateLbrpPortModeByID) | **Patch** /lbrp/{name}/port_mode/                                         | Update port mode by ID
 
 # **CreateLbrpByID**
 > CreateLbrpByID(ctx, name, lbrp)
@@ -776,6 +778,35 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **ReadLbrpPortsIpByID**
+> string ReadLbrpPortsIpByID(ctx, name, portsName)
+Read ip by ID
+
+Read operation of resource: ip
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**name** | **string**| ID of name |
+**portsName** | **string**| ID of ports_name |
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **ReadLbrpPortsUuidByID**
 > string ReadLbrpPortsUuidByID(ctx, name, portsName)
 Read uuid by ID
@@ -1278,6 +1309,34 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **ReadLbrpPortModeByID**
+> string ReadLbrpPortModeByID(ctx, name)
+Read port mode by ID
+
+Read operation of resource: port_mode
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**name** | **string**| ID of name |
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **ReplaceLbrpByID**
 > ReplaceLbrpByID(ctx, name, lbrp)
 Replace lbrp by ID
@@ -1726,6 +1785,37 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **UpdateLbrpPortsIpByID**
+> UpdateLbrpPortsIpByID(ctx, name, portsName, ip_)
+Update ip by ID
+
+Update operation of resource: ip
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**name** | **string**| ID of name |
+**portsName** | **string**| ID of ports_name |
+**ip_** | **string**| IP address of the client interface (only for FRONTEND port) |
+
+### Return type
+
+(empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 # **UpdateLbrpServiceBackendByID**
 > UpdateLbrpServiceBackendByID(ctx, name, vip, vport, proto, ip, backend)
 Update backend by ID
@@ -2096,6 +2186,35 @@ No authorization required
 
  - **Content-Type**: application/json
  - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **UpdateLbrpPortModeByID**
+> UpdateLbrpPortModeByID(ctx, name, portMode)
+Update port mode by ID
+
+Update operation of resource: port_mode
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**name** | **string**| ID of name |
+**portMode** | **string**| K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port |
+
+### Return type
+
+(empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

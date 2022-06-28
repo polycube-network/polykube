@@ -20,9 +20,9 @@ type Environment struct {
 	NodePortRange              string
 	CNIConfFilePath            string
 	MTU                        int
-	IntK8sLbrpName             string
+	IntLbrpName                string
 	RouterName                 string
-	ExtK8sLbrpName             string
+	ExtLbrpName                string
 	K8sDispName                string
 	CubesLogLevel              string
 	CNILogLevel                string

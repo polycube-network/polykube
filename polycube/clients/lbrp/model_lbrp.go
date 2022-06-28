@@ -29,4 +29,6 @@ type Lbrp struct {
 	SrcIpRewrite *SrcIpRewrite `json:"src-ip-rewrite,omitempty"`
 	// Services (i.e., virtual ip:protocol:port) exported to the client
 	Service []Service `json:"service,omitempty"`
+	// K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port
+	PortMode_ string `json:"port_mode,omitempty"`
 }

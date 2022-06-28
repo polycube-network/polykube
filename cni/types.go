@@ -8,10 +8,10 @@ import (
 
 type NetConf struct {
 	types.NetConf
-	MTU         int    `json:"mtu"`
-	K8sLbrpName string `json:"intK8sLbrp"`
-	LogLevel    string `json:"logLevel"`
-	Gw          GwInfo `json:"gateway"`
+	MTU      int    `json:"mtu"`
+	LbrpName string `json:"intLbrp"`
+	LogLevel string `json:"logLevel"`
+	Gw       GwInfo `json:"gateway"`
 }
 
 type GwInfo struct {

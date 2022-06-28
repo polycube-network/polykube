@@ -13,7 +13,7 @@ import (
 	"github.com/containernetworking/plugins/pkg/ip"
 	"github.com/containernetworking/plugins/pkg/ipam"
 	"github.com/containernetworking/plugins/pkg/ns"
-	k8slbrp "github.com/ekoops/polykube-operator/polycube/clients/k8slbrp"
+	lbrp "github.com/ekoops/polykube-operator/polycube/clients/lbrp"
 	"github.com/ekoops/polykube-operator/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/vishvananda/netlink"
@@ -29,8 +29,7 @@ const (
 )
 
 var (
-	//routerAPI  *router.RouterApiService
-	k8sLbrpAPI *k8slbrp.K8sLbrpApiService
+	lbrpAPI *lbrp.LbrpApiService
 )
 
 func init() {
@@ -48,15 +47,10 @@ func init() {
 	// must ensure that the goroutine does not jump from OS thread to thread
 	runtime.LockOSThread()
 
-	//// init router API
-	//cfgRouter := router.Configuration{BasePath: basePath}
-	//srRouter := router.NewAPIClient(&cfgRouter)
-	//routerAPI = srRouter.RouterApi
-
-	// init k8slbrp API
-	cfgK8sLbrp := k8slbrp.Configuration{BasePath: basePath}
-	srK8sLbrp := k8slbrp.NewAPIClient(&cfgK8sLbrp)
-	k8sLbrpAPI = srK8sLbrp.K8sLbrpApi
+	// init lbrp API
+	cfgLbrp := lbrp.Configuration{BasePath: basePath}
+	srLbrp := lbrp.NewAPIClient(&cfgLbrp)
+	lbrpAPI = srLbrp.LbrpApi
 }
 
 // setupVeth creates a veth pair using the provided ends names and puts the container end inside the provided netns. It
@@ -109,8 +103,8 @@ func loadNetConf(stdin []byte) (*NetConf, error) {
 		return nil, errors.New("MTU must be specified")
 	}
 
-	if conf.K8sLbrpName == "" {
-		return nil, errors.New("internal k8s lbrp name must be specified")
+	if conf.LbrpName == "" {
+		return nil, errors.New("internal lbrp name must be specified")
 	}
 
 	logLevelStr := strings.ToLower(conf.LogLevel)
@@ -368,31 +362,31 @@ func cmdAdd(args *skel.CmdArgs) error {
 	}
 	nlog.Info("netns configured")
 
-	// creating k8slbrp port and connecting it to hostInterface
-	k8sLbrpName := conf.K8sLbrpName
-	k8sLbrpPortName := ipHexStr
-	port := k8slbrp.Ports{
-		Name:  k8sLbrpPortName,
+	// creating lbrp port and connecting it to hostInterface
+	lbrpName := conf.LbrpName
+	lbrpPortName := ipHexStr
+	port := lbrp.Ports{
+		Name:  lbrpPortName,
 		Type_: "frontend",
 		Ip_:   addr.IP.String(),
 		Peer:  hostIfaceName,
 	}
 	nlog = l.WithFields(log.Fields{
-		"k8slbrp": k8sLbrpName,
-		"port":    fmt.Sprintf("%+v", port),
+		"lbrp": lbrpName,
+		"port": fmt.Sprintf("%+v", port),
 	})
 
-	if resp, err := k8sLbrpAPI.CreateK8sLbrpPortsByID(context.TODO(), k8sLbrpName, k8sLbrpPortName, port); err != nil {
+	if resp, err := lbrpAPI.CreateLbrpPortsByID(context.TODO(), lbrpName, lbrpPortName, port); err != nil {
 		nlog.WithFields(log.Fields{
 			"response": fmt.Sprintf("%+v", resp), "detail": err,
-		}).Fatal("failed to create and connect k8s lbrp port")
+		}).Fatal("failed to create and connect lbrp port")
 		return fmt.Errorf(
-			"failed to create and connect %q internal k8s lbrp %q port: %v", k8sLbrpName, k8sLbrpPortName, err,
+			"failed to create and connect %q internal lbrp %q port: %v", lbrpName, lbrpPortName, err,
 		)
 	}
 	nlog.WithField(
-		"connection", fmt.Sprintf("%s:%s <-> %s", k8sLbrpName, k8sLbrpPortName, hostIfaceName),
-	).Info("internal k8s lbrp connected to the host interface")
+		"connection", fmt.Sprintf("%s:%s <-> %s", lbrpName, lbrpPortName, hostIfaceName),
+	).Info("internal lbrp connected to the host interface")
 
 	// setting up the plugin result
 	result := &current.Result{}
@@ -499,17 +493,17 @@ func cmdCheck(args *skel.CmdArgs) error {
 	}
 	nlog.Info("netns checked")
 
-	// checking k8slbrp port connection
-	k8sLbrpName := conf.K8sLbrpName
+	// checking lbrp port connection
+	lbrpName := conf.LbrpName
 	contIP := contIfaceConf.IPConf.Address.IP
-	k8sLbrpPortName := hex.EncodeToString(contIP)
-	k8sLbrpPortPeer := hostIfaceConf.Interface.Name
-	klog := l.WithField("k8slbrp", k8sLbrpName) // k8s lbrp logger
-	if err := checkK8sLbrpPort(k8sLbrpName, k8sLbrpPortName, k8sLbrpPortPeer, contIP.String()); err != nil {
-		klog.WithField("detail", err).Fatal("failed k8slbrp checking")
-		return fmt.Errorf("failed %q k8slbrp port checking: %v", k8sLbrpName, err)
+	lbrpPortName := hex.EncodeToString(contIP)
+	lbrpPortPeer := hostIfaceConf.Interface.Name
+	lblog := l.WithField("lbrp", lbrpName) // lbrp logger
+	if err := checkLbrpPort(lbrpName, lbrpPortName, lbrpPortPeer, contIP.String()); err != nil {
+		lblog.WithField("detail", err).Fatal("failed lbrp checking")
+		return fmt.Errorf("failed %q lbrp port checking: %v", lbrpName, err)
 	}
-	klog.Info("k8slbrp checked")
+	lblog.Info("lbrp checked")
 	return nil
 }
 
@@ -555,22 +549,22 @@ func cmdDel(args *skel.CmdArgs) error {
 	}
 	l.Info("ip released")
 
-	// deleting k8slbrp port
-	k8sLbrpName := conf.K8sLbrpName
-	k8sLbrpPortName := hex.EncodeToString(contIP)
-	klog := l.WithFields(log.Fields{"k8slbrp": k8sLbrpName, "port": k8sLbrpPortName})
-	if resp, err := k8sLbrpAPI.DeleteK8sLbrpPortsByID(
-		context.TODO(), k8sLbrpName, k8sLbrpPortName,
+	// deleting lbrp port
+	lbrpName := conf.LbrpName
+	lbrpPortName := hex.EncodeToString(contIP)
+	lblog := l.WithFields(log.Fields{"lbrp": lbrpName, "port": lbrpPortName})
+	if resp, err := lbrpAPI.DeleteLbrpPortsByID(
+		context.TODO(), lbrpName, lbrpPortName,
 	); err != nil && resp.StatusCode != 409 {
-		klog.WithFields(log.Fields{
+		lblog.WithFields(log.Fields{
 			"response": fmt.Sprintf("%+v", resp), "detail": err,
-		}).Fatal("failed to delete internal k8s lbrp port")
+		}).Fatal("failed to delete internal lbrp port")
 		return fmt.Errorf(
-			"failed to delete %q port on %q internal k8s lbrp: - error: %s, response: %+v",
-			k8sLbrpPortName, k8sLbrpName, err, resp,
+			"failed to delete %q port on %q internal lbrp: - error: %s, response: %+v",
+			lbrpPortName, lbrpName, err, resp,
 		)
 	}
-	klog.Info("internal k8s lbrp port deleted")
+	lblog.Info("internal lbrp port deleted")
 
 	// deleting netns iface and related stuff (routes, arpentry, etc...)
 	if args.Netns != "" {

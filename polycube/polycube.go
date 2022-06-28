@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/ekoops/polykube-operator/node"
 	k8sdispatcher "github.com/ekoops/polykube-operator/polycube/clients/k8sdispatcher"
-	k8slbrp "github.com/ekoops/polykube-operator/polycube/clients/k8slbrp"
+	lbrp "github.com/ekoops/polykube-operator/polycube/clients/lbrp"
 	"github.com/ekoops/polykube-operator/polycube/clients/router"
 	"github.com/ekoops/polykube-operator/utils"
 	"math"
@@ -23,17 +23,17 @@ const (
 var (
 	// logger used throughout the package
 	log              = ctrl.Log.WithName("polycube-pkg")
-	k8sLbrpAPI       *k8slbrp.K8sLbrpApiService
+	lbrpAPI          *lbrp.LbrpApiService
 	routerAPI        *router.RouterApiService
 	k8sDispatcherAPI *k8sdispatcher.K8sdispatcherApiService
 	conf             *configuration
 )
 
 func init() {
-	// init k8slbrp API
-	cfgK8sLbrp := k8slbrp.Configuration{BasePath: basePath}
-	srK8sLbrp := k8slbrp.NewAPIClient(&cfgK8sLbrp)
-	k8sLbrpAPI = srK8sLbrp.K8sLbrpApi
+	// init lbrp API
+	cfgLbrp := lbrp.Configuration{BasePath: basePath}
+	srLbrp := lbrp.NewAPIClient(&cfgLbrp)
+	lbrpAPI = srLbrp.LbrpApi
 
 	// init router API
 	cfgRouter := router.Configuration{BasePath: basePath}
@@ -46,33 +46,33 @@ func init() {
 	k8sDispatcherAPI = srK8sdispatcher.K8sdispatcherApi
 }
 
-// createIntK8sLbrp creates the polycube internal k8s lbrp cube.
-func createIntK8sLbrp() error {
-	iklName := conf.intK8sLbrpName
+// createIntLbrp creates the polycube internal lbrp cube.
+func createIntLbrp() error {
+	ilbName := conf.intLbrpName
 
-	// defining internal k8s lbrp port that will be connected to the router
-	iklToRPort := k8slbrp.Ports{
-		Name:  conf.iklToRPortName,
+	// defining internal lbrp port that will be connected to the router
+	ilbToRPort := lbrp.Ports{
+		Name:  conf.ilbToRPortName,
 		Type_: "backend",
 	}
-	iklPorts := []k8slbrp.Ports{iklToRPort}
-	ikl := k8slbrp.K8sLbrp{
-		Name:      iklName,
+	ilbPorts := []lbrp.Ports{ilbToRPort}
+	ilb := lbrp.Lbrp{
+		Name:      ilbName,
 		Loglevel:  conf.cubesLogLevel,
-		Ports:     iklPorts,
+		Ports:     ilbPorts,
 		PortMode_: "MULTI",
 	}
 
-	// creating internal k8s lbrp
-	if resp, err := k8sLbrpAPI.CreateK8sLbrpByID(context.TODO(), iklName, ikl); err != nil {
+	// creating internal lbrp
+	if resp, err := lbrpAPI.CreateLbrpByID(context.TODO(), ilbName, ilb); err != nil {
 		log.Error(
-			err, "failed to create internal k8s lbrp",
-			"k8slbrp", fmt.Sprintf("%+v", ikl),
+			err, "failed to create internal lbrp",
+			"lbrp", fmt.Sprintf("%+v", ilb),
 			"response", fmt.Sprintf("%+v", resp),
 		)
-		return errors.New("failed to create internal k8s lbrp")
+		return errors.New("failed to create internal lbrp")
 	}
-	log.V(1).Info("created internal k8s lbrp", "name", iklName)
+	log.V(1).Info("created internal lbrp", "name", ilbName)
 	return nil
 }
 
@@ -80,11 +80,11 @@ func createIntK8sLbrp() error {
 func createRouter() error {
 	rName := conf.rName
 
-	// defining the router port that will be connected to the internal k8s lbrp
+	// defining the router port that will be connected to the internal lbrp
 	podsGwIPNetStr := node.Conf.PodGwInfo.IPNet.String()
 	podsGwMACStr := node.Conf.PodGwInfo.MAC.String()
-	rToIklPort := router.Ports{
-		Name: conf.rToIklPortName,
+	rToIlbPort := router.Ports{
+		Name: conf.rToIlbPortName,
 		Ip:   podsGwIPNetStr,
 		Mac:  podsGwMACStr,
 	}
@@ -112,14 +112,14 @@ func createRouter() error {
 		//Peer: vethNetEndIface.Link.Attrs().Name,
 	}
 
-	// defining the router port that will be connected to the external k8s lbrp
+	// defining the router port that will be connected to the external lbrp
 	extIface := node.Conf.ExtIface
-	rToEklPort := router.Ports{
-		Name: conf.rToEklPortName,
+	rToElbPort := router.Ports{
+		Name: conf.rToElbPortName,
 		Ip:   extIface.IPNet.String(),
 		Mac:  extIface.Link.Attrs().HardwareAddr.String(),
 	}
-	rPorts := []router.Ports{rToIklPort, rToVxlanPort, rToHostPort, rToEklPort}
+	rPorts := []router.Ports{rToIlbPort, rToVxlanPort, rToHostPort, rToElbPort}
 
 	// defining router default route and setting static arp table entry for the default gateway
 	nodeGwIPStr := node.Conf.NodeGwInfo.IPNet.IP.String()
@@ -134,12 +134,12 @@ func createRouter() error {
 		{ // default route through node gateway
 			Network:    "0.0.0.0/0",
 			Nexthop:    nodeGwIPStr,
-			Interface_: conf.rToEklPortName,
+			Interface_: conf.rToElbPortName,
 		},
 		{ // traffic for vpod address must go towards the k8sdispatcher
 			Network:    node.Conf.VPodIPNet.String(),
 			Nexthop:    nodeGwIPStr,
-			Interface_: conf.rToEklPortName,
+			Interface_: conf.rToElbPortName,
 		},
 		{ // traffic for node physical interface address must go towards the veth host end
 			Network:    nodeIPNet.String(),
@@ -151,7 +151,7 @@ func createRouter() error {
 		{
 			Address:    nodeGwIPStr,
 			Mac:        nodeGwMACStr,
-			Interface_: conf.rToEklPortName,
+			Interface_: conf.rToElbPortName,
 		},
 	}
 	r := router.Router{
@@ -174,39 +174,39 @@ func createRouter() error {
 	return nil
 }
 
-// createExtK8sLbrp creates the polycube external k8s lbrp cube.
-func createExtK8sLbrp() error {
-	eklName := conf.extK8sLbrpName
+// createExtLbrp creates the polycube external lbrp cube.
+func createExtLbrp() error {
+	elbName := conf.extLbrpName
 
-	// defining the external k8s lbrp port that will be connected to the router interface
-	eklToRPort := k8slbrp.Ports{
-		Name:  conf.eklToRPortName,
+	// defining the external lbrp port that will be connected to the router interface
+	elbToRPort := lbrp.Ports{
+		Name:  conf.elbToRPortName,
 		Type_: "backend",
 	}
-	// defining the external k8s lbrp port that will be connected to the k8sdispatcher interface
-	eklToKPort := k8slbrp.Ports{
-		Name:  conf.eklToKPortName,
+	// defining the external lbrp port that will be connected to the k8sdispatcher interface
+	elbToKPort := lbrp.Ports{
+		Name:  conf.elbToKPortName,
 		Type_: "frontend",
 	}
 
-	eklPorts := []k8slbrp.Ports{eklToRPort, eklToKPort}
-	ekl := k8slbrp.K8sLbrp{
-		Name:      eklName,
+	elbPorts := []lbrp.Ports{elbToRPort, elbToKPort}
+	elb := lbrp.Lbrp{
+		Name:      elbName,
 		Loglevel:  conf.cubesLogLevel,
-		Ports:     eklPorts,
+		Ports:     elbPorts,
 		PortMode_: "SINGLE",
 	}
 
-	// creating external k8s lbrp
-	if resp, err := k8sLbrpAPI.CreateK8sLbrpByID(context.TODO(), eklName, ekl); err != nil {
+	// creating external lbrp
+	if resp, err := lbrpAPI.CreateLbrpByID(context.TODO(), elbName, elb); err != nil {
 		log.Error(
-			err, "failed to create external k8s lbrp",
-			"k8slbrp", fmt.Sprintf("%+v", ekl),
+			err, "failed to create external lbrp",
+			"lbrp", fmt.Sprintf("%+v", elb),
 			"response", fmt.Sprintf("%+v", resp),
 		)
-		return errors.New("failed to create external k8s lbrp")
+		return errors.New("failed to create external lbrp")
 	}
-	log.V(1).Info("created external k8s lbrp", "name", eklName)
+	log.V(1).Info("created external lbrp", "name", elbName)
 	return nil
 }
 
@@ -214,9 +214,9 @@ func createExtK8sLbrp() error {
 func createK8sDispatcher() error {
 	kdName := conf.k8sDispName
 
-	// defining the k8sdispatcher port that will be connected to the external k8s lbrp interface
-	kToEklPort := k8sdispatcher.Ports{
-		Name:  conf.kToEklPortName,
+	// defining the k8sdispatcher port that will be connected to the external lbrp interface
+	kToElbPort := k8sdispatcher.Ports{
+		Name:  conf.kToElbPortName,
 		Type_: "BACKEND",
 	}
 	// defining the k8sdispatcher port that will be connected to the node external interface
@@ -227,7 +227,7 @@ func createK8sDispatcher() error {
 		Ip_:   extIface.IPNet.IP.String(),
 		Peer:  extIface.Link.Attrs().Name,
 	}
-	kPorts := []k8sdispatcher.Ports{kToEklPort, kToIntPort}
+	kPorts := []k8sdispatcher.Ports{kToElbPort, kToIntPort}
 
 	kd := k8sdispatcher.K8sdispatcher{
 		Name:          kdName,
@@ -253,42 +253,42 @@ func createK8sDispatcher() error {
 // EnsureCubesConnections ensures that each port of the already deployed polycube infrastructure is connected with
 // the right peer.
 func EnsureCubesConnections() error {
-	iklName := conf.intK8sLbrpName
+	ilbName := conf.intLbrpName
 	rName := conf.rName
-	eklName := conf.extK8sLbrpName
+	elbName := conf.extLbrpName
 	kName := conf.k8sDispName
 
-	// updating internal k8s lbrp ports
-	// updating internal k8s lbrp "to_r0" port in order to set peer=r0:to_ikl0
-	iklToRPortName := conf.iklToRPortName
-	iklToRPortPeer := utils.CreatePeer(rName, conf.rToIklPortName)
-	l := log.WithValues("name", iklName, "port", iklToRPortName, "peer", iklToRPortPeer)
-	iklToRPort := k8slbrp.Ports{
-		Name: iklToRPortName,
-		Peer: iklToRPortPeer,
+	// updating internal lbrp ports
+	// updating internal lbrp "to_r0" port in order to set peer=r0:to_ilb0
+	ilbToRPortName := conf.ilbToRPortName
+	ilbToRPortPeer := utils.CreatePeer(rName, conf.rToIlbPortName)
+	l := log.WithValues("name", ilbName, "port", ilbToRPortName, "peer", ilbToRPortPeer)
+	ilbToRPort := lbrp.Ports{
+		Name: ilbToRPortName,
+		Peer: ilbToRPortPeer,
 	}
-	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), iklName, iklToRPortName, iklToRPort); err != nil {
+	if resp, err := lbrpAPI.UpdateLbrpPortsByID(context.TODO(), ilbName, ilbToRPortName, ilbToRPort); err != nil {
 		l.Error(
-			err, "failed to set internal k8s lbrp port peer",
+			err, "failed to set internal lbrp port peer",
 			"response", fmt.Sprintf("%+v", resp),
 		)
-		return errors.New("failed to set internal k8s lbrp port peer")
+		return errors.New("failed to set internal lbrp port peer")
 	}
-	l.V(1).Info("set internal k8s lbrp port peer")
+	l.V(1).Info("set internal lbrp port peer")
 
 	// updating router ports
-	// updating router "to_ikl0" port in order to set peer=ikl0:to_r0
-	rToIklPortName := conf.rToIklPortName
-	rToIklPortPeer := utils.CreatePeer(iklName, conf.iklToRPortName)
+	// updating router "to_ilb0" port in order to set peer=ilb0:to_r0
+	rToIlbPortName := conf.rToIlbPortName
+	rToIlbPortPeer := utils.CreatePeer(ilbName, conf.ilbToRPortName)
 	podsGwInfo := node.Conf.PodGwInfo
-	l = log.WithValues("name", rName, "port", rToIklPortName, "peer", rToIklPortPeer)
-	rToIklPort := router.Ports{
-		Name: rToIklPortName,
+	l = log.WithValues("name", rName, "port", rToIlbPortName, "peer", rToIlbPortPeer)
+	rToIlbPort := router.Ports{
+		Name: rToIlbPortName,
 		Ip:   podsGwInfo.IPNet.String(),
 		Mac:  podsGwInfo.MAC.String(),
-		Peer: rToIklPortPeer,
+		Peer: rToIlbPortPeer,
 	}
-	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToIklPortName, rToIklPort); err != nil {
+	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToIlbPortName, rToIlbPort); err != nil {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
 	}
@@ -318,69 +318,69 @@ func EnsureCubesConnections() error {
 	}
 	l.V(1).Info("set router port peer")
 
-	// updating router "to_ekl0" port in order to set peer=ekl0:to_r0
-	rToEklPortName := conf.rToEklPortName
-	rToEklPortPeer := utils.CreatePeer(eklName, conf.eklToRPortName)
+	// updating router "to_elb0" port in order to set peer=elb0:to_r0
+	rToElbPortName := conf.rToElbPortName
+	rToElbPortPeer := utils.CreatePeer(elbName, conf.elbToRPortName)
 	extIface := node.Conf.ExtIface
-	l = log.WithValues("name", rName, "port", rToEklPortName, "peer", rToEklPortPeer)
-	rToEklPort := router.Ports{
-		Name: conf.rToEklPortName,
+	l = log.WithValues("name", rName, "port", rToElbPortName, "peer", rToElbPortPeer)
+	rToElbPort := router.Ports{
+		Name: conf.rToElbPortName,
 		Ip:   extIface.IPNet.String(),
 		Mac:  extIface.Link.Attrs().HardwareAddr.String(),
-		Peer: rToEklPortPeer,
+		Peer: rToElbPortPeer,
 	}
-	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToEklPortName, rToEklPort); err != nil {
+	if resp, err := routerAPI.UpdateRouterPortsByID(context.TODO(), rName, rToElbPortName, rToElbPort); err != nil {
 		l.Error(err, "failed to set router port peer", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to set router port peer")
 	}
 	l.V(1).Info("set router port peer")
 
-	// updating external k8s lbrp ports
-	// updating external k8s lbrp "to_r0" port in order to set peer=r0:to_ekl0
-	eklToRPortName := conf.eklToRPortName
-	eklToRPortPeer := utils.CreatePeer(rName, conf.rToEklPortName)
-	l = log.WithValues("name", eklName, "port", eklToRPortName, "peer", eklToRPortPeer)
-	eklToRPort := k8slbrp.Ports{
-		Name: eklToRPortName,
-		Peer: eklToRPortPeer,
+	// updating external lbrp ports
+	// updating external lbrp "to_r0" port in order to set peer=r0:to_elb0
+	elbToRPortName := conf.elbToRPortName
+	elbToRPortPeer := utils.CreatePeer(rName, conf.rToElbPortName)
+	l = log.WithValues("name", elbName, "port", elbToRPortName, "peer", elbToRPortPeer)
+	elbToRPort := lbrp.Ports{
+		Name: elbToRPortName,
+		Peer: elbToRPortPeer,
 	}
-	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), eklName, eklToRPortName, eklToRPort); err != nil {
+	if resp, err := lbrpAPI.UpdateLbrpPortsByID(context.TODO(), elbName, elbToRPortName, elbToRPort); err != nil {
 		l.Error(
-			err, "failed to set external k8s lbrp port peer",
+			err, "failed to set external lbrp port peer",
 			"response", fmt.Sprintf("%+v", resp),
 		)
-		return errors.New("failed to set external k8s lbrp port peer")
+		return errors.New("failed to set external lbrp port peer")
 	}
-	l.V(1).Info("set external k8s lbrp port peer")
+	l.V(1).Info("set external lbrp port peer")
 
-	// updating external k8s lbrp "to_k0" port in order to set peer=k0:to_ekl0
-	eklToKPortName := conf.eklToKPortName
-	eklToKPortPeer := utils.CreatePeer(kName, conf.kToEklPortName)
-	l = log.WithValues("name", eklName, "port", eklToKPortName, "peer", eklToKPortPeer)
-	eklToKPort := k8slbrp.Ports{
-		Name: eklToKPortName,
-		Peer: eklToKPortPeer,
+	// updating external lbrp "to_k0" port in order to set peer=k0:to_elb0
+	elbToKPortName := conf.elbToKPortName
+	elbToKPortPeer := utils.CreatePeer(kName, conf.kToElbPortName)
+	l = log.WithValues("name", elbName, "port", elbToKPortName, "peer", elbToKPortPeer)
+	elbToKPort := lbrp.Ports{
+		Name: elbToKPortName,
+		Peer: elbToKPortPeer,
 	}
-	if resp, err := k8sLbrpAPI.UpdateK8sLbrpPortsByID(context.TODO(), eklName, eklToKPortName, eklToKPort); err != nil {
+	if resp, err := lbrpAPI.UpdateLbrpPortsByID(context.TODO(), elbName, elbToKPortName, elbToKPort); err != nil {
 		l.Error(
-			err, "failed to set external k8s lbrp port peer",
+			err, "failed to set external lbrp port peer",
 			"response", fmt.Sprintf("%+v", resp),
 		)
-		return errors.New("failed to set external k8s lbrp port peer")
+		return errors.New("failed to set external lbrp port peer")
 	}
-	l.V(1).Info("set external k8s lbrp port peer")
+	l.V(1).Info("set external lbrp port peer")
 
 	// updating k8sdispatcher ports
-	// updating k8sdispatcher "to_ekl0" port in order to set peer=ekl0:to_k0
-	kToEklPortName := conf.kToEklPortName
-	kToEklPortPeer := utils.CreatePeer(eklName, conf.eklToKPortName)
-	l = log.WithValues("name", kName, "port", kToEklPortName, "peer", kToEklPortPeer)
-	kToEklPort := k8sdispatcher.Ports{
-		Name: kToEklPortName,
-		Peer: kToEklPortPeer,
+	// updating k8sdispatcher "to_elb0" port in order to set peer=elb0:to_k0
+	kToElbPortName := conf.kToElbPortName
+	kToElbPortPeer := utils.CreatePeer(elbName, conf.elbToKPortName)
+	l = log.WithValues("name", kName, "port", kToElbPortName, "peer", kToElbPortPeer)
+	kToElbPort := k8sdispatcher.Ports{
+		Name: kToElbPortName,
+		Peer: kToElbPortPeer,
 	}
 	if resp, err := k8sDispatcherAPI.UpdateK8sdispatcherPortsByID(
-		context.TODO(), kName, kToEklPortName, kToEklPort,
+		context.TODO(), kName, kToElbPortName, kToElbPort,
 	); err != nil {
 		l.Error(
 			err, "failed to set k8s dispatcher port peer",
@@ -395,48 +395,48 @@ func EnsureCubesConnections() error {
 // EnsureCubes ensures that the polycube infrastructure is correctly deployed: in order to do that, it creates
 // the cubes that don't exist yet and cleans up the configuration of the already existing ones.
 func EnsureCubes() error {
-	// retrieving the k8s lbrp list
-	kls, resp, err := k8sLbrpAPI.ReadK8sLbrpListByID(context.TODO())
+	// retrieving the lbrp list
+	lbs, resp, err := lbrpAPI.ReadLbrpListByID(context.TODO())
 	if err != nil {
-		log.Error(err, "failed to retrieve the k8s lbrp list", "response", fmt.Sprintf("%+v", resp))
-		return errors.New("failed to retrieve the k8s lbrp list")
+		log.Error(err, "failed to retrieve the lbrp list", "response", fmt.Sprintf("%+v", resp))
+		return errors.New("failed to retrieve the lbrp list")
 	}
 
-	// checking k8s lbrps existence
-	iklName := conf.intK8sLbrpName
-	eklName := conf.extK8sLbrpName
-	iklExist := false
-	eklExist := false
-	for _, kl := range kls {
-		if kl.Name == iklName {
-			iklExist = true
-		} else if kl.Name == eklName {
-			eklExist = true
+	// checking lbrps existence
+	ilbName := conf.intLbrpName
+	elbName := conf.extLbrpName
+	ilbExist := false
+	elbExist := false
+	for _, lb := range lbs {
+		if lb.Name == ilbName {
+			ilbExist = true
+		} else if lb.Name == elbName {
+			elbExist = true
 		}
 	}
-	// creating internal k8s lbrp if it doesn't exist
-	l := log.WithValues("name", iklName)
-	if !iklExist {
-		l.V(1).Info("failed to find internal k8s lbrp: creating it...")
-		if err := createIntK8sLbrp(); err != nil {
+	// creating internal lbrp if it doesn't exist
+	l := log.WithValues("name", ilbName)
+	if !ilbExist {
+		l.V(1).Info("failed to find internal lbrp: creating it...")
+		if err := createIntLbrp(); err != nil {
 			return err
 		}
 	} else {
-		l.V(1).Info("cleaning up services of the already existing internal k8s lbrp...")
-		if err := CleanupK8sLbrpServices(iklName); err != nil {
+		l.V(1).Info("cleaning up services of the already existing internal lbrp...")
+		if err := CleanupLbrpServices(ilbName); err != nil {
 			return err
 		}
 	}
-	// creating external k8s lbrp if it doesn't exist
-	l = log.WithValues("name", eklName)
-	if !eklExist {
-		l.V(1).Info("failed to find external k8s lbrp: creating it...")
-		if err := createExtK8sLbrp(); err != nil {
+	// creating external lbrp if it doesn't exist
+	l = log.WithValues("name", elbName)
+	if !elbExist {
+		l.V(1).Info("failed to find external lbrp: creating it...")
+		if err := createExtLbrp(); err != nil {
 			return err
 		}
 	} else {
-		l.V(1).Info("cleaning up services of the already existing external k8s lbrp...")
-		if err := CleanupK8sLbrpServices(eklName); err != nil {
+		l.V(1).Info("cleaning up services of the already existing external lbrp...")
+		if err := CleanupLbrpServices(elbName); err != nil {
 			return err
 		}
 	}
@@ -526,18 +526,18 @@ func InitConf() {
 	ec := node.Env
 	conf = &configuration{
 		cubesLogLevel:    ec.CubesLogLevel,
-		intK8sLbrpName:   ec.IntK8sLbrpName,
+		intLbrpName:      ec.IntLbrpName,
 		rName:            ec.RouterName,
-		extK8sLbrpName:   ec.ExtK8sLbrpName,
+		extLbrpName:      ec.ExtLbrpName,
 		k8sDispName:      ec.K8sDispName,
-		iklToRPortName:   "to_" + ec.RouterName,
-		rToIklPortName:   "to_" + ec.IntK8sLbrpName,
+		ilbToRPortName:   "to_" + ec.RouterName,
+		rToIlbPortName:   "to_" + ec.IntLbrpName,
 		rToVxlanPortName: "to_" + ec.VxlanIfaceName,
 		rToHostPortName:  "to_host",
-		rToEklPortName:   "to_" + ec.ExtK8sLbrpName,
-		eklToRPortName:   "to_" + ec.RouterName,
-		eklToKPortName:   "to_" + ec.K8sDispName,
-		kToEklPortName:   "to_" + ec.ExtK8sLbrpName,
+		rToElbPortName:   "to_" + ec.ExtLbrpName,
+		elbToRPortName:   "to_" + ec.RouterName,
+		elbToKPortName:   "to_" + ec.K8sDispName,
+		kToElbPortName:   "to_" + ec.ExtLbrpName,
 		kToIntPortName:   "to_int",
 	}
 }

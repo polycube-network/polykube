@@ -14,9 +14,9 @@ data:
   nodePortRange: "30000-32767"
   cniConfFilePath: "/host/etc/cni/net.d/00-polykube.json"
   mtu: "1450"
-  intK8sLbrpName: "ikl0"
+  intLbrpName: "ilb0"
   routerName: "r0"
-  extK8sLbrpName: "ekl0"
+  extLbrpName: "elb0"
   k8sDispName: "k0"
   # The cubes log level can assume one of the following values:
   # "TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "OFF"

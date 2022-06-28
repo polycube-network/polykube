@@ -414,6 +414,84 @@ paths:
         "204":
           description: "No content: Successful update"
       x-is-base-datamodel: true
+  /lbrp/{name}/port_mode/:
+    get:
+      tags:
+        - "lbrp"
+      summary: "Read port mode by ID"
+      description: "Read operation of resource: port_mode"
+      operationId: "readLbrpPortModeByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port"
+            example: "MULTI"
+            enum:
+              - "SINGLE"
+              - "MULTI"
+            default: "MULTI"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+      x-is-base-datamodel: true
+    patch:
+      tags:
+        - "lbrp"
+      summary: "Update port mode by ID"
+      description: "Update operation of resource: port_mode"
+      operationId: "updateLbrpPortModeByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - in: "body"
+          name: "port_mode"
+          description: "K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port"
+          required: true
+          schema:
+            type: "string"
+            description: "K8s lbrp mode of operation. 'MULTI' allows to manage multiple FRONTEND port. 'SINGLE' is optimized for working with a single FRONTEND port"
+            example: "MULTI"
+            enum:
+              - "SINGLE"
+              - "MULTI"
+            default: "MULTI"
+          x-is-enum: "true"
+          x-exportParamName: "PortMode_"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+      x-is-base-datamodel: true
   /lbrp/{name}/ports/{ports_name}/:
     get:
       tags:
@@ -995,6 +1073,80 @@ paths:
           x-is-required: true
         x-is-enum: "true"
         x-exportParamName: "Type_"
+      responses:
+        "200":
+          description: "OK: Successful update"
+        "404":
+          description: "Not found: Resource not found"
+        "403":
+          description: "Forbidden: User not authorized"
+        "204":
+          description: "No content: Successful update"
+  /lbrp/{name}/ports/{ports_name}/ip/:
+    get:
+      tags:
+        - "lbrp"
+      summary: "Read ip by ID"
+      description: "Read operation of resource: ip"
+      operationId: "readLbrpPortsIpByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - name: "ports_name"
+          in: "path"
+          description: "ID of ports_name"
+          required: true
+          type: "string"
+          x-exportParamName: "PortsName"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "IP address of the client interface (only for FRONTEND port)"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+    patch:
+      tags:
+        - "lbrp"
+      summary: "Update ip by ID"
+      description: "Update operation of resource: ip"
+      operationId: "updateLbrpPortsIpByID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "name"
+          in: "path"
+          description: "ID of name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - name: "ports_name"
+          in: "path"
+          description: "ID of ports_name"
+          required: true
+          type: "string"
+          x-exportParamName: "PortsName"
+        - in: "body"
+          name: "ip"
+          description: "IP address of the client interface (only for FRONTEND port)"
+          required: true
+          type: "string"
+          x-exportParamName: "Ip_"
       responses:
         "200":
           description: "OK: Successful update"

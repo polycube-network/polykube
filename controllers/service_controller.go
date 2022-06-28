@@ -108,8 +108,8 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		// the following work for both the internal and the external load balancers.
 		// In case o services other than ClusterIP and NodePort ones, the following
 		// will not delete anything
-		if err := polycube.CleanupK8sLbrpsServicesById(sId); err != nil {
-			log.Error(err, "something went wrong during related k8s lbrp services cleanup")
+		if err := polycube.CleanupLbrpsServicesById(sId); err != nil {
+			log.Error(err, "something went wrong during related lbrp services cleanup")
 			return ctrl.Result{}, err
 		}
 		if err := polycube.CleanupK8sDispatcherNodePortRulesById(sId); err != nil {
@@ -134,8 +134,8 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 	log.V(1).WithValues("detail", fmt.Sprintf("%+v", sd)).Info("built service detail")
 
-	if err := polycube.SyncK8sLbrpServices(sd); err != nil {
-		log.Error(err, "something went wrong during k8s lbrp services sync")
+	if err := polycube.SyncLbrpServices(sd); err != nil {
+		log.Error(err, "something went wrong during lbrp services sync")
 		return ctrl.Result{}, err
 	}
 
