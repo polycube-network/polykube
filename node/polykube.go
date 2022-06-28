@@ -2,7 +2,7 @@ package node
 
 import (
 	"errors"
-	"github.com/ekoops/polykube-operator/types"
+	"github.com/polycube-network/polykube/types"
 	"github.com/vishvananda/netlink"
 	"net"
 )

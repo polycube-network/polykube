@@ -22,7 +22,7 @@ WORKDIR /workspace/cni
 # Build polycube-cni-plugin
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o plugins/polykube-cni-plugin
 WORKDIR /workspace
-# Build polykube-operator
+# Build polykube
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o polykube main.go
 
 # Use distroless as minimal base image to package the manager binary and the CNI plugin

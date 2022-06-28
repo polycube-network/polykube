@@ -18,9 +18,9 @@ package main
 
 import (
 	"flag"
-	"github.com/ekoops/polykube-operator/controllers"
-	"github.com/ekoops/polykube-operator/node"
-	"github.com/ekoops/polykube-operator/polycube"
+	"github.com/polycube-network/polykube/controllers"
+	"github.com/polycube-network/polykube/node"
+	"github.com/polycube-network/polykube/polycube"
 	"net/http"
 	"os"
 	"os/signal"

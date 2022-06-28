@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/containernetworking/plugins/pkg/ip"
-	"github.com/ekoops/polykube-operator/utils"
+	"github.com/polycube-network/polykube/utils"
 	"net"
 	"os"
 	"strconv"

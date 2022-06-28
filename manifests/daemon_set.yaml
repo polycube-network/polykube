@@ -55,8 +55,8 @@ spec:
               mountPath: /usr/src
             - name: var-log
               mountPath: /host/var/log
-        - name: polykube-operator
-          image: ekoops/polykube-operator:latest
+        - name: polykube
+          image: ekoops/polykube:latest
           imagePullPolicy: Always
           terminationMessagePolicy: FallbackToLogsOnError # in order to allow k8s to retrieve log from container stderr
           securityContext:

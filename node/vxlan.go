@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/ekoops/polykube-operator/types"
+	"github.com/polycube-network/polykube/types"
 	"github.com/vishvananda/netlink"
 	"math"
 	"net"

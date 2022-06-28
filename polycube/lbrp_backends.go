@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	lbrp "github.com/ekoops/polykube-operator/polycube/clients/lbrp"
-	"github.com/ekoops/polykube-operator/types"
+	lbrp "github.com/polycube-network/polykube/polycube/clients/lbrp"
+	"github.com/polycube-network/polykube/types"
 	"strings"
 )
 

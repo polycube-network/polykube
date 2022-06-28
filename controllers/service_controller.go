@@ -19,9 +19,9 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"github.com/ekoops/polykube-operator/node"
-	"github.com/ekoops/polykube-operator/polycube"
-	"github.com/ekoops/polykube-operator/types"
+	"github.com/polycube-network/polykube/node"
+	"github.com/polycube-network/polykube/polycube"
+	"github.com/polycube-network/polykube/types"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"

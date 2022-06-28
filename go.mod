@@ -1,4 +1,4 @@
-module github.com/ekoops/polykube-operator
+module github.com/polycube-network/polykube
 
 go 1.16
 

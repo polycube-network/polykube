@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	k8sdispatcher "github.com/ekoops/polykube-operator/polycube/clients/k8sdispatcher"
-	"github.com/ekoops/polykube-operator/types"
+	k8sdispatcher "github.com/polycube-network/polykube/polycube/clients/k8sdispatcher"
+	"github.com/polycube-network/polykube/types"
 	"net"
 	"strings"
 )

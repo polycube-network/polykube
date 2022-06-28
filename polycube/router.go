@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ekoops/polykube-operator/polycube/clients/router"
+	"github.com/polycube-network/polykube/polycube/clients/router"
 	"net"
 	"net/url"
 )

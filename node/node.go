@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/containernetworking/plugins/pkg/ip"
-	"github.com/ekoops/polykube-operator/types"
+	"github.com/polycube-network/polykube/types"
 	"github.com/vishvananda/netlink"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

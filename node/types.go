@@ -2,7 +2,7 @@ package node
 
 import (
 	"fmt"
-	"github.com/ekoops/polykube-operator/types"
+	"github.com/polycube-network/polykube/types"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"net"

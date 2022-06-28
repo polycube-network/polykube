@@ -4,6 +4,6 @@ layout:
 plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}
-projectName: polykube-operator
-repo: github.com/ekoops/polykube-operator
+projectName: polykube
+repo: github.com/polycube-network/polykube
 version: "3"
