@@ -10,6 +10,24 @@ import (
 	"strings"
 )
 
+func getK8sDispatcherNodePortRules() ([]k8sdispatcher.NodeportRule, error) {
+	kdName := conf.k8sDispName
+	log := log.WithValues("k8sdisp", kdName)
+	nprs, resp, err := k8sDispatcherAPI.ReadK8sdispatcherNodeportRuleListByID(context.TODO(), kdName)
+	if err != nil {
+		log.Error(
+			err, "failed to retrieve k8s dispatcher NodePort rules",
+			"response", fmt.Sprintf("%+v", resp),
+		)
+		return nil, errors.New("failed to retrieve k8s dispatcher NodePort rules")
+	}
+	log.V(1).Info(
+		"retrieved k8s dispatcher NodePort rules", "rules", fmt.Sprintf("%+v\n", nprs),
+	)
+	return nprs, nil
+
+}
+
 func nodePortRuleToFrontend(npr k8sdispatcher.NodeportRule, nodeIP net.IP) types.Frontend {
 	return types.Frontend{
 		Vip:   nodeIP.String(),
@@ -27,7 +45,7 @@ func frontendToK8sDispatcherNodePortRule(f *types.Frontend, sn string, etp strin
 	}
 }
 
-func extractK8sDispatcherNodePortRulesToAddAndDel(
+func extractK8sDispatcherNodePortRulesToAddUpdAndDel(
 	oldNprList []k8sdispatcher.NodeportRule, svcDetail *types.ServiceDetail, nodeIP net.IP,
 ) ([]k8sdispatcher.NodeportRule, []k8sdispatcher.NodeportRule, []k8sdispatcher.NodeportRule) {
 	svcId := svcDetail.ServiceId
@@ -88,6 +106,29 @@ func updateK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportR
 	return nil
 }
 
+func addK8sDispatcherNodePortRules(kdName string, nprs []k8sdispatcher.NodeportRule) error {
+	log := log.WithValues("k8sdisp", kdName, "rules", fmt.Sprintf("%+v", nprs))
+
+	resp, err := k8sDispatcherAPI.CreateK8sdispatcherNodeportRuleListByID(context.TODO(), kdName, nprs)
+	if err != nil {
+		log.Error(err, "failed to add k8s dispatcher NodePort rules", "response", fmt.Sprintf("%+v", resp))
+		return fmt.Errorf("failed to add k8s dispatcher NodePort rules")
+	}
+	log.V(1).Info("added k8s dispatcher NodePort rules")
+	return nil
+}
+func updateK8sDispatcherNodePortRules(kdName string, nprs []k8sdispatcher.NodeportRule) error {
+	log := log.WithValues("k8sdisp", kdName, "rules", fmt.Sprintf("%+v", nprs))
+
+	resp, err := k8sDispatcherAPI.UpdateK8sdispatcherNodeportRuleListByID(context.TODO(), kdName, nprs)
+	if err != nil {
+		log.Error(err, "failed to update k8s dispatcher NodePort rules", "response", fmt.Sprintf("%+v", resp))
+		return fmt.Errorf("failed to update k8s dispatcher NodePort rules")
+	}
+	log.V(1).Info("updated k8s dispatcher NodePort rules")
+	return nil
+}
+
 func deleteK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportRule) error {
 	log := log.WithValues("k8sdisp", kdName, "nodePortRule", fmt.Sprintf("%+v", *npr))
 	resp, err := k8sDispatcherAPI.DeleteK8sdispatcherNodeportRuleByID(context.TODO(), kdName, npr.Port, npr.Proto)
@@ -99,22 +140,62 @@ func deleteK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportR
 	return nil
 }
 
-func getK8sDispatcherNodePortRules() ([]k8sdispatcher.NodeportRule, error) {
+func SyncK8sDispatcherNodePortRules(svcDetail *types.ServiceDetail, nodeIP net.IP) error {
 	kdName := conf.k8sDispName
-	log := log.WithValues("k8sdisp", kdName)
-	nprs, resp, err := k8sDispatcherAPI.ReadK8sdispatcherNodeportRuleListByID(context.TODO(), kdName)
+	kdNprs, err := getK8sDispatcherNodePortRules()
 	if err != nil {
-		log.Error(
-			err, "failed to retrieve k8s dispatcher NodePort rules",
-			"response", fmt.Sprintf("%+v", resp),
-		)
-		return nil, errors.New("failed to retrieve k8s dispatcher NodePort rules")
+		return err
 	}
-	log.V(1).Info(
-		"retrieved k8s dispatcher NodePort rules", "rules", fmt.Sprintf("%+v\n", nprs),
-	)
-	return nprs, nil
+	log := log.WithValues("svcId", svcDetail.ServiceId)
 
+	kdNprsToAdd, kdNprsToUpd, kdNprsToDel := extractK8sDispatcherNodePortRulesToAddUpdAndDel(kdNprs, svcDetail, nodeIP)
+	log.V(1).Info("evaluated k8s dispatcher NodePort rules to add, update and delete",
+		"toAdd", fmt.Sprintf("%+v", kdNprsToAdd),
+		"toUpd", fmt.Sprintf("%+v", kdNprsToUpd),
+		"toDel", fmt.Sprintf("%+v", kdNprsToDel),
+	)
+
+	lenToAdd := len(kdNprsToAdd)
+	lenToUpd := len(kdNprsToUpd)
+	lenToDel := len(kdNprsToDel)
+	if lenToAdd == 0 && lenToUpd == 0 && lenToDel == 0 {
+		log.V(1).Info("k8s dispatcher NodePort rule already synced")
+		return nil
+	}
+
+	if lenToAdd > 0 {
+		if err := addK8sDispatcherNodePortRules(kdName, kdNprsToAdd); err != nil {
+			log.Error(err, "error during k8s dispatcher NodePort rules addition")
+			return errors.New("error during k8s dispatcher NodePort rules addition")
+		}
+	}
+	if lenToUpd > 0 {
+		if err := updateK8sDispatcherNodePortRules(kdName, kdNprsToUpd); err != nil {
+			log.Error(err, "error during k8s dispatcher NodePort rules update")
+			return errors.New("error during k8s dispatcher NodePort rules update")
+		}
+	}
+
+	//for _, npr := range kdNprsToAdd {
+	//	if err := createK8sDispatcherNodePortRule(kdName, &npr); err != nil {
+	//		log.Error(err, "error during k8s dispatcher NodePort rule creation")
+	//		return errors.New("error during k8s dispatcher NodePort rule creation")
+	//	}
+	//}
+	//for _, npr := range kdNprsToUpd {
+	//	if err := updateK8sDispatcherNodePortRule(kdName, &npr); err != nil {
+	//		log.Error(err, "error during k8s dispatcher NodePort rule update")
+	//		return errors.New("error during k8s dispatcher NodePort rule update")
+	//	}
+	//}
+	for _, npr := range kdNprsToDel {
+		if err := deleteK8sDispatcherNodePortRule(kdName, &npr); err != nil {
+			log.Error(err, "error during k8s dispatcher NodePort rule deletion")
+			return errors.New("error during k8s dispatcher NodePort rule deletion")
+		}
+	}
+	log.V(1).Info("synced k8s dispatcher NodePort rules")
+	return nil
 }
 
 func CleanupK8sDispatcherNodePortRules(svcId string) error {
@@ -134,47 +215,5 @@ func CleanupK8sDispatcherNodePortRules(svcId string) error {
 		}
 	}
 	log.V(1).Info("cleaned up k8s dispatcher NodePort rules")
-	return nil
-}
-
-func SyncK8sDispatcherNodePortRules(svcDetail *types.ServiceDetail, nodeIP net.IP) error {
-	kdName := conf.k8sDispName
-	ksNprs, err := getK8sDispatcherNodePortRules()
-	if err != nil {
-		return err
-	}
-	log := log.WithValues("svcId", svcDetail.ServiceId)
-
-	kdNprsToAdd, kdNprsToUpd, kdNprsToDel := extractK8sDispatcherNodePortRulesToAddAndDel(ksNprs, svcDetail, nodeIP)
-	log.V(1).Info("evaluated k8s dispatcher NodePort rules to add, update and delete",
-		"toAdd", fmt.Sprintf("%+v", kdNprsToAdd),
-		"toUpd", fmt.Sprintf("%+v", kdNprsToUpd),
-		"toDel", fmt.Sprintf("%+v", kdNprsToDel),
-	)
-
-	if len(kdNprsToAdd) == 0 && len(kdNprsToUpd) == 0 && len(kdNprsToDel) == 0 {
-		log.V(1).Info("k8s dispatcher NodePort rule already synced")
-		return nil
-	}
-
-	for _, npr := range kdNprsToAdd {
-		if err := createK8sDispatcherNodePortRule(kdName, &npr); err != nil {
-			log.Error(err, "error during k8s dispatcher NodePort rule creation")
-			return errors.New("error during k8s dispatcher NodePort rule creation")
-		}
-	}
-	for _, npr := range kdNprsToUpd {
-		if err := updateK8sDispatcherNodePortRule(kdName, &npr); err != nil {
-			log.Error(err, "error during k8s dispatcher NodePort rule update")
-			return errors.New("error during k8s dispatcher NodePort rule update")
-		}
-	}
-	for _, npr := range kdNprsToDel {
-		if err := deleteK8sDispatcherNodePortRule(kdName, &npr); err != nil {
-			log.Error(err, "error during k8s dispatcher NodePort rule deletion")
-			return errors.New("error during k8s dispatcher NodePort rule deletion")
-		}
-	}
-	log.V(1).Info("synced k8s dispatcher NodePort rules")
 	return nil
 }

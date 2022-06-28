@@ -139,10 +139,6 @@ func (r *ServiceReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		return ctrl.Result{}, err
 	}
 
-	//if err := polycube.Prova(); err != nil {
-	//	l.Error(err, "ERRORE ESTERNO")
-	//}
-
 	if err := polycube.SyncK8sDispatcherNodePortRules(sd, nodeIP); err != nil {
 		l.Error(err, "something went wrong during k8s dispatcher NodePort rules sync")
 		return ctrl.Result{}, err
