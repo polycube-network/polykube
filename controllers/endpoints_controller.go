@@ -45,9 +45,11 @@ type EndpointsReconciler struct {
 
 // buildServiceToBackends builds a map containing for each port (identified by the name
 // or, in case of a single service port, by the placeholder "-") a set containing all the
-// associated backends.
+// associated backends. A weight is also associated to each backend depending on the node on which it is.
 func buildServiceToBackends(ep *corev1.Endpoints) types.ServiceToBackends {
 	stb := make(types.ServiceToBackends)
+
+	podCIDRStr := node.Conf.PodCIDR
 
 	for _, sub := range ep.Subsets {
 		// each EndpointPort object is associated one-to-one with a virtual service
@@ -61,7 +63,18 @@ func buildServiceToBackends(ep *corev1.Endpoints) types.ServiceToBackends {
 			// each address along with the port of an EndpointPort identifies a backend that has to be associated to the
 			// virtual service
 			for _, addr := range sub.Addresses {
-				stb.Add(svcId, types.Backend{Ip: addr.IP, Port: p.Port})
+				//calculating backend weight
+				var w int32
+				if podCIDRStr.Contains(net.ParseIP(addr.IP)) {
+					w = 3
+				} else {
+					w = 1
+				}
+				stb.Add(svcId, types.Backend{
+					Ip:     addr.IP,
+					Port:   p.Port,
+					Weight: w,
+				})
 			}
 		}
 	}

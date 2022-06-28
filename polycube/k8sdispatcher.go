@@ -152,6 +152,11 @@ func SyncK8sDispatcherNodePortRules(svcDetail *types.ServiceDetail, nodeIP net.I
 		"toDel", fmt.Sprintf("%+v", kdNprsToDel),
 	)
 
+	if len(kdNprsToAdd) == 0 && len(kdNprsToUpd) == 0 && len(kdNprsToDel) == 0 {
+		log.V(1).Info("k8s dispatcher NodePort rule already synced")
+		return nil
+	}
+
 	for _, npr := range kdNprsToAdd {
 		if err := createK8sDispatcherNodePortRule(kdName, &npr); err != nil {
 			log.Error(err, "error during k8s dispatcher NodePort rule creation")

@@ -1,8 +1,9 @@
 package types
 
 type Backend struct {
-	Ip   string
-	Port int32
+	Ip     string
+	Port   int32
+	Weight int32
 }
 type BackendsSet map[Backend]struct{}
 
@@ -20,26 +21,8 @@ func (stb ServiceToBackends) Add(s string, b Backend) {
 	stb[s][b] = struct{}{}
 }
 
-func (stb ServiceToBackends) AddBackends(s string, bs BackendsSet) {
-	stb[s] = bs
-}
-
-func (stb ServiceToBackends) CountDistinctServices() int {
-	return len(stb)
-}
 func (stb ServiceToBackends) GetBackendsSet(s string) BackendsSet {
 	return stb[s]
-}
-func (stb ServiceToBackends) checkService(s string) bool {
-	_, ok := stb[s]
-	return ok
-}
-func (stb ServiceToBackends) Contains(s string, b Backend) bool {
-	if _, ok := stb[s]; !ok {
-		return false
-	}
-	_, ok := stb[s][b]
-	return ok
 }
 
 type EndpointsDetail struct {

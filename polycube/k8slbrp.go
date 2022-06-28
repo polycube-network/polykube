@@ -183,6 +183,11 @@ func SyncK8sLbrpServices(svcDetail *types.ServiceDetail) error {
 			"toDel", fmt.Sprintf("%+v", klSvcsToDel),
 		)
 
+		if len(klSvcsToAdd) == 0 && len(klSvcsToDel) == 0 {
+			log.V(1).Info("k8s lbrp services already synced")
+			continue
+		}
+
 		for _, klSvc := range klSvcsToAdd {
 			if err := createK8sLbrpService(kl.Name, &klSvc); err != nil {
 				log.Error(err, "error during k8s lbrp service creation")
@@ -233,7 +238,7 @@ func areBackendsEqual(actualBackendsList []k8slbrp.ServiceBackend, expectedBacke
 		return false
 	}
 	for _, sb := range actualBackendsList {
-		b := types.Backend{Ip: sb.Ip, Port: sb.Port}
+		b := types.Backend{Ip: sb.Ip, Port: sb.Port, Weight: sb.Weight}
 		if !expectedBackendsSet.Contains(b) {
 			return false
 		}
@@ -252,7 +257,7 @@ func replaceK8sLbrpServiceBackends(klName string, svc *k8slbrp.Service, newBacke
 			Name:   epName,
 			Ip:     b.Ip,
 			Port:   b.Port,
-			Weight: 1, // TODO mocked
+			Weight: b.Weight,
 		})
 	}
 
