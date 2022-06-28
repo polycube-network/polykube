@@ -92,6 +92,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: API_SERVER_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: apiServerIp
+            - name: API_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: polykube-cfg
+                  key: apiServerPort
             - name: VXLAN_IFACE_NAME
               valueFrom:
                 configMapKeyRef:

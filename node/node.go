@@ -205,6 +205,10 @@ func LoadConfig() error {
 		return err
 	}
 
+	// changing the config host in such a way that the clientset (the one created starting from this config) can talk
+	// directly with the API server without using the "kubernetes" ClusterIP Service
+	clusterConfig.Host = Env.APIServerEndpoint()
+
 	// creating the clientset
 	cset, err := kubernetes.NewForConfig(clusterConfig)
 	if err != nil {
