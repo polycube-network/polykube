@@ -15,9 +15,9 @@ type K8sdispatcher struct {
 	// UUID of the Cube
 	Uuid string `json:"uuid,omitempty"`
 	// Type of the Cube (TC, XDP_SKB, XDP_DRV)
-	Type_       string `json:"type,omitempty"`
+	Type_ string `json:"type,omitempty"`
 	ServiceName string `json:"service-name,omitempty"`
-	// Defines the logging level of a service instance, from none (OFF) to the most verbose (TRACE)
+	// Logging level of a cube, from none (OFF) to the most verbose (TRACE)
 	Loglevel string `json:"loglevel,omitempty"`
 	// Entry of the ports table
 	Ports []Ports `json:"ports,omitempty"`
@@ -25,10 +25,12 @@ type K8sdispatcher struct {
 	Shadow bool `json:"shadow,omitempty"`
 	// Defines if all traffic is sent to Linux
 	Span bool `json:"span,omitempty"`
-	// Internal src ip used for services with externaltrafficpolicy=cluster
-	InternalSrcIp string         `json:"internal-src-ip,omitempty"`
-	NattingRule   []NattingRule  `json:"natting-rule,omitempty"`
-	NodeportRule  []NodeportRule `json:"nodeport-rule,omitempty"`
-	// Port range used for NodePort services
+	// Internal source IP address used for natting incoming packets directed to Kubernetes Services with a CLUSTER external traffic policy
+	InternalSrcIp string `json:"internal-src-ip,omitempty"`
+	// Port range used for NodePort Services
 	NodeportRange string `json:"nodeport-range,omitempty"`
+	// Session entry related to a specific traffic direction
+	SessionRule []SessionRule `json:"session-rule,omitempty"`
+	// NodePort rule associated with a Kubernetes NodePort Service
+	NodeportRule []NodeportRule `json:"nodeport-rule,omitempty"`
 }

@@ -10,12 +10,12 @@
 package swagger
 
 type NodeportRule struct {
-	// Source IP address
-	Name string `json:"nodeport-name,omitempty"`
-	// Destination L4 port number
-	Port int32 `json:"nodeport-port,omitempty"`
-	// L4 protocol
+	// NodePort rule nodeport port number
+	NodeportPort int32 `json:"nodeport-port,omitempty"`
+	// NodePort rule L4 protocol
 	Proto string `json:"proto,omitempty"`
-	// Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoint
-	ServiceType string `json:"service-type,omitempty"`
+	// The external traffic policy of the Kubernetes NodePort Service
+	ExternalTrafficPolicy string `json:"external-traffic-policy,omitempty"`
+	// An optional name for the NodePort rule
+	RuleName string `json:"rule-name,omitempty"`
 }

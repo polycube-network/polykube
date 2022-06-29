@@ -5,6 +5,7 @@ info:
   version: "1.0.0"
   title: "k8sdispatcher API"
   x-yang-path: "/input/k8sdispatcher.yang"
+  x-service-name: "k8sdispatcher"
 host: "localhost:8080"
 basePath: "/"
 tags:
@@ -346,8 +347,8 @@ paths:
           description: "OK: Successful operation"
           schema:
             type: "string"
-            description: "Defines the logging level of a service instance, from none\
-              \ (OFF) to the most verbose (TRACE)"
+            description: "Logging level of a cube, from none (OFF) to the most verbose\
+              \ (TRACE)"
             example: "INFO"
             enum:
             - "TRACE"
@@ -385,13 +386,13 @@ paths:
         x-exportParamName: "Name"
       - in: "body"
         name: "loglevel"
-        description: "Defines the logging level of a service instance, from none (OFF)\
-          \ to the most verbose (TRACE)"
+        description: "Logging level of a cube, from none (OFF) to the most verbose\
+          \ (TRACE)"
         required: true
         schema:
           type: "string"
-          description: "Defines the logging level of a service instance, from none\
-            \ (OFF) to the most verbose (TRACE)"
+          description: "Logging level of a cube, from none (OFF) to the most verbose\
+            \ (TRACE)"
           example: "INFO"
           enum:
           - "TRACE"
@@ -947,7 +948,7 @@ paths:
           description: "OK: Successful operation"
           schema:
             type: "string"
-            description: "Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND)"
+            description: "Type of the K8s Dispatcher cube port (e.g. BACKEND or FRONTEND)"
             enum:
             - "BACKEND"
             - "FRONTEND"
@@ -959,12 +960,13 @@ paths:
           description: "Not found"
         "400":
           description: "Bad request"
-    patch:
+  /k8sdispatcher/{name}/ports/{ports_name}/ip/:
+    get:
       tags:
       - "k8sdispatcher"
-      summary: "Update type by ID"
-      description: "Update operation of resource: type"
-      operationId: "updateK8sdispatcherPortsTypeByID"
+      summary: "Read ip by ID"
+      description: "Read operation of resource: ip"
+      operationId: "readK8sdispatcherPortsIpByID"
       consumes:
       - "application/json"
       produces:
@@ -982,28 +984,21 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "PortsName"
-      - in: "body"
-        name: "type"
-        description: "Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND)"
-        required: true
-        schema:
-          type: "string"
-          description: "Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND)"
-          enum:
-          - "BACKEND"
-          - "FRONTEND"
-          x-is-required: true
-        x-is-enum: "true"
-        x-exportParamName: "Type_"
       responses:
         "200":
-          description: "OK: Successful update"
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+              p{N}\\p{L}]+)?"
+            description: "IP address of the node interface (only for FRONTEND port)"
+            example: "10.10.1.1"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
         "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
+          description: "Not found"
+        "400":
+          description: "Bad request"
   /k8sdispatcher/{name}/shadow/:
     get:
       tags:
@@ -1129,7 +1124,8 @@ paths:
             type: "string"
             format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
               p{N}\\p{L}]+)?"
-            description: "Internal src ip used for services with externaltrafficpolicy=cluster"
+            description: "Internal source IP address used for natting incoming packets\
+              \ directed to Kubernetes Services with a CLUSTER external traffic policy"
             example: "10.10.1.1"
             x-is-required: true
         "405":
@@ -1138,51 +1134,13 @@ paths:
           description: "Not found"
         "400":
           description: "Bad request"
-    patch:
-      tags:
-      - "k8sdispatcher"
-      summary: "Update internal-src-ip by ID"
-      description: "Update operation of resource: internal-src-ip"
-      operationId: "updateK8sdispatcherInternalSrcIpByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - in: "body"
-        name: "internal-src-ip"
-        description: "Internal src ip used for services with externaltrafficpolicy=cluster"
-        required: true
-        schema:
-          type: "string"
-          format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-            p{N}\\p{L}]+)?"
-          description: "Internal src ip used for services with externaltrafficpolicy=cluster"
-          example: "10.10.1.1"
-          x-is-required: true
-        x-exportParamName: "InternalSrcIp"
-      responses:
-        "200":
-          description: "OK: Successful update"
-        "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
-  /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/:
+  /k8sdispatcher/{name}/nodeport-range/:
     get:
       tags:
       - "k8sdispatcher"
-      summary: "Read natting-rule by ID"
-      description: "Read operation of resource: natting-rule"
-      operationId: "readK8sdispatcherNattingRuleByID"
+      summary: "Read nodeport-range by ID"
+      description: "Read operation of resource: nodeport-range"
+      operationId: "readK8sdispatcherNodeportRangeByID"
       consumes:
       - "application/json"
       produces:
@@ -1194,257 +1152,26 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "Name"
-      - name: "internal-src"
-        in: "path"
-        description: "ID of internal-src"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
-        in: "path"
-        description: "ID of internal-dst"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
-        in: "path"
-        description: "ID of internal-sport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
-        in: "path"
-        description: "ID of internal-dport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalDport"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
       responses:
         "200":
           description: "OK: Successful operation"
           schema:
-            $ref: "#/definitions/NattingRule"
+            type: "string"
+            description: "Port range used for NodePort Services"
+            example: "30000-32767"
+            default: "30000-32767"
         "405":
           description: "Method not allowed: Use POST to invoke operations"
         "404":
           description: "Not found"
         "400":
           description: "Bad request"
-    post:
-      tags:
-      - "k8sdispatcher"
-      summary: "Create natting-rule by ID"
-      description: "Create operation of resource: natting-rule"
-      operationId: "createK8sdispatcherNattingRuleByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - name: "internal-src"
-        in: "path"
-        description: "ID of internal-src"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
-        in: "path"
-        description: "ID of internal-dst"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
-        in: "path"
-        description: "ID of internal-sport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
-        in: "path"
-        description: "ID of internal-dport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalDport"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
-      - in: "body"
-        name: "natting-rule"
-        description: "natting-rulebody object"
-        required: true
-        schema:
-          $ref: "#/definitions/NattingRule"
-        x-exportParamName: "NattingRule"
-      responses:
-        "201":
-          description: "Created: Successful operation"
-        "404":
-          description: "Not found: Resource not created"
-        "403":
-          description: "Forbidden: User not authorized"
-        "409":
-          description: "Conflict: Resource not created"
-    put:
-      tags:
-      - "k8sdispatcher"
-      summary: "Replace natting-rule by ID"
-      description: "Replace operation of resource: natting-rule"
-      operationId: "replaceK8sdispatcherNattingRuleByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - name: "internal-src"
-        in: "path"
-        description: "ID of internal-src"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
-        in: "path"
-        description: "ID of internal-dst"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
-        in: "path"
-        description: "ID of internal-sport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
-        in: "path"
-        description: "ID of internal-dport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalDport"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
-      - in: "body"
-        name: "natting-rule"
-        description: "natting-rulebody object"
-        required: true
-        schema:
-          $ref: "#/definitions/NattingRule"
-        x-exportParamName: "NattingRule"
-      responses:
-        "201":
-          description: "OK: Resource replaced successfully"
-        "404":
-          description: "Resource not found"
-        "204":
-          description: "No content: Resource modified successfully"
-        "400":
-          description: "Bad request: resource not replaced"
-    delete:
-      tags:
-      - "k8sdispatcher"
-      summary: "Delete natting-rule by ID"
-      description: "Delete operation of resource: natting-rule"
-      operationId: "deleteK8sdispatcherNattingRuleByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - name: "internal-src"
-        in: "path"
-        description: "ID of internal-src"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
-        in: "path"
-        description: "ID of internal-dst"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
-        in: "path"
-        description: "ID of internal-sport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
-        in: "path"
-        description: "ID of internal-dport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalDport"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
-      responses:
-        "404":
-          description: "Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Resource deleted"
     patch:
       tags:
       - "k8sdispatcher"
-      summary: "Update natting-rule by ID"
-      description: "Update operation of resource: natting-rule"
-      operationId: "updateK8sdispatcherNattingRuleByID"
+      summary: "Update nodeport-range by ID"
+      description: "Update operation of resource: nodeport-range"
+      operationId: "updateK8sdispatcherNodeportRangeByID"
       consumes:
       - "application/json"
       produces:
@@ -1456,49 +1183,16 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "Name"
-      - name: "internal-src"
-        in: "path"
-        description: "ID of internal-src"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
-        in: "path"
-        description: "ID of internal-dst"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
-        in: "path"
-        description: "ID of internal-sport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
-        in: "path"
-        description: "ID of internal-dport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalDport"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
       - in: "body"
-        name: "natting-rule"
-        description: "natting-rulebody object"
+        name: "nodeport-range"
+        description: "Port range used for NodePort Services"
         required: true
         schema:
-          $ref: "#/definitions/NattingRule"
-        x-exportParamName: "NattingRule"
+          type: "string"
+          description: "Port range used for NodePort Services"
+          example: "30000-32767"
+          default: "30000-32767"
+        x-exportParamName: "NodeportRange"
       responses:
         "200":
           description: "OK: Successful update"
@@ -1508,13 +1202,92 @@ paths:
           description: "Forbidden: User not authorized"
         "204":
           description: "No content: Successful update"
-  /k8sdispatcher/{name}/natting-rule/:
+  /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/:
     get:
       tags:
       - "k8sdispatcher"
-      summary: "Read natting-rule by ID"
-      description: "Read operation of resource: natting-rule"
-      operationId: "readK8sdispatcherNattingRuleListByID"
+      summary: "Read session-rule by ID"
+      description: "Read operation of resource: session-rule"
+      operationId: "readK8sdispatcherSessionRuleByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "direction"
+        in: "path"
+        description: "ID of direction"
+        required: true
+        type: "string"
+        enum:
+        - "INGRESS"
+        - "EGRESS"
+        x-exportParamName: "Direction"
+      - name: "src-ip"
+        in: "path"
+        description: "ID of src-ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "SrcIp"
+      - name: "dst-ip"
+        in: "path"
+        description: "ID of dst-ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "DstIp"
+      - name: "src-port"
+        in: "path"
+        description: "ID of src-port"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "SrcPort"
+      - name: "dst-port"
+        in: "path"
+        description: "ID of dst-port"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "DstPort"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
+        x-exportParamName: "Proto"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            $ref: "#/definitions/SessionRule"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
+  /k8sdispatcher/{name}/session-rule/:
+    get:
+      tags:
+      - "k8sdispatcher"
+      summary: "Read session-rule by ID"
+      description: "Read operation of resource: session-rule"
+      operationId: "readK8sdispatcherSessionRuleListByID"
       consumes:
       - "application/json"
       produces:
@@ -1532,149 +1305,20 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/NattingRule"
+              $ref: "#/definitions/SessionRule"
         "405":
           description: "Method not allowed: Use POST to invoke operations"
         "404":
           description: "Not found"
         "400":
           description: "Bad request"
-    post:
-      tags:
-      - "k8sdispatcher"
-      summary: "Create natting-rule by ID"
-      description: "Create operation of resource: natting-rule"
-      operationId: "createK8sdispatcherNattingRuleListByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - in: "body"
-        name: "natting-rule"
-        description: "natting-rulebody object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/NattingRule"
-        x-exportParamName: "NattingRule"
-      responses:
-        "201":
-          description: "Created: Successful operation"
-        "404":
-          description: "Not found: Resource not created"
-        "403":
-          description: "Forbidden: User not authorized"
-        "409":
-          description: "Conflict: Resource not created"
-    put:
-      tags:
-      - "k8sdispatcher"
-      summary: "Replace natting-rule by ID"
-      description: "Replace operation of resource: natting-rule"
-      operationId: "replaceK8sdispatcherNattingRuleListByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - in: "body"
-        name: "natting-rule"
-        description: "natting-rulebody object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/NattingRule"
-        x-exportParamName: "NattingRule"
-      responses:
-        "201":
-          description: "OK: Resource replaced successfully"
-        "404":
-          description: "Resource not found"
-        "204":
-          description: "No content: Resource modified successfully"
-        "400":
-          description: "Bad request: resource not replaced"
-    delete:
-      tags:
-      - "k8sdispatcher"
-      summary: "Delete natting-rule by ID"
-      description: "Delete operation of resource: natting-rule"
-      operationId: "deleteK8sdispatcherNattingRuleListByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      responses:
-        "404":
-          description: "Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Resource deleted"
-    patch:
-      tags:
-      - "k8sdispatcher"
-      summary: "Update natting-rule by ID"
-      description: "Update operation of resource: natting-rule"
-      operationId: "updateK8sdispatcherNattingRuleListByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - in: "body"
-        name: "natting-rule"
-        description: "natting-rulebody object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/NattingRule"
-        x-exportParamName: "NattingRule"
-      responses:
-        "200":
-          description: "OK: Successful update"
-        "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
-  /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-ip/:
+  /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/new-ip/:
     get:
       tags:
       - "k8sdispatcher"
-      summary: "Read external-ip by ID"
-      description: "Read operation of resource: external-ip"
-      operationId: "readK8sdispatcherNattingRuleExternalIpByID"
+      summary: "Read new-ip by ID"
+      description: "Read operation of resource: new-ip"
+      operationId: "readK8sdispatcherSessionRuleNewIpByID"
       consumes:
       - "application/json"
       produces:
@@ -1686,41 +1330,55 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "Name"
-      - name: "internal-src"
+      - name: "direction"
         in: "path"
-        description: "ID of internal-src"
+        description: "ID of direction"
+        required: true
+        type: "string"
+        enum:
+        - "INGRESS"
+        - "EGRESS"
+        x-exportParamName: "Direction"
+      - name: "src-ip"
+        in: "path"
+        description: "ID of src-ip"
         required: true
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
+        x-exportParamName: "SrcIp"
+      - name: "dst-ip"
         in: "path"
-        description: "ID of internal-dst"
+        description: "ID of dst-ip"
         required: true
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
+        x-exportParamName: "DstIp"
+      - name: "src-port"
         in: "path"
-        description: "ID of internal-sport"
+        description: "ID of src-port"
         required: true
         type: "integer"
         format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
+        x-exportParamName: "SrcPort"
+      - name: "dst-port"
         in: "path"
-        description: "ID of internal-dport"
+        description: "ID of dst-port"
         required: true
         type: "integer"
         format: "uint16"
-        x-exportParamName: "InternalDport"
+        x-exportParamName: "DstPort"
       - name: "proto"
         in: "path"
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       responses:
         "200":
@@ -1736,85 +1394,13 @@ paths:
           description: "Not found"
         "400":
           description: "Bad request"
-    patch:
-      tags:
-      - "k8sdispatcher"
-      summary: "Update external-ip by ID"
-      description: "Update operation of resource: external-ip"
-      operationId: "updateK8sdispatcherNattingRuleExternalIpByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - name: "internal-src"
-        in: "path"
-        description: "ID of internal-src"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
-        in: "path"
-        description: "ID of internal-dst"
-        required: true
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
-        in: "path"
-        description: "ID of internal-sport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
-        in: "path"
-        description: "ID of internal-dport"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "InternalDport"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
-      - in: "body"
-        name: "external-ip"
-        description: "Translated IP address"
-        required: true
-        schema:
-          type: "string"
-          format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-            p{N}\\p{L}]+)?"
-          description: "Translated IP address"
-        x-exportParamName: "ExternalIp"
-      responses:
-        "200":
-          description: "OK: Successful update"
-        "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
-  /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-port/:
+  /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/new-port/:
     get:
       tags:
       - "k8sdispatcher"
-      summary: "Read external-port by ID"
-      description: "Read operation of resource: external-port"
-      operationId: "readK8sdispatcherNattingRuleExternalPortByID"
+      summary: "Read new-port by ID"
+      description: "Read operation of resource: new-port"
+      operationId: "readK8sdispatcherSessionRuleNewPortByID"
       consumes:
       - "application/json"
       produces:
@@ -1826,41 +1412,55 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "Name"
-      - name: "internal-src"
+      - name: "direction"
         in: "path"
-        description: "ID of internal-src"
+        description: "ID of direction"
+        required: true
+        type: "string"
+        enum:
+        - "INGRESS"
+        - "EGRESS"
+        x-exportParamName: "Direction"
+      - name: "src-ip"
+        in: "path"
+        description: "ID of src-ip"
         required: true
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
+        x-exportParamName: "SrcIp"
+      - name: "dst-ip"
         in: "path"
-        description: "ID of internal-dst"
+        description: "ID of dst-ip"
         required: true
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
+        x-exportParamName: "DstIp"
+      - name: "src-port"
         in: "path"
-        description: "ID of internal-sport"
+        description: "ID of src-port"
         required: true
         type: "integer"
         format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
+        x-exportParamName: "SrcPort"
+      - name: "dst-port"
         in: "path"
-        description: "ID of internal-dport"
+        description: "ID of dst-port"
         required: true
         type: "integer"
         format: "uint16"
-        x-exportParamName: "InternalDport"
+        x-exportParamName: "DstPort"
       - name: "proto"
         in: "path"
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       responses:
         "200":
@@ -1877,12 +1477,13 @@ paths:
           description: "Not found"
         "400":
           description: "Bad request"
-    patch:
+  /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/operation/:
+    get:
       tags:
       - "k8sdispatcher"
-      summary: "Update external-port by ID"
-      description: "Update operation of resource: external-port"
-      operationId: "updateK8sdispatcherNattingRuleExternalPortByID"
+      summary: "Read operation by ID"
+      description: "Read operation of resource: operation"
+      operationId: "readK8sdispatcherSessionRuleOperationByID"
       consumes:
       - "application/json"
       produces:
@@ -1894,62 +1495,156 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "Name"
-      - name: "internal-src"
+      - name: "direction"
         in: "path"
-        description: "ID of internal-src"
+        description: "ID of direction"
+        required: true
+        type: "string"
+        enum:
+        - "INGRESS"
+        - "EGRESS"
+        x-exportParamName: "Direction"
+      - name: "src-ip"
+        in: "path"
+        description: "ID of src-ip"
         required: true
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalSrc"
-      - name: "internal-dst"
+        x-exportParamName: "SrcIp"
+      - name: "dst-ip"
         in: "path"
-        description: "ID of internal-dst"
+        description: "ID of dst-ip"
         required: true
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        x-exportParamName: "InternalDst"
-      - name: "internal-sport"
+        x-exportParamName: "DstIp"
+      - name: "src-port"
         in: "path"
-        description: "ID of internal-sport"
+        description: "ID of src-port"
         required: true
         type: "integer"
         format: "uint16"
-        x-exportParamName: "InternalSport"
-      - name: "internal-dport"
+        x-exportParamName: "SrcPort"
+      - name: "dst-port"
         in: "path"
-        description: "ID of internal-dport"
+        description: "ID of dst-port"
         required: true
         type: "integer"
         format: "uint16"
-        x-exportParamName: "InternalDport"
+        x-exportParamName: "DstPort"
       - name: "proto"
         in: "path"
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
-      - in: "body"
-        name: "external-port"
-        description: "Translated L4 port number"
-        required: true
-        schema:
-          type: "integer"
-          minimum: 0
-          maximum: 65535
-          format: "uint16"
-          description: "Translated L4 port number"
-        x-exportParamName: "ExternalPort"
       responses:
         "200":
-          description: "OK: Successful update"
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Operation applied on the original packet"
+            enum:
+            - "XLATE_SRC"
+            - "XLATE_DST"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
         "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
+          description: "Not found"
+        "400":
+          description: "Bad request"
+  /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/originating-rule/:
+    get:
+      tags:
+      - "k8sdispatcher"
+      summary: "Read originating-rule by ID"
+      description: "Read operation of resource: originating-rule"
+      operationId: "readK8sdispatcherSessionRuleOriginatingRuleByID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "ID of name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "direction"
+        in: "path"
+        description: "ID of direction"
+        required: true
+        type: "string"
+        enum:
+        - "INGRESS"
+        - "EGRESS"
+        x-exportParamName: "Direction"
+      - name: "src-ip"
+        in: "path"
+        description: "ID of src-ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "SrcIp"
+      - name: "dst-ip"
+        in: "path"
+        description: "ID of dst-ip"
+        required: true
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        x-exportParamName: "DstIp"
+      - name: "src-port"
+        in: "path"
+        description: "ID of src-port"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "SrcPort"
+      - name: "dst-port"
+        in: "path"
+        description: "ID of dst-port"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "DstPort"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
+        x-exportParamName: "Proto"
+      responses:
+        "200":
+          description: "OK: Successful operation"
+          schema:
+            type: "string"
+            description: "Rule originating the session entry"
+            enum:
+            - "POD_TO_EXT"
+            - "NODEPORT_CLUSTER"
+          x-is-enum: "true"
+        "405":
+          description: "Method not allowed: Use POST to invoke operations"
+        "404":
+          description: "Not found"
+        "400":
+          description: "Bad request"
   /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/:
     get:
       tags:
@@ -1980,6 +1675,11 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       responses:
         "200":
@@ -2021,6 +1721,11 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       - in: "body"
         name: "nodeport-rule"
@@ -2067,6 +1772,11 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       - in: "body"
         name: "nodeport-rule"
@@ -2113,6 +1823,11 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       responses:
         "404":
@@ -2150,6 +1865,11 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       - in: "body"
         name: "nodeport-rule"
@@ -2327,13 +2047,13 @@ paths:
           description: "Forbidden: User not authorized"
         "204":
           description: "No content: Successful update"
-  /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/internal-src/:
+  /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/external-traffic-policy/:
     get:
       tags:
       - "k8sdispatcher"
-      summary: "Read internal-src by ID"
-      description: "Read operation of resource: internal-src"
-      operationId: "readK8sdispatcherNodeportRuleInternalSrcByID"
+      summary: "Read external-traffic-policy by ID"
+      description: "Read operation of resource: external-traffic-policy"
+      operationId: "readK8sdispatcherNodeportRuleExternalTrafficPolicyByID"
       consumes:
       - "application/json"
       produces:
@@ -2357,112 +2077,22 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       responses:
         "200":
           description: "OK: Successful operation"
           schema:
             type: "string"
-            format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-              p{N}\\p{L}]+)?"
-            description: "Source IP address"
-        "405":
-          description: "Method not allowed: Use POST to invoke operations"
-        "404":
-          description: "Not found"
-        "400":
-          description: "Bad request"
-    patch:
-      tags:
-      - "k8sdispatcher"
-      summary: "Update internal-src by ID"
-      description: "Update operation of resource: internal-src"
-      operationId: "updateK8sdispatcherNodeportRuleInternalSrcByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - name: "nodeport-port"
-        in: "path"
-        description: "ID of nodeport-port"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "NodeportPort"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
-      - in: "body"
-        name: "internal-src"
-        description: "Source IP address"
-        required: true
-        schema:
-          type: "string"
-          format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-            p{N}\\p{L}]+)?"
-          description: "Source IP address"
-        x-exportParamName: "InternalSrc"
-      responses:
-        "200":
-          description: "OK: Successful update"
-        "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
-  /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/:
-    get:
-      tags:
-      - "k8sdispatcher"
-      summary: "Read service-type by ID"
-      description: "Read operation of resource: service-type"
-      operationId: "readK8sdispatcherNodeportRuleServiceTypeByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - name: "nodeport-port"
-        in: "path"
-        description: "ID of nodeport-port"
-        required: true
-        type: "integer"
-        format: "uint16"
-        x-exportParamName: "NodeportPort"
-      - name: "proto"
-        in: "path"
-        description: "ID of proto"
-        required: true
-        type: "string"
-        x-exportParamName: "Proto"
-      responses:
-        "200":
-          description: "OK: Successful operation"
-          schema:
-            type: "string"
-            description: "Denotes if this Service desires to route external traffic\
-              \ to node-local or cluster-wide endpoint"
+            description: "The external traffic policy of the Kubernetes NodePort Service"
             enum:
-            - "CLUSTER"
             - "LOCAL"
-            x-is-required: true
+            - "CLUSTER"
+            default: "CLUSTER"
           x-is-enum: "true"
         "405":
           description: "Method not allowed: Use POST to invoke operations"
@@ -2473,9 +2103,9 @@ paths:
     patch:
       tags:
       - "k8sdispatcher"
-      summary: "Update service-type by ID"
-      description: "Update operation of resource: service-type"
-      operationId: "updateK8sdispatcherNodeportRuleServiceTypeByID"
+      summary: "Update external-traffic-policy by ID"
+      description: "Update operation of resource: external-traffic-policy"
+      operationId: "updateK8sdispatcherNodeportRuleExternalTrafficPolicyByID"
       consumes:
       - "application/json"
       produces:
@@ -2499,22 +2129,25 @@ paths:
         description: "ID of proto"
         required: true
         type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-exportParamName: "Proto"
       - in: "body"
-        name: "service-type"
-        description: "Denotes if this Service desires to route external traffic to\
-          \ node-local or cluster-wide endpoint"
+        name: "external-traffic-policy"
+        description: "The external traffic policy of the Kubernetes NodePort Service"
         required: true
         schema:
           type: "string"
-          description: "Denotes if this Service desires to route external traffic\
-            \ to node-local or cluster-wide endpoint"
+          description: "The external traffic policy of the Kubernetes NodePort Service"
           enum:
-          - "CLUSTER"
           - "LOCAL"
-          x-is-required: true
+          - "CLUSTER"
+          default: "CLUSTER"
         x-is-enum: "true"
-        x-exportParamName: "ServiceType"
+        x-exportParamName: "ExternalTrafficPolicy"
       responses:
         "200":
           description: "OK: Successful update"
@@ -2524,13 +2157,13 @@ paths:
           description: "Forbidden: User not authorized"
         "204":
           description: "No content: Successful update"
-  /k8sdispatcher/{name}/nodeport-range/:
+  /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/rule-name/:
     get:
       tags:
       - "k8sdispatcher"
-      summary: "Read nodeport-range by ID"
-      description: "Read operation of resource: nodeport-range"
-      operationId: "readK8sdispatcherNodeportRangeByID"
+      summary: "Read rule-name by ID"
+      description: "Read operation of resource: rule-name"
+      operationId: "readK8sdispatcherNodeportRuleRuleNameByID"
       consumes:
       - "application/json"
       produces:
@@ -2542,56 +2175,37 @@ paths:
         required: true
         type: "string"
         x-exportParamName: "Name"
+      - name: "nodeport-port"
+        in: "path"
+        description: "ID of nodeport-port"
+        required: true
+        type: "integer"
+        format: "uint16"
+        x-exportParamName: "NodeportPort"
+      - name: "proto"
+        in: "path"
+        description: "ID of proto"
+        required: true
+        type: "string"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
+        x-exportParamName: "Proto"
       responses:
         "200":
           description: "OK: Successful operation"
           schema:
             type: "string"
-            description: "Port range used for NodePort services"
-            example: "30000-32767"
-            default: "30000-32767"
+            description: "An optional name for the NodePort rule"
+            example: "my-nodeport-rule"
         "405":
           description: "Method not allowed: Use POST to invoke operations"
         "404":
           description: "Not found"
         "400":
           description: "Bad request"
-    patch:
-      tags:
-      - "k8sdispatcher"
-      summary: "Update nodeport-range by ID"
-      description: "Update operation of resource: nodeport-range"
-      operationId: "updateK8sdispatcherNodeportRangeByID"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "ID of name"
-        required: true
-        type: "string"
-        x-exportParamName: "Name"
-      - in: "body"
-        name: "nodeport-range"
-        description: "Port range used for NodePort services"
-        required: true
-        schema:
-          type: "string"
-          description: "Port range used for NodePort services"
-          example: "30000-32767"
-          default: "30000-32767"
-        x-exportParamName: "NodeportRange"
-      responses:
-        "200":
-          description: "OK: Successful update"
-        "404":
-          description: "Not found: Resource not found"
-        "403":
-          description: "Forbidden: User not authorized"
-        "204":
-          description: "No content: Successful update"
 definitions:
   Ports:
     properties:
@@ -2631,16 +2245,25 @@ definitions:
         x-is-base-datamodel: true
       type:
         type: "string"
-        description: "Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND)"
+        description: "Type of the K8s Dispatcher cube port (e.g. BACKEND or FRONTEND)"
+        readOnly: true
         enum:
         - "BACKEND"
         - "FRONTEND"
         x-is-required: true
+      ip:
+        type: "string"
+        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
+          p{N}\\p{L}]+)?"
+        example: "10.10.1.1"
+        description: "IP address of the node interface (only for FRONTEND port)"
+        readOnly: true
     example:
       tcubes:
       - "tcubes"
       - "tcubes"
       peer: "r0:port1"
+      ip: "10.10.1.1"
       name: "port1"
       type: "BACKEND"
       uuid: "uuid"
@@ -2648,90 +2271,128 @@ definitions:
     x-inherits-from: "polycube::service::Port"
     x-is-list: "true"
     x-parent: "K8sdispatcher"
-  NattingRule:
+  SessionRule:
     properties:
-      internal-src:
+      direction:
+        type: "string"
+        description: "Session entry direction (e.g. INGRESS or EGRESS)"
+        enum:
+        - "INGRESS"
+        - "EGRESS"
+        x-is-key: true
+      src-ip:
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        description: "Source IP address"
+        description: "Session entry source IP address"
         x-is-key: true
-      internal-dst:
+      dst-ip:
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
-        description: "Destination IP address"
+        description: "Session entry destination IP address"
         x-is-key: true
-      internal-sport:
+      src-port:
         type: "integer"
         format: "uint16"
-        description: "Source L4 port number"
+        description: "Session entry source L4 port number"
         minimum: 0
         maximum: 65535
         x-is-key: true
-      internal-dport:
+      dst-port:
         type: "integer"
         format: "uint16"
-        description: "Destination L4 port number"
+        description: "Session entry destination L4 port number"
         minimum: 0
         maximum: 65535
         x-is-key: true
       proto:
         type: "string"
-        description: "L4 protocol"
+        example: "TCP, UDP, ICMP"
+        description: "Session entry L4 protocol"
+        enum:
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
         x-is-key: true
-      external-ip:
+      new-ip:
         type: "string"
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
         description: "Translated IP address"
-      external-port:
+        readOnly: true
+      new-port:
         type: "integer"
         format: "uint16"
         description: "Translated L4 port number"
+        readOnly: true
         minimum: 0
         maximum: 65535
+      operation:
+        type: "string"
+        description: "Operation applied on the original packet"
+        readOnly: true
+        enum:
+        - "XLATE_SRC"
+        - "XLATE_DST"
+      originating-rule:
+        type: "string"
+        description: "Rule originating the session entry"
+        readOnly: true
+        enum:
+        - "POD_TO_EXT"
+        - "NODEPORT_CLUSTER"
     example:
-      external-port: 9606
-      internal-sport: 5248
-      proto: "proto"
-      internal-dport: 39500
-      external-ip: "external-ip"
-      internal-src: "internal-src"
-      internal-dst: "internal-dst"
+      src-ip: "src-ip"
+      dst-ip: "dst-ip"
+      src-port: 5248
+      proto: "TCP, UDP, ICMP"
+      originating-rule: "POD_TO_EXT"
+      new-port: 9606
+      dst-port: 39500
+      operation: "XLATE_SRC"
+      direction: "INGRESS"
+      new-ip: "new-ip"
     x-is-list: "true"
     x-parent: "K8sdispatcher"
   NodeportRule:
     properties:
-      internal-src:
-        type: "string"
-        format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
-          p{N}\\p{L}]+)?"
-        description: "Source IP address"
       nodeport-port:
         type: "integer"
         format: "uint16"
-        description: "Destination L4 port number"
+        example: 30500
+        description: "NodePort rule nodeport port number"
         minimum: 0
         maximum: 65535
         x-is-key: true
       proto:
         type: "string"
-        description: "L4 protocol"
-        x-is-key: true
-      service-type:
-        type: "string"
-        description: "Denotes if this Service desires to route external traffic to\
-          \ node-local or cluster-wide endpoint"
+        example: "TCP, UDP, ICMP"
+        description: "NodePort rule L4 protocol"
         enum:
-        - "CLUSTER"
+        - "TCP"
+        - "UDP"
+        - "ICMP"
+        x-typedef: "l4-proto"
+        x-is-key: true
+      external-traffic-policy:
+        type: "string"
+        description: "The external traffic policy of the Kubernetes NodePort Service"
+        default: "CLUSTER"
+        enum:
         - "LOCAL"
-        x-is-required: true
+        - "CLUSTER"
+      rule-name:
+        type: "string"
+        example: "my-nodeport-rule"
+        description: "An optional name for the NodePort rule"
+        readOnly: true
     example:
-      nodeport-port: 39072
-      proto: "proto"
-      service-type: "CLUSTER"
-      internal-src: "internal-src"
+      external-traffic-policy: "CLUSTER"
+      nodeport-port: 30500
+      proto: "TCP, UDP, ICMP"
+      rule-name: "my-nodeport-rule"
     x-is-list: "true"
     x-parent: "K8sdispatcher"
   K8sdispatcher:
@@ -2769,8 +2430,8 @@ definitions:
       loglevel:
         type: "string"
         example: "INFO"
-        description: "Defines the logging level of a service instance, from none (OFF)\
-          \ to the most verbose (TRACE)"
+        description: "Logging level of a cube, from none (OFF) to the most verbose\
+          \ (TRACE)"
         default: "INFO"
         enum:
         - "TRACE"
@@ -2808,33 +2469,49 @@ definitions:
         format: "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\\
           p{N}\\p{L}]+)?"
         example: "10.10.1.1"
-        description: "Internal src ip used for services with externaltrafficpolicy=cluster"
+        description: "Internal source IP address used for natting incoming packets\
+          \ directed to Kubernetes Services with a CLUSTER external traffic policy"
+        readOnly: true
         x-is-required: true
-      natting-rule:
+      nodeport-range:
+        type: "string"
+        example: "30000-32767"
+        description: "Port range used for NodePort Services"
+        default: "30000-32767"
+      session-rule:
         type: "array"
+        description: "Session entry related to a specific traffic direction"
+        readOnly: true
         items:
-          $ref: "#/definitions/NattingRule"
+          $ref: "#/definitions/SessionRule"
         x-key:
-        - "internal-src"
-        - "internal-dst"
-        - "internal-sport"
-        - "internal-dport"
+        - "direction"
+        - "src-ip"
+        - "dst-ip"
+        - "src-port"
+        - "dst-port"
         - "proto"
         x-key-list:
-        - name: "internal-src"
+        - name: "direction"
           type: "string"
-        - name: "internal-dst"
+          isEnum: "true"
+        - name: "src-ip"
           type: "string"
-        - name: "internal-sport"
+        - name: "dst-ip"
+          type: "string"
+        - name: "src-port"
           type: "integer"
           format: "uint16"
-        - name: "internal-dport"
+        - name: "dst-port"
           type: "integer"
           format: "uint16"
         - name: "proto"
           type: "string"
+          isEnum: "true"
+          x-typedef: "l4-proto"
       nodeport-rule:
         type: "array"
+        description: "NodePort rule associated with a Kubernetes NodePort Service"
         items:
           $ref: "#/definitions/NodeportRule"
         x-key:
@@ -2846,19 +2523,51 @@ definitions:
           format: "uint16"
         - name: "proto"
           type: "string"
-      nodeport-range:
-        type: "string"
-        example: "30000-32767"
-        description: "Port range used for NodePort services"
-        default: "30000-32767"
+          isEnum: "true"
+          x-typedef: "l4-proto"
     example:
+      service-name: "helloworld"
+      nodeport-range: "30000-32767"
       shadow: false
+      session-rule:
+      - src-ip: "src-ip"
+        dst-ip: "dst-ip"
+        src-port: 5248
+        proto: "TCP, UDP, ICMP"
+        originating-rule: "POD_TO_EXT"
+        new-port: 9606
+        dst-port: 39500
+        operation: "XLATE_SRC"
+        direction: "INGRESS"
+        new-ip: "new-ip"
+      - src-ip: "src-ip"
+        dst-ip: "dst-ip"
+        src-port: 5248
+        proto: "TCP, UDP, ICMP"
+        originating-rule: "POD_TO_EXT"
+        new-port: 9606
+        dst-port: 39500
+        operation: "XLATE_SRC"
+        direction: "INGRESS"
+        new-ip: "new-ip"
+      loglevel: "INFO"
+      name: "k8sdispatcher1"
+      nodeport-rule:
+      - external-traffic-policy: "CLUSTER"
+        nodeport-port: 30500
+        proto: "TCP, UDP, ICMP"
+        rule-name: "my-nodeport-rule"
+      - external-traffic-policy: "CLUSTER"
+        nodeport-port: 30500
+        proto: "TCP, UDP, ICMP"
+        rule-name: "my-nodeport-rule"
       type: "TC"
       ports:
       - tcubes:
         - "tcubes"
         - "tcubes"
         peer: "r0:port1"
+        ip: "10.10.1.1"
         name: "port1"
         type: "BACKEND"
         uuid: "uuid"
@@ -2867,39 +2576,12 @@ definitions:
         - "tcubes"
         - "tcubes"
         peer: "r0:port1"
+        ip: "10.10.1.1"
         name: "port1"
         type: "BACKEND"
         uuid: "uuid"
         status: "UP"
       uuid: "uuid"
-      service-name: "helloworld"
-      nodeport-range: "30000-32767"
-      loglevel: "INFO"
-      name: "k8sdispatcher1"
-      natting-rule:
-      - external-port: 9606
-        internal-sport: 5248
-        proto: "proto"
-        internal-dport: 39500
-        external-ip: "external-ip"
-        internal-src: "internal-src"
-        internal-dst: "internal-dst"
-      - external-port: 9606
-        internal-sport: 5248
-        proto: "proto"
-        internal-dport: 39500
-        external-ip: "external-ip"
-        internal-src: "internal-src"
-        internal-dst: "internal-dst"
-      nodeport-rule:
-      - nodeport-port: 39072
-        proto: "proto"
-        service-type: "CLUSTER"
-        internal-src: "internal-src"
-      - nodeport-port: 39072
-        proto: "proto"
-        service-type: "CLUSTER"
-        internal-src: "internal-src"
       internal-src-ip: "10.10.1.1"
       span: false
     x-is-list: "true"

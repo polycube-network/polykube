@@ -47,17 +47,17 @@ func getK8sDispatcherNodePortRules() ([]k8sdispatcher.NodeportRule, error) {
 func nodePortRuleToFrontend(npr k8sdispatcher.NodeportRule, nodeIP net.IP) types.Frontend {
 	return types.Frontend{
 		Vip:   nodeIP.String(),
-		Vport: npr.Port,
+		Vport: npr.NodeportPort,
 		Proto: strings.ToUpper(npr.Proto),
 	}
 }
 
 func frontendToK8sDispatcherNodePortRule(f *types.Frontend, sn string, etp string) k8sdispatcher.NodeportRule {
 	return k8sdispatcher.NodeportRule{
-		Name:        sn,
-		Port:        f.Vport,
-		Proto:       strings.ToUpper(f.Proto),
-		ServiceType: etp,
+		RuleName:              sn,
+		NodeportPort:          f.Vport,
+		Proto:                 strings.ToUpper(f.Proto),
+		ExternalTrafficPolicy: etp,
 	}
 }
 
@@ -74,7 +74,7 @@ func extractK8sDispatcherNodePortRulesToAddUpdAndDel(
 	fs := make(types.FrontendsSet)
 
 	for _, npr := range oldNprList {
-		if npr.Name != svcId {
+		if npr.RuleName != svcId {
 			continue
 		}
 		f := nodePortRuleToFrontend(npr, nodeIP)
@@ -82,9 +82,10 @@ func extractK8sDispatcherNodePortRulesToAddUpdAndDel(
 			// the NodePort rule has to be deleted if is not present in the newFrontendsSet
 			nprToDel = append(nprToDel, npr)
 		} else {
-			if strings.ToUpper(npr.ServiceType) != etp {
+			if strings.ToUpper(npr.ExternalTrafficPolicy) != etp {
 				// the NodePort rule has to be updated if it is present in the newFrontendsSet
-				npr.ServiceType = etp
+				npr.ExternalTrafficPolicy = etp
+				npr.RuleName = "" // the REST API complains if the rule name is set
 				nprToUpd = append(nprToUpd, npr)
 			}
 			// add to the set the NodePort rule with name = svcId and that have not to be deleted
@@ -125,7 +126,7 @@ func updateK8sDispatcherNodePortRules(kdName string, nprs []k8sdispatcher.Nodepo
 
 func deleteK8sDispatcherNodePortRule(kdName string, npr *k8sdispatcher.NodeportRule) error {
 	log := log.WithValues("k8sdisp", kdName, "rule", fmt.Sprintf("%+v", *npr))
-	resp, err := k8sDispatcherAPI.DeleteK8sdispatcherNodeportRuleByID(context.TODO(), kdName, npr.Port, npr.Proto)
+	resp, err := k8sDispatcherAPI.DeleteK8sdispatcherNodeportRuleByID(context.TODO(), kdName, npr.NodeportPort, npr.Proto)
 	if err != nil && resp.StatusCode != 409 {
 		log.Error(err, "failed to delete k8s dispatcher NodePort rule", "response", fmt.Sprintf("%+v", resp))
 		return errors.New("failed to delete k8s dispatcher NodePort rule")
@@ -189,7 +190,7 @@ func CleanupK8sDispatcherNodePortRulesById(svcId string) error {
 	log := log.WithValues("k8sdisp", kdName, "svcId", svcId)
 
 	for _, npr := range kdNprs {
-		if npr.Name == svcId {
+		if npr.RuleName == svcId {
 			if err := deleteK8sDispatcherNodePortRule(kdName, &npr); err != nil {
 				log.Error(err, "error during k8s dispatcher NodePort rule deletion")
 				return errors.New("error during k8s dispatcher NodePort rule deletion")

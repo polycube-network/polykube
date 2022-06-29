@@ -5,71 +5,57 @@ All URIs are relative to *http://localhost:8080*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**CreateK8sdispatcherByID**](K8sdispatcherApi.md#CreateK8sdispatcherByID) | **Post** /k8sdispatcher/{name}/ | Create k8sdispatcher by ID
-[**CreateK8sdispatcherNattingRuleByID**](K8sdispatcherApi.md#CreateK8sdispatcherNattingRuleByID) | **Post** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/ | Create natting-rule by ID
-[**CreateK8sdispatcherNattingRuleListByID**](K8sdispatcherApi.md#CreateK8sdispatcherNattingRuleListByID) | **Post** /k8sdispatcher/{name}/natting-rule/ | Create natting-rule by ID
 [**CreateK8sdispatcherNodeportRuleByID**](K8sdispatcherApi.md#CreateK8sdispatcherNodeportRuleByID) | **Post** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/ | Create nodeport-rule by ID
 [**CreateK8sdispatcherNodeportRuleListByID**](K8sdispatcherApi.md#CreateK8sdispatcherNodeportRuleListByID) | **Post** /k8sdispatcher/{name}/nodeport-rule/ | Create nodeport-rule by ID
 [**CreateK8sdispatcherPortsByID**](K8sdispatcherApi.md#CreateK8sdispatcherPortsByID) | **Post** /k8sdispatcher/{name}/ports/{ports_name}/ | Create ports by ID
 [**CreateK8sdispatcherPortsListByID**](K8sdispatcherApi.md#CreateK8sdispatcherPortsListByID) | **Post** /k8sdispatcher/{name}/ports/ | Create ports by ID
 [**DeleteK8sdispatcherByID**](K8sdispatcherApi.md#DeleteK8sdispatcherByID) | **Delete** /k8sdispatcher/{name}/ | Delete k8sdispatcher by ID
-[**DeleteK8sdispatcherNattingRuleByID**](K8sdispatcherApi.md#DeleteK8sdispatcherNattingRuleByID) | **Delete** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/ | Delete natting-rule by ID
-[**DeleteK8sdispatcherNattingRuleListByID**](K8sdispatcherApi.md#DeleteK8sdispatcherNattingRuleListByID) | **Delete** /k8sdispatcher/{name}/natting-rule/ | Delete natting-rule by ID
 [**DeleteK8sdispatcherNodeportRuleByID**](K8sdispatcherApi.md#DeleteK8sdispatcherNodeportRuleByID) | **Delete** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/ | Delete nodeport-rule by ID
 [**DeleteK8sdispatcherNodeportRuleListByID**](K8sdispatcherApi.md#DeleteK8sdispatcherNodeportRuleListByID) | **Delete** /k8sdispatcher/{name}/nodeport-rule/ | Delete nodeport-rule by ID
 [**DeleteK8sdispatcherPortsByID**](K8sdispatcherApi.md#DeleteK8sdispatcherPortsByID) | **Delete** /k8sdispatcher/{name}/ports/{ports_name}/ | Delete ports by ID
 [**DeleteK8sdispatcherPortsListByID**](K8sdispatcherApi.md#DeleteK8sdispatcherPortsListByID) | **Delete** /k8sdispatcher/{name}/ports/ | Delete ports by ID
 [**ReadK8sdispatcherByID**](K8sdispatcherApi.md#ReadK8sdispatcherByID) | **Get** /k8sdispatcher/{name}/ | Read k8sdispatcher by ID
-[**ReadK8sdispatcherClientSubnetByID**](K8sdispatcherApi.md#ReadK8sdispatcherClientSubnetByID) | **Get** /k8sdispatcher/{name}/client-subnet/ | Read client-subnet by ID
-[**ReadK8sdispatcherClusterIpSubnetByID**](K8sdispatcherApi.md#ReadK8sdispatcherClusterIpSubnetByID) | **Get** /k8sdispatcher/{name}/cluster-ip-subnet/ | Read cluster-ip-subnet by ID
 [**ReadK8sdispatcherInternalSrcIpByID**](K8sdispatcherApi.md#ReadK8sdispatcherInternalSrcIpByID) | **Get** /k8sdispatcher/{name}/internal-src-ip/ | Read internal-src-ip by ID
 [**ReadK8sdispatcherListByID**](K8sdispatcherApi.md#ReadK8sdispatcherListByID) | **Get** /k8sdispatcher/ | Read k8sdispatcher by ID
 [**ReadK8sdispatcherLoglevelByID**](K8sdispatcherApi.md#ReadK8sdispatcherLoglevelByID) | **Get** /k8sdispatcher/{name}/loglevel/ | Read loglevel by ID
-[**ReadK8sdispatcherNattingRuleByID**](K8sdispatcherApi.md#ReadK8sdispatcherNattingRuleByID) | **Get** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/ | Read natting-rule by ID
-[**ReadK8sdispatcherNattingRuleExternalIpByID**](K8sdispatcherApi.md#ReadK8sdispatcherNattingRuleExternalIpByID) | **Get** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-ip/ | Read external-ip by ID
-[**ReadK8sdispatcherNattingRuleExternalPortByID**](K8sdispatcherApi.md#ReadK8sdispatcherNattingRuleExternalPortByID) | **Get** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-port/ | Read external-port by ID
-[**ReadK8sdispatcherNattingRuleListByID**](K8sdispatcherApi.md#ReadK8sdispatcherNattingRuleListByID) | **Get** /k8sdispatcher/{name}/natting-rule/ | Read natting-rule by ID
 [**ReadK8sdispatcherNodeportRangeByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRangeByID) | **Get** /k8sdispatcher/{name}/nodeport-range/ | Read nodeport-range by ID
 [**ReadK8sdispatcherNodeportRuleByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRuleByID) | **Get** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/ | Read nodeport-rule by ID
-[**ReadK8sdispatcherNodeportRuleInternalSrcByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRuleInternalSrcByID) | **Get** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/internal-src/ | Read internal-src by ID
+[**ReadK8sdispatcherNodeportRuleExternalTrafficPolicyByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRuleExternalTrafficPolicyByID) | **Get** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/external-traffic-policy/ | Read external-traffic-policy by ID
 [**ReadK8sdispatcherNodeportRuleListByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRuleListByID) | **Get** /k8sdispatcher/{name}/nodeport-rule/ | Read nodeport-rule by ID
-[**ReadK8sdispatcherNodeportRuleServiceTypeByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRuleServiceTypeByID) | **Get** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/ | Read service-type by ID
+[**ReadK8sdispatcherNodeportRuleRuleNameByID**](K8sdispatcherApi.md#ReadK8sdispatcherNodeportRuleRuleNameByID) | **Get** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/rule-name/ | Read rule-name by ID
 [**ReadK8sdispatcherPortsByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsByID) | **Get** /k8sdispatcher/{name}/ports/{ports_name}/ | Read ports by ID
+[**ReadK8sdispatcherPortsIpByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsIpByID) | **Get** /k8sdispatcher/{name}/ports/{ports_name}/ip/ | Read ip by ID
 [**ReadK8sdispatcherPortsListByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsListByID) | **Get** /k8sdispatcher/{name}/ports/ | Read ports by ID
 [**ReadK8sdispatcherPortsPeerByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsPeerByID) | **Get** /k8sdispatcher/{name}/ports/{ports_name}/peer/ | Read peer by ID
 [**ReadK8sdispatcherPortsStatusByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsStatusByID) | **Get** /k8sdispatcher/{name}/ports/{ports_name}/status/ | Read status by ID
 [**ReadK8sdispatcherPortsTypeByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsTypeByID) | **Get** /k8sdispatcher/{name}/ports/{ports_name}/type/ | Read type by ID
 [**ReadK8sdispatcherPortsUuidByID**](K8sdispatcherApi.md#ReadK8sdispatcherPortsUuidByID) | **Get** /k8sdispatcher/{name}/ports/{ports_name}/uuid/ | Read uuid by ID
 [**ReadK8sdispatcherServiceNameByID**](K8sdispatcherApi.md#ReadK8sdispatcherServiceNameByID) | **Get** /k8sdispatcher/{name}/service-name/ | Read service-name by ID
+[**ReadK8sdispatcherSessionRuleByID**](K8sdispatcherApi.md#ReadK8sdispatcherSessionRuleByID) | **Get** /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/ | Read session-rule by ID
+[**ReadK8sdispatcherSessionRuleListByID**](K8sdispatcherApi.md#ReadK8sdispatcherSessionRuleListByID) | **Get** /k8sdispatcher/{name}/session-rule/ | Read session-rule by ID
+[**ReadK8sdispatcherSessionRuleNewIpByID**](K8sdispatcherApi.md#ReadK8sdispatcherSessionRuleNewIpByID) | **Get** /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/new-ip/ | Read new-ip by ID
+[**ReadK8sdispatcherSessionRuleNewPortByID**](K8sdispatcherApi.md#ReadK8sdispatcherSessionRuleNewPortByID) | **Get** /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/new-port/ | Read new-port by ID
+[**ReadK8sdispatcherSessionRuleOperationByID**](K8sdispatcherApi.md#ReadK8sdispatcherSessionRuleOperationByID) | **Get** /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/operation/ | Read operation by ID
+[**ReadK8sdispatcherSessionRuleOriginatingRuleByID**](K8sdispatcherApi.md#ReadK8sdispatcherSessionRuleOriginatingRuleByID) | **Get** /k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/originating-rule/ | Read originating-rule by ID
 [**ReadK8sdispatcherShadowByID**](K8sdispatcherApi.md#ReadK8sdispatcherShadowByID) | **Get** /k8sdispatcher/{name}/shadow/ | Read shadow by ID
 [**ReadK8sdispatcherSpanByID**](K8sdispatcherApi.md#ReadK8sdispatcherSpanByID) | **Get** /k8sdispatcher/{name}/span/ | Read span by ID
 [**ReadK8sdispatcherTypeByID**](K8sdispatcherApi.md#ReadK8sdispatcherTypeByID) | **Get** /k8sdispatcher/{name}/type/ | Read type by ID
 [**ReadK8sdispatcherUuidByID**](K8sdispatcherApi.md#ReadK8sdispatcherUuidByID) | **Get** /k8sdispatcher/{name}/uuid/ | Read uuid by ID
 [**ReplaceK8sdispatcherByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherByID) | **Put** /k8sdispatcher/{name}/ | Replace k8sdispatcher by ID
-[**ReplaceK8sdispatcherNattingRuleByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherNattingRuleByID) | **Put** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/ | Replace natting-rule by ID
-[**ReplaceK8sdispatcherNattingRuleListByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherNattingRuleListByID) | **Put** /k8sdispatcher/{name}/natting-rule/ | Replace natting-rule by ID
 [**ReplaceK8sdispatcherNodeportRuleByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherNodeportRuleByID) | **Put** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/ | Replace nodeport-rule by ID
 [**ReplaceK8sdispatcherNodeportRuleListByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherNodeportRuleListByID) | **Put** /k8sdispatcher/{name}/nodeport-rule/ | Replace nodeport-rule by ID
 [**ReplaceK8sdispatcherPortsByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherPortsByID) | **Put** /k8sdispatcher/{name}/ports/{ports_name}/ | Replace ports by ID
 [**ReplaceK8sdispatcherPortsListByID**](K8sdispatcherApi.md#ReplaceK8sdispatcherPortsListByID) | **Put** /k8sdispatcher/{name}/ports/ | Replace ports by ID
 [**UpdateK8sdispatcherByID**](K8sdispatcherApi.md#UpdateK8sdispatcherByID) | **Patch** /k8sdispatcher/{name}/ | Update k8sdispatcher by ID
-[**UpdateK8sdispatcherClientSubnetByID**](K8sdispatcherApi.md#UpdateK8sdispatcherClientSubnetByID) | **Patch** /k8sdispatcher/{name}/client-subnet/ | Update client-subnet by ID
-[**UpdateK8sdispatcherClusterIpSubnetByID**](K8sdispatcherApi.md#UpdateK8sdispatcherClusterIpSubnetByID) | **Patch** /k8sdispatcher/{name}/cluster-ip-subnet/ | Update cluster-ip-subnet by ID
-[**UpdateK8sdispatcherInternalSrcIpByID**](K8sdispatcherApi.md#UpdateK8sdispatcherInternalSrcIpByID) | **Patch** /k8sdispatcher/{name}/internal-src-ip/ | Update internal-src-ip by ID
 [**UpdateK8sdispatcherListByID**](K8sdispatcherApi.md#UpdateK8sdispatcherListByID) | **Patch** /k8sdispatcher/ | Update k8sdispatcher by ID
 [**UpdateK8sdispatcherLoglevelByID**](K8sdispatcherApi.md#UpdateK8sdispatcherLoglevelByID) | **Patch** /k8sdispatcher/{name}/loglevel/ | Update loglevel by ID
-[**UpdateK8sdispatcherNattingRuleByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNattingRuleByID) | **Patch** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/ | Update natting-rule by ID
-[**UpdateK8sdispatcherNattingRuleExternalIpByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNattingRuleExternalIpByID) | **Patch** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-ip/ | Update external-ip by ID
-[**UpdateK8sdispatcherNattingRuleExternalPortByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNattingRuleExternalPortByID) | **Patch** /k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-port/ | Update external-port by ID
-[**UpdateK8sdispatcherNattingRuleListByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNattingRuleListByID) | **Patch** /k8sdispatcher/{name}/natting-rule/ | Update natting-rule by ID
 [**UpdateK8sdispatcherNodeportRangeByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNodeportRangeByID) | **Patch** /k8sdispatcher/{name}/nodeport-range/ | Update nodeport-range by ID
 [**UpdateK8sdispatcherNodeportRuleByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNodeportRuleByID) | **Patch** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/ | Update nodeport-rule by ID
-[**UpdateK8sdispatcherNodeportRuleInternalSrcByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNodeportRuleInternalSrcByID) | **Patch** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/internal-src/ | Update internal-src by ID
+[**UpdateK8sdispatcherNodeportRuleExternalTrafficPolicyByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNodeportRuleExternalTrafficPolicyByID) | **Patch** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/external-traffic-policy/ | Update external-traffic-policy by ID
 [**UpdateK8sdispatcherNodeportRuleListByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNodeportRuleListByID) | **Patch** /k8sdispatcher/{name}/nodeport-rule/ | Update nodeport-rule by ID
-[**UpdateK8sdispatcherNodeportRuleServiceTypeByID**](K8sdispatcherApi.md#UpdateK8sdispatcherNodeportRuleServiceTypeByID) | **Patch** /k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/ | Update service-type by ID
 [**UpdateK8sdispatcherPortsByID**](K8sdispatcherApi.md#UpdateK8sdispatcherPortsByID) | **Patch** /k8sdispatcher/{name}/ports/{ports_name}/ | Update ports by ID
 [**UpdateK8sdispatcherPortsListByID**](K8sdispatcherApi.md#UpdateK8sdispatcherPortsListByID) | **Patch** /k8sdispatcher/{name}/ports/ | Update ports by ID
 [**UpdateK8sdispatcherPortsPeerByID**](K8sdispatcherApi.md#UpdateK8sdispatcherPortsPeerByID) | **Patch** /k8sdispatcher/{name}/ports/{ports_name}/peer/ | Update peer by ID
-[**UpdateK8sdispatcherPortsTypeByID**](K8sdispatcherApi.md#UpdateK8sdispatcherPortsTypeByID) | **Patch** /k8sdispatcher/{name}/ports/{ports_name}/type/ | Update type by ID
 [**UpdateK8sdispatcherSpanByID**](K8sdispatcherApi.md#UpdateK8sdispatcherSpanByID) | **Patch** /k8sdispatcher/{name}/span/ | Update span by ID
 
 
@@ -86,69 +72,6 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **name** | **string**| ID of name | 
   **k8sdispatcher** | [**K8sdispatcher**](K8sdispatcher.md)| k8sdispatcherbody object | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **CreateK8sdispatcherNattingRuleByID**
-> CreateK8sdispatcherNattingRuleByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto, nattingRule)
-Create natting-rule by ID
-
-Create operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-  **nattingRule** | [**NattingRule**](NattingRule.md)| natting-rulebody object | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **CreateK8sdispatcherNattingRuleListByID**
-> CreateK8sdispatcherNattingRuleListByID(ctx, name, nattingRule)
-Create natting-rule by ID
-
-Create operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **nattingRule** | [**[]NattingRule**](NattingRule.md)| natting-rulebody object | 
 
 ### Return type
 
@@ -289,67 +212,6 @@ No authorization required
 Delete k8sdispatcher by ID
 
 Delete operation of resource: k8sdispatcher
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **DeleteK8sdispatcherNattingRuleByID**
-> DeleteK8sdispatcherNattingRuleByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto)
-Delete natting-rule by ID
-
-Delete operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **DeleteK8sdispatcherNattingRuleListByID**
-> DeleteK8sdispatcherNattingRuleListByID(ctx, name)
-Delete natting-rule by ID
-
-Delete operation of resource: natting-rule
 
 ### Required Parameters
 
@@ -516,62 +378,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ReadK8sdispatcherClientSubnetByID**
-> string ReadK8sdispatcherClientSubnetByID(ctx, name)
-Read client-subnet by ID
-
-Read operation of resource: client-subnet
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-
-### Return type
-
-**string**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ReadK8sdispatcherClusterIpSubnetByID**
-> string ReadK8sdispatcherClusterIpSubnetByID(ctx, name)
-Read cluster-ip-subnet by ID
-
-Read operation of resource: cluster-ip-subnet
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-
-### Return type
-
-**string**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **ReadK8sdispatcherInternalSrcIpByID**
 > string ReadK8sdispatcherInternalSrcIpByID(ctx, name)
 Read internal-src-ip by ID
@@ -652,133 +458,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ReadK8sdispatcherNattingRuleByID**
-> NattingRule ReadK8sdispatcherNattingRuleByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto)
-Read natting-rule by ID
-
-Read operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-
-### Return type
-
-[**NattingRule**](NattingRule.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ReadK8sdispatcherNattingRuleExternalIpByID**
-> string ReadK8sdispatcherNattingRuleExternalIpByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto)
-Read external-ip by ID
-
-Read operation of resource: external-ip
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-
-### Return type
-
-**string**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ReadK8sdispatcherNattingRuleExternalPortByID**
-> int32 ReadK8sdispatcherNattingRuleExternalPortByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto)
-Read external-port by ID
-
-Read operation of resource: external-port
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-
-### Return type
-
-**int32**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ReadK8sdispatcherNattingRuleListByID**
-> []NattingRule ReadK8sdispatcherNattingRuleListByID(ctx, name)
-Read natting-rule by ID
-
-Read operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-
-### Return type
-
-[**[]NattingRule**](NattingRule.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **ReadK8sdispatcherNodeportRangeByID**
 > string ReadK8sdispatcherNodeportRangeByID(ctx, name)
 Read nodeport-range by ID
@@ -837,11 +516,11 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ReadK8sdispatcherNodeportRuleInternalSrcByID**
-> string ReadK8sdispatcherNodeportRuleInternalSrcByID(ctx, name, nodeportPort, proto)
-Read internal-src by ID
+# **ReadK8sdispatcherNodeportRuleExternalTrafficPolicyByID**
+> string ReadK8sdispatcherNodeportRuleExternalTrafficPolicyByID(ctx, name, nodeportPort, proto)
+Read external-traffic-policy by ID
 
-Read operation of resource: internal-src
+Read operation of resource: external-traffic-policy
 
 ### Required Parameters
 
@@ -895,11 +574,11 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **ReadK8sdispatcherNodeportRuleServiceTypeByID**
-> string ReadK8sdispatcherNodeportRuleServiceTypeByID(ctx, name, nodeportPort, proto)
-Read service-type by ID
+# **ReadK8sdispatcherNodeportRuleRuleNameByID**
+> string ReadK8sdispatcherNodeportRuleRuleNameByID(ctx, name, nodeportPort, proto)
+Read rule-name by ID
 
-Read operation of resource: service-type
+Read operation of resource: rule-name
 
 ### Required Parameters
 
@@ -942,6 +621,35 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**Ports**](Ports.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ReadK8sdispatcherPortsIpByID**
+> string ReadK8sdispatcherPortsIpByID(ctx, name, portsName)
+Read ip by ID
+
+Read operation of resource: ip
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+  **portsName** | **string**| ID of ports_name | 
+
+### Return type
+
+**string**
 
 ### Authorization
 
@@ -1126,6 +834,204 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **ReadK8sdispatcherSessionRuleByID**
+> SessionRule ReadK8sdispatcherSessionRuleByID(ctx, name, direction, srcIp, dstIp, srcPort, dstPort, proto)
+Read session-rule by ID
+
+Read operation of resource: session-rule
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+  **direction** | **string**| ID of direction | 
+  **srcIp** | **string**| ID of src-ip | 
+  **dstIp** | **string**| ID of dst-ip | 
+  **srcPort** | **int32**| ID of src-port | 
+  **dstPort** | **int32**| ID of dst-port | 
+  **proto** | **string**| ID of proto | 
+
+### Return type
+
+[**SessionRule**](SessionRule.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ReadK8sdispatcherSessionRuleListByID**
+> []SessionRule ReadK8sdispatcherSessionRuleListByID(ctx, name)
+Read session-rule by ID
+
+Read operation of resource: session-rule
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+
+### Return type
+
+[**[]SessionRule**](SessionRule.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ReadK8sdispatcherSessionRuleNewIpByID**
+> string ReadK8sdispatcherSessionRuleNewIpByID(ctx, name, direction, srcIp, dstIp, srcPort, dstPort, proto)
+Read new-ip by ID
+
+Read operation of resource: new-ip
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+  **direction** | **string**| ID of direction | 
+  **srcIp** | **string**| ID of src-ip | 
+  **dstIp** | **string**| ID of dst-ip | 
+  **srcPort** | **int32**| ID of src-port | 
+  **dstPort** | **int32**| ID of dst-port | 
+  **proto** | **string**| ID of proto | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ReadK8sdispatcherSessionRuleNewPortByID**
+> int32 ReadK8sdispatcherSessionRuleNewPortByID(ctx, name, direction, srcIp, dstIp, srcPort, dstPort, proto)
+Read new-port by ID
+
+Read operation of resource: new-port
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+  **direction** | **string**| ID of direction | 
+  **srcIp** | **string**| ID of src-ip | 
+  **dstIp** | **string**| ID of dst-ip | 
+  **srcPort** | **int32**| ID of src-port | 
+  **dstPort** | **int32**| ID of dst-port | 
+  **proto** | **string**| ID of proto | 
+
+### Return type
+
+**int32**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ReadK8sdispatcherSessionRuleOperationByID**
+> string ReadK8sdispatcherSessionRuleOperationByID(ctx, name, direction, srcIp, dstIp, srcPort, dstPort, proto)
+Read operation by ID
+
+Read operation of resource: operation
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+  **direction** | **string**| ID of direction | 
+  **srcIp** | **string**| ID of src-ip | 
+  **dstIp** | **string**| ID of dst-ip | 
+  **srcPort** | **int32**| ID of src-port | 
+  **dstPort** | **int32**| ID of dst-port | 
+  **proto** | **string**| ID of proto | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **ReadK8sdispatcherSessionRuleOriginatingRuleByID**
+> string ReadK8sdispatcherSessionRuleOriginatingRuleByID(ctx, name, direction, srcIp, dstIp, srcPort, dstPort, proto)
+Read originating-rule by ID
+
+Read operation of resource: originating-rule
+
+### Required Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+  **name** | **string**| ID of name | 
+  **direction** | **string**| ID of direction | 
+  **srcIp** | **string**| ID of src-ip | 
+  **dstIp** | **string**| ID of dst-ip | 
+  **srcPort** | **int32**| ID of src-port | 
+  **dstPort** | **int32**| ID of dst-port | 
+  **proto** | **string**| ID of proto | 
+
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **ReadK8sdispatcherShadowByID**
 > bool ReadK8sdispatcherShadowByID(ctx, name)
 Read shadow by ID
@@ -1251,69 +1157,6 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **name** | **string**| ID of name | 
   **k8sdispatcher** | [**K8sdispatcher**](K8sdispatcher.md)| k8sdispatcherbody object | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ReplaceK8sdispatcherNattingRuleByID**
-> ReplaceK8sdispatcherNattingRuleByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto, nattingRule)
-Replace natting-rule by ID
-
-Replace operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-  **nattingRule** | [**NattingRule**](NattingRule.md)| natting-rulebody object | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **ReplaceK8sdispatcherNattingRuleListByID**
-> ReplaceK8sdispatcherNattingRuleListByID(ctx, name, nattingRule)
-Replace natting-rule by ID
-
-Replace operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **nattingRule** | [**[]NattingRule**](NattingRule.md)| natting-rulebody object | 
 
 ### Return type
 
@@ -1478,93 +1321,6 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **UpdateK8sdispatcherClientSubnetByID**
-> UpdateK8sdispatcherClientSubnetByID(ctx, name, clientSubnet)
-Update client-subnet by ID
-
-Update operation of resource: client-subnet
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **clientSubnet** | **string**| Range of IPs of pods in this node | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherClusterIpSubnetByID**
-> UpdateK8sdispatcherClusterIpSubnetByID(ctx, name, clusterIpSubnet)
-Update cluster-ip-subnet by ID
-
-Update operation of resource: cluster-ip-subnet
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **clusterIpSubnet** | **string**| Range of VIPs where clusterIP services are exposed | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherInternalSrcIpByID**
-> UpdateK8sdispatcherInternalSrcIpByID(ctx, name, internalSrcIp)
-Update internal-src-ip by ID
-
-Update operation of resource: internal-src-ip
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrcIp** | **string**| Internal src ip used for services with externaltrafficpolicy&#x3D;cluster | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **UpdateK8sdispatcherListByID**
 > UpdateK8sdispatcherListByID(ctx, k8sdispatcher)
 Update k8sdispatcher by ID
@@ -1605,138 +1361,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **name** | **string**| ID of name | 
-  **loglevel** | **string**| Defines the logging level of a service instance, from none (OFF) to the most verbose (TRACE) | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherNattingRuleByID**
-> UpdateK8sdispatcherNattingRuleByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto, nattingRule)
-Update natting-rule by ID
-
-Update operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-  **nattingRule** | [**NattingRule**](NattingRule.md)| natting-rulebody object | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherNattingRuleExternalIpByID**
-> UpdateK8sdispatcherNattingRuleExternalIpByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto, externalIp)
-Update external-ip by ID
-
-Update operation of resource: external-ip
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-  **externalIp** | **string**| Translated IP address | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherNattingRuleExternalPortByID**
-> UpdateK8sdispatcherNattingRuleExternalPortByID(ctx, name, internalSrc, internalDst, internalSport, internalDport, proto, externalPort)
-Update external-port by ID
-
-Update operation of resource: external-port
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **internalSrc** | **string**| ID of internal-src | 
-  **internalDst** | **string**| ID of internal-dst | 
-  **internalSport** | **int32**| ID of internal-sport | 
-  **internalDport** | **int32**| ID of internal-dport | 
-  **proto** | **string**| ID of proto | 
-  **externalPort** | **int32**| Translated L4 port number | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherNattingRuleListByID**
-> UpdateK8sdispatcherNattingRuleListByID(ctx, name, nattingRule)
-Update natting-rule by ID
-
-Update operation of resource: natting-rule
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **nattingRule** | [**[]NattingRule**](NattingRule.md)| natting-rulebody object | 
+  **loglevel** | **string**| Logging level of a cube, from none (OFF) to the most verbose (TRACE) | 
 
 ### Return type
 
@@ -1765,7 +1390,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **name** | **string**| ID of name | 
-  **nodeportRange** | **string**| Port range used for NodePort services | 
+  **nodeportRange** | **string**| Port range used for NodePort Services | 
 
 ### Return type
 
@@ -1813,11 +1438,11 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **UpdateK8sdispatcherNodeportRuleInternalSrcByID**
-> UpdateK8sdispatcherNodeportRuleInternalSrcByID(ctx, name, nodeportPort, proto, internalSrc)
-Update internal-src by ID
+# **UpdateK8sdispatcherNodeportRuleExternalTrafficPolicyByID**
+> UpdateK8sdispatcherNodeportRuleExternalTrafficPolicyByID(ctx, name, nodeportPort, proto, externalTrafficPolicy)
+Update external-traffic-policy by ID
 
-Update operation of resource: internal-src
+Update operation of resource: external-traffic-policy
 
 ### Required Parameters
 
@@ -1827,7 +1452,7 @@ Name | Type | Description  | Notes
   **name** | **string**| ID of name | 
   **nodeportPort** | **int32**| ID of nodeport-port | 
   **proto** | **string**| ID of proto | 
-  **internalSrc** | **string**| Source IP address | 
+  **externalTrafficPolicy** | **string**| The external traffic policy of the Kubernetes NodePort Service | 
 
 ### Return type
 
@@ -1857,37 +1482,6 @@ Name | Type | Description  | Notes
  **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
   **name** | **string**| ID of name | 
   **nodeportRule** | [**[]NodeportRule**](NodeportRule.md)| nodeport-rulebody object | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherNodeportRuleServiceTypeByID**
-> UpdateK8sdispatcherNodeportRuleServiceTypeByID(ctx, name, nodeportPort, proto, serviceType)
-Update service-type by ID
-
-Update operation of resource: service-type
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **nodeportPort** | **int32**| ID of nodeport-port | 
-  **proto** | **string**| ID of proto | 
-  **serviceType** | **string**| Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoint | 
 
 ### Return type
 
@@ -1977,36 +1571,6 @@ Name | Type | Description  | Notes
   **name** | **string**| ID of name | 
   **portsName** | **string**| ID of ports_name | 
   **peer** | **string**| Peer name, such as a network interfaces (e.g., &#39;veth0&#39;) or another cube (e.g., &#39;br1:port2&#39;) | 
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **UpdateK8sdispatcherPortsTypeByID**
-> UpdateK8sdispatcherPortsTypeByID(ctx, name, portsName, type_)
-Update type by ID
-
-Update operation of resource: type
-
-### Required Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-  **name** | **string**| ID of name | 
-  **portsName** | **string**| ID of ports_name | 
-  **type_** | **string**| Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND) | 
 
 ### Return type
 

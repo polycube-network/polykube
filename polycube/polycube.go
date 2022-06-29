@@ -240,7 +240,7 @@ func createK8sDispatcher() error {
 	kToIntPort := k8sdispatcher.Ports{
 		Name:  conf.kToIntPortName,
 		Type_: "FRONTEND",
-		Ip_:   extIface.IPNet.IP.String(),
+		Ip:    extIface.IPNet.IP.String(),
 		Peer:  extIface.Link.Attrs().Name,
 	}
 	kPorts := []k8sdispatcher.Ports{kToElbPort, kToIntPort}

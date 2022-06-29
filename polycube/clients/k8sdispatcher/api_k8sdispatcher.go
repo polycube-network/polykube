@@ -98,160 +98,6 @@ func (a *K8sdispatcherApiService) CreateK8sdispatcherByID(ctx context.Context, n
 }
 
 /*
-K8sdispatcherApiService Create natting-rule by ID
-Create operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
- * @param nattingRule natting-rulebody object
-
-
-*/
-func (a *K8sdispatcherApiService) CreateK8sdispatcherNattingRuleByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string, nattingRule NattingRule) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Post")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &nattingRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Create natting-rule by ID
-Create operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param nattingRule natting-rulebody object
-
-
-*/
-func (a *K8sdispatcherApiService) CreateK8sdispatcherNattingRuleListByID(ctx context.Context, name string, nattingRule []NattingRule) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Post")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &nattingRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Create nodeport-rule by ID
 Create operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -259,6 +105,8 @@ Create operation of resource: nodeport-rule
  * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param nodeportRule nodeport-rulebody object
+
+
 */
 func (a *K8sdispatcherApiService) CreateK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
 	var (
@@ -613,160 +461,14 @@ func (a *K8sdispatcherApiService) DeleteK8sdispatcherByID(ctx context.Context, n
 }
 
 /*
-K8sdispatcherApiService Delete natting-rule by ID
-Delete operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
-
-
-*/
-func (a *K8sdispatcherApiService) DeleteK8sdispatcherNattingRuleByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Delete")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Delete natting-rule by ID
-Delete operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
-
-
-*/
-func (a *K8sdispatcherApiService) DeleteK8sdispatcherNattingRuleListByID(ctx context.Context, name string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Delete")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Delete nodeport-rule by ID
 Delete operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
  * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
+
+
 */
 func (a *K8sdispatcherApiService) DeleteK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string) (*http.Response, error) {
 	var (
@@ -1387,384 +1089,6 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherLoglevelByID(ctx context.Cont
 }
 
 /*
-K8sdispatcherApiService Read natting-rule by ID
-Read operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
-
-@return NattingRule
-*/
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNattingRuleByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string) (NattingRule, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue NattingRule
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		if localVarHttpResponse.StatusCode == 200 {
-			var v NattingRule
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Read external-ip by ID
-Read operation of resource: external-ip
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
-
-@return string
-*/
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNattingRuleExternalIpByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string) (string, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue string
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-ip/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		if localVarHttpResponse.StatusCode == 200 {
-			var v string
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Read external-port by ID
-Read operation of resource: external-port
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
-
-@return int32
-*/
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNattingRuleExternalPortByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string) (int32, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue int32
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-port/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		if localVarHttpResponse.StatusCode == 200 {
-			var v int32
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Read natting-rule by ID
-Read operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
-
-@return []NattingRule
-*/
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNattingRuleListByID(ctx context.Context, name string) ([]NattingRule, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue []NattingRule
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		if localVarHttpResponse.StatusCode == 200 {
-			var v []NattingRule
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Read nodeport-range by ID
 Read operation of resource: nodeport-range
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -1858,6 +1182,7 @@ Read operation of resource: nodeport-rule
  * @param name ID of name
  * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
+
 @return NodeportRule
 */
 func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string) (NodeportRule, *http.Response, error) {
@@ -1942,8 +1267,8 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleByID(ctx context.
 }
 
 /*
-K8sdispatcherApiService Read nodeport-name by ID
-Read operation of resource: nodeport-name
+K8sdispatcherApiService Read external-traffic-policy by ID
+Read operation of resource: external-traffic-policy
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
  * @param nodeportPort ID of nodeport-port
@@ -1951,7 +1276,7 @@ Read operation of resource: nodeport-name
 
 @return string
 */
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleNameByID(ctx context.Context, name string, nodeportPort int32, proto string) (string, *http.Response, error) {
+func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleExternalTrafficPolicyByID(ctx context.Context, name string, nodeportPort int32, proto string) (string, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -1961,7 +1286,7 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleNameByID(ctx cont
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/nodeport-name/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/external-traffic-policy/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
@@ -2120,8 +1445,8 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleListByID(ctx cont
 }
 
 /*
-K8sdispatcherApiService Read service-type by ID
-Read operation of resource: service-type
+K8sdispatcherApiService Read rule-name by ID
+Read operation of resource: rule-name
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
  * @param nodeportPort ID of nodeport-port
@@ -2129,7 +1454,7 @@ Read operation of resource: service-type
 
 @return string
 */
-func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleServiceTypeByID(ctx context.Context, name string, nodeportPort int32, proto string) (string, *http.Response, error) {
+func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleRuleNameByID(ctx context.Context, name string, nodeportPort int32, proto string) (string, *http.Response, error) {
 	var (
 		localVarHttpMethod  = strings.ToUpper("Get")
 		localVarPostBody    interface{}
@@ -2139,7 +1464,7 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherNodeportRuleServiceTypeByID(c
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/rule-name/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
@@ -2284,6 +1609,95 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherPortsByID(ctx context.Context
 
 		if localVarHttpResponse.StatusCode == 200 {
 			var v Ports
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read ip by ID
+Read operation of resource: ip
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+ * @param portsName ID of ports_name
+
+@return string
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherPortsIpByID(ctx context.Context, name string, portsName string) (string, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue string
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/ports/{ports_name}/ip/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ports_name"+"}", fmt.Sprintf("%v", portsName), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v string
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -2654,95 +2068,6 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherPortsTypeByID(ctx context.Con
 }
 
 /*
-K8sdispatcherApiService Read ip by ID
-Read operation of resource: ip
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param ip IP address of the node interface (only for FRONTEND port)
-
-@return string
-*/
-func (a *K8sdispatcherApiService) ReadK8sdispatcherPortsIpByID(ctx context.Context, name string, portsName string) (string, *http.Response, error) {
-	var (
-		localVarHttpMethod  = strings.ToUpper("Get")
-		localVarPostBody    interface{}
-		localVarFileName    string
-		localVarFileBytes   []byte
-		localVarReturnValue string
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/ports/{ports_name}/ip/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"ports_name"+"}", fmt.Sprintf("%v", portsName), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-		return localVarReturnValue, localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		if localVarHttpResponse.StatusCode == 200 {
-			var v string
-			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHttpResponse, newErr
-			}
-			newErr.model = v
-			return localVarReturnValue, localVarHttpResponse, newErr
-		}
-
-		return localVarReturnValue, localVarHttpResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Read uuid by ID
 Read operation of resource: uuid
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -2851,6 +2176,588 @@ func (a *K8sdispatcherApiService) ReadK8sdispatcherServiceNameByID(ctx context.C
 	// create path and map variables
 	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/service-name/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read session-rule by ID
+Read operation of resource: session-rule
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+ * @param direction ID of direction
+ * @param srcIp ID of src-ip
+ * @param dstIp ID of dst-ip
+ * @param srcPort ID of src-port
+ * @param dstPort ID of dst-port
+ * @param proto ID of proto
+
+@return SessionRule
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherSessionRuleByID(ctx context.Context, name string, direction string, srcIp string, dstIp string, srcPort int32, dstPort int32, proto string) (SessionRule, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue SessionRule
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"direction"+"}", fmt.Sprintf("%v", direction), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-ip"+"}", fmt.Sprintf("%v", srcIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-ip"+"}", fmt.Sprintf("%v", dstIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-port"+"}", fmt.Sprintf("%v", srcPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-port"+"}", fmt.Sprintf("%v", dstPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v SessionRule
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read session-rule by ID
+Read operation of resource: session-rule
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+
+@return []SessionRule
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherSessionRuleListByID(ctx context.Context, name string) ([]SessionRule, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue []SessionRule
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/session-rule/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v []SessionRule
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read new-ip by ID
+Read operation of resource: new-ip
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+ * @param direction ID of direction
+ * @param srcIp ID of src-ip
+ * @param dstIp ID of dst-ip
+ * @param srcPort ID of src-port
+ * @param dstPort ID of dst-port
+ * @param proto ID of proto
+
+@return string
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherSessionRuleNewIpByID(ctx context.Context, name string, direction string, srcIp string, dstIp string, srcPort int32, dstPort int32, proto string) (string, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue string
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/new-ip/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"direction"+"}", fmt.Sprintf("%v", direction), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-ip"+"}", fmt.Sprintf("%v", srcIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-ip"+"}", fmt.Sprintf("%v", dstIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-port"+"}", fmt.Sprintf("%v", srcPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-port"+"}", fmt.Sprintf("%v", dstPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read new-port by ID
+Read operation of resource: new-port
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+ * @param direction ID of direction
+ * @param srcIp ID of src-ip
+ * @param dstIp ID of dst-ip
+ * @param srcPort ID of src-port
+ * @param dstPort ID of dst-port
+ * @param proto ID of proto
+
+@return int32
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherSessionRuleNewPortByID(ctx context.Context, name string, direction string, srcIp string, dstIp string, srcPort int32, dstPort int32, proto string) (int32, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue int32
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/new-port/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"direction"+"}", fmt.Sprintf("%v", direction), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-ip"+"}", fmt.Sprintf("%v", srcIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-ip"+"}", fmt.Sprintf("%v", dstIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-port"+"}", fmt.Sprintf("%v", srcPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-port"+"}", fmt.Sprintf("%v", dstPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v int32
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read operation by ID
+Read operation of resource: operation
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+ * @param direction ID of direction
+ * @param srcIp ID of src-ip
+ * @param dstIp ID of dst-ip
+ * @param srcPort ID of src-port
+ * @param dstPort ID of dst-port
+ * @param proto ID of proto
+
+@return string
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherSessionRuleOperationByID(ctx context.Context, name string, direction string, srcIp string, dstIp string, srcPort int32, dstPort int32, proto string) (string, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue string
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/operation/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"direction"+"}", fmt.Sprintf("%v", direction), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-ip"+"}", fmt.Sprintf("%v", srcIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-ip"+"}", fmt.Sprintf("%v", dstIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-port"+"}", fmt.Sprintf("%v", srcPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-port"+"}", fmt.Sprintf("%v", dstPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHttpContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
+	if localVarHttpContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHttpContentType
+	}
+
+	// to determine the Accept header
+	localVarHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
+	if localVarHttpHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
+	}
+	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHttpResponse, err := a.client.callAPI(r)
+	if err != nil || localVarHttpResponse == nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
+	localVarHttpResponse.Body.Close()
+	if err != nil {
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = a.client.decode(&localVarReturnValue, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+		return localVarReturnValue, localVarHttpResponse, err
+	}
+
+	if localVarHttpResponse.StatusCode >= 300 {
+		newErr := GenericSwaggerError{
+			body:  localVarBody,
+			error: localVarHttpResponse.Status,
+		}
+
+		if localVarHttpResponse.StatusCode == 200 {
+			var v string
+			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHttpResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHttpResponse, newErr
+		}
+
+		return localVarReturnValue, localVarHttpResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHttpResponse, nil
+}
+
+/*
+K8sdispatcherApiService Read originating-rule by ID
+Read operation of resource: originating-rule
+ * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ * @param name ID of name
+ * @param direction ID of direction
+ * @param srcIp ID of src-ip
+ * @param dstIp ID of dst-ip
+ * @param srcPort ID of src-port
+ * @param dstPort ID of dst-port
+ * @param proto ID of proto
+
+@return string
+*/
+func (a *K8sdispatcherApiService) ReadK8sdispatcherSessionRuleOriginatingRuleByID(ctx context.Context, name string, direction string, srcIp string, dstIp string, srcPort int32, dstPort int32, proto string) (string, *http.Response, error) {
+	var (
+		localVarHttpMethod  = strings.ToUpper("Get")
+		localVarPostBody    interface{}
+		localVarFileName    string
+		localVarFileBytes   []byte
+		localVarReturnValue string
+	)
+
+	// create path and map variables
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/session-rule/{direction}/{src-ip}/{dst-ip}/{src-port}/{dst-port}/{proto}/originating-rule/"
+	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"direction"+"}", fmt.Sprintf("%v", direction), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-ip"+"}", fmt.Sprintf("%v", srcIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-ip"+"}", fmt.Sprintf("%v", dstIp), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"src-port"+"}", fmt.Sprintf("%v", srcPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"dst-port"+"}", fmt.Sprintf("%v", dstPort), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -3339,160 +3246,6 @@ func (a *K8sdispatcherApiService) ReplaceK8sdispatcherByID(ctx context.Context, 
 }
 
 /*
-K8sdispatcherApiService Replace natting-rule by ID
-Replace operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
- * @param nattingRule natting-rulebody object
-
-
-*/
-func (a *K8sdispatcherApiService) ReplaceK8sdispatcherNattingRuleByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string, nattingRule NattingRule) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Put")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &nattingRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Replace natting-rule by ID
-Replace operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param nattingRule natting-rulebody object
-
-
-*/
-func (a *K8sdispatcherApiService) ReplaceK8sdispatcherNattingRuleListByID(ctx context.Context, name string, nattingRule []NattingRule) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Put")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &nattingRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Replace nodeport-rule by ID
 Replace operation of resource: nodeport-rule
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -3500,6 +3253,8 @@ Replace operation of resource: nodeport-rule
  * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param nodeportRule nodeport-rulebody object
+
+
 */
 func (a *K8sdispatcherApiService) ReplaceK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
 	var (
@@ -3857,78 +3612,6 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherByID(ctx context.Context, n
 }
 
 /*
-K8sdispatcherApiService Update internal-src-ip by ID
-Update operation of resource: internal-src-ip
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrcIp Internal src ip used for services with externaltrafficpolicy&#x3D;cluster
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherInternalSrcIpByID(ctx context.Context, name string, internalSrcIp string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/internal-src-ip/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &internalSrcIp
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Update k8sdispatcher by ID
 Update operation of resource: k8sdispatcher
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -4003,7 +3686,7 @@ K8sdispatcherApiService Update loglevel by ID
 Update operation of resource: loglevel
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param loglevel Defines the logging level of a service instance, from none (OFF) to the most verbose (TRACE)
+ * @param loglevel Logging level of a cube, from none (OFF) to the most verbose (TRACE)
 
 
 */
@@ -4071,329 +3754,11 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherLoglevelByID(ctx context.Co
 }
 
 /*
-K8sdispatcherApiService Update natting-rule by ID
-Update operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
- * @param nattingRule natting-rulebody object
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNattingRuleByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string, nattingRule NattingRule) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &nattingRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Update external-ip by ID
-Update operation of resource: external-ip
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
- * @param externalIp Translated IP address
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNattingRuleExternalIpByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string, externalIp string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-ip/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &externalIp
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Update external-port by ID
-Update operation of resource: external-port
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param internalSrc ID of internal-src
- * @param internalDst ID of internal-dst
- * @param internalSport ID of internal-sport
- * @param internalDport ID of internal-dport
- * @param proto ID of proto
- * @param externalPort Translated L4 port number
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNattingRuleExternalPortByID(ctx context.Context, name string, internalSrc string, internalDst string, internalSport int32, internalDport int32, proto string, externalPort int32) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/{internal-src}/{internal-dst}/{internal-sport}/{internal-dport}/{proto}/external-port/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-src"+"}", fmt.Sprintf("%v", internalSrc), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dst"+"}", fmt.Sprintf("%v", internalDst), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-sport"+"}", fmt.Sprintf("%v", internalSport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"internal-dport"+"}", fmt.Sprintf("%v", internalDport), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &externalPort
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Update natting-rule by ID
-Update operation of resource: natting-rule
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param nattingRule natting-rulebody object
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNattingRuleListByID(ctx context.Context, name string, nattingRule []NattingRule) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/natting-rule/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &nattingRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
 K8sdispatcherApiService Update nodeport-range by ID
 Update operation of resource: nodeport-range
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
- * @param nodeportRange Port range used for NodePort services
+ * @param nodeportRange Port range used for NodePort Services
 
 
 */
@@ -4468,6 +3833,8 @@ Update operation of resource: nodeport-rule
  * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
  * @param nodeportRule nodeport-rulebody object
+
+
 */
 func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportRule NodeportRule) (*http.Response, error) {
 	var (
@@ -4535,17 +3902,17 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleByID(ctx contex
 }
 
 /*
-K8sdispatcherApiService Update ruleName by ID
-Update operation of resource: ruleName
+K8sdispatcherApiService Update external-traffic-policy by ID
+Update operation of resource: external-traffic-policy
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  * @param name ID of name
  * @param nodeportPort ID of nodeport-port
  * @param proto ID of proto
- * @param nodeportName An optional name for the NodePort rule
+ * @param externalTrafficPolicy The external traffic policy of the Kubernetes NodePort Service
 
 
 */
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx context.Context, name string, nodeportPort int32, proto string, nodeportName string) (*http.Response, error) {
+func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleExternalTrafficPolicyByID(ctx context.Context, name string, nodeportPort int32, proto string, externalTrafficPolicy string) (*http.Response, error) {
 	var (
 		localVarHttpMethod = strings.ToUpper("Patch")
 		localVarPostBody   interface{}
@@ -4554,7 +3921,7 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx co
 	)
 
 	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/nodeport-name/"
+	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/external-traffic-policy/"
 	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
 	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
@@ -4581,7 +3948,7 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleNameByID(ctx co
 		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
 	}
 	// body params
-	localVarPostBody = &nodeportName
+	localVarPostBody = &externalTrafficPolicy
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
@@ -4654,82 +4021,6 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleListByID(ctx co
 	}
 	// body params
 	localVarPostBody = &nodeportRule
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Update service-type by ID
-Update operation of resource: service-type
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param nodeportPort ID of nodeport-port
- * @param proto ID of proto
- * @param serviceType Denotes if this Service desires to route external traffic to node-local or cluster-wide endpoint
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherNodeportRuleServiceTypeByID(ctx context.Context, name string, nodeportPort int32, proto string, serviceType string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/nodeport-rule/{nodeport-port}/{proto}/service-type/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"nodeport-port"+"}", fmt.Sprintf("%v", nodeportPort), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"proto"+"}", fmt.Sprintf("%v", proto), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &serviceType
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err
@@ -4950,154 +4241,6 @@ func (a *K8sdispatcherApiService) UpdateK8sdispatcherPortsPeerByID(ctx context.C
 	}
 	// body params
 	localVarPostBody = &peer
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Update type by ID
-Update operation of resource: type
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param portsName ID of ports_name
- * @param type_ Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND)
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherPortsTypeByID(ctx context.Context, name string, portsName string, type_ string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/ports/{ports_name}/type/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"ports_name"+"}", fmt.Sprintf("%v", portsName), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &type_
-	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	localVarHttpResponse, err := a.client.callAPI(r)
-	if err != nil || localVarHttpResponse == nil {
-		return localVarHttpResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHttpResponse.Body)
-	localVarHttpResponse.Body.Close()
-	if err != nil {
-		return localVarHttpResponse, err
-	}
-
-	if localVarHttpResponse.StatusCode >= 300 {
-		newErr := GenericSwaggerError{
-			body:  localVarBody,
-			error: localVarHttpResponse.Status,
-		}
-
-		return localVarHttpResponse, newErr
-	}
-
-	return localVarHttpResponse, nil
-}
-
-/*
-K8sdispatcherApiService Update ip by ID
-Update operation of resource: ip
- * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- * @param name ID of name
- * @param portsName ID of ports_name
- * @param ip_ IP address of the node interface (only for FRONTEND port)
-
-
-*/
-func (a *K8sdispatcherApiService) UpdateK8sdispatcherPortsIpByID(ctx context.Context, name string, portsName string, ip_ string) (*http.Response, error) {
-	var (
-		localVarHttpMethod = strings.ToUpper("Patch")
-		localVarPostBody   interface{}
-		localVarFileName   string
-		localVarFileBytes  []byte
-	)
-
-	// create path and map variables
-	localVarPath := a.client.cfg.BasePath + "/k8sdispatcher/{name}/ports/{ports_name}/ip/"
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", fmt.Sprintf("%v", name), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"ports_name"+"}", fmt.Sprintf("%v", portsName), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHttpContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHttpContentType := selectHeaderContentType(localVarHttpContentTypes)
-	if localVarHttpContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHttpContentType
-	}
-
-	// to determine the Accept header
-	localVarHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHttpHeaderAccept := selectHeaderAccept(localVarHttpHeaderAccepts)
-	if localVarHttpHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHttpHeaderAccept
-	}
-	// body params
-	localVarPostBody = &ip_
 	r, err := a.client.prepareRequest(ctx, localVarPath, localVarHttpMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, localVarFileName, localVarFileBytes)
 	if err != nil {
 		return nil, err

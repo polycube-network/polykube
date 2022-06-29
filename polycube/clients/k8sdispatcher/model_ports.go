@@ -17,10 +17,10 @@ type Ports struct {
 	// Status of the port (UP or DOWN)
 	Status string `json:"status,omitempty"`
 	// Peer name, such as a network interfaces (e.g., 'veth0') or another cube (e.g., 'br1:port2')
-	Peer   string   `json:"peer,omitempty"`
+	Peer string `json:"peer,omitempty"`
 	Tcubes []string `json:"tcubes,omitempty"`
-	// Type of the k8sdispatcher port (e.g. BACKEND or FRONTEND)
+	// Type of the K8s Dispatcher cube port (e.g. BACKEND or FRONTEND)
 	Type_ string `json:"type,omitempty"`
 	// IP address of the node interface (only for FRONTEND port)
-	Ip_ string `json:"ip,omitempty"`
+	Ip string `json:"ip,omitempty"`
 }
